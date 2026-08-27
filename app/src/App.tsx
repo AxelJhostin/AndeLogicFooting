@@ -1,0 +1,233 @@
+import { useEffect, useRef, useState } from 'react'
+import {
+  createNewProject,
+  isProjectDocument,
+  type FootingInputs,
+  type ProjectDocument,
+} from './domain/projects'
+import { checkCalculationReadiness } from './application/check-readiness'
+import { browserProjectRepository } from './persistence/browser-project-repository'
+import './App.css'
+
+type NumberField = keyof FootingInputs
+
+const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
+  { key: 'axialLoadKn', label: 'Carga axial centrada', unit: 'kN' },
+  { key: 'allowableBearingKpa', label: 'Capacidad admisible del suelo', unit: 'kPa' },
+  { key: 'columnWidthM', label: 'Ancho de columna', unit: 'm' },
+  { key: 'columnLengthM', label: 'Largo de columna', unit: 'm' },
+  { key: 'footingWidthM', label: 'Ancho preliminar de zapata', unit: 'm' },
+  { key: 'footingLengthM', label: 'Largo preliminar de zapata', unit: 'm' },
+]
+
+function App() {
+  const [project, setProject] = useState<ProjectDocument>(createNewProject)
+  const [projects, setProjects] = useState<ProjectDocument[]>([])
+  const [status, setStatus] = useState('Proyecto nuevo: aún no está guardado en este navegador.')
+  const importInput = useRef<HTMLInputElement>(null)
+
+  const refreshProjects = async () => {
+    setProjects(await browserProjectRepository.list())
+  }
+
+  useEffect(() => {
+    let isCurrent = true
+
+    const loadStoredProjects = async () => {
+      const storedProjects = await browserProjectRepository.list()
+      if (isCurrent) setProjects(storedProjects)
+    }
+
+    void loadStoredProjects()
+    return () => {
+      isCurrent = false
+    }
+  }, [])
+
+  const updateInput = (key: NumberField, value: string) => {
+    setProject((current) => ({
+      ...current,
+      inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
+    }))
+  }
+
+  const saveProject = async () => {
+    const savedProject = { ...project, updatedAt: new Date().toISOString() }
+    await browserProjectRepository.save(savedProject)
+    setProject(savedProject)
+    await refreshProjects()
+    setStatus('Guardado localmente en este navegador.')
+  }
+
+  const openProject = async (projectId: string) => {
+    const savedProject = await browserProjectRepository.get(projectId)
+    if (!savedProject) return
+    setProject(savedProject)
+    setStatus('Proyecto abierto desde la biblioteca local.')
+  }
+
+  const exportProject = () => {
+    const content = JSON.stringify(project, null, 2)
+    const blob = new Blob([content], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${project.name.trim().replaceAll(/[^a-z0-9]+/gi, '-').toLowerCase() || 'zapata'}.andelogic-footing-project.json`
+    link.click()
+    URL.revokeObjectURL(url)
+    setStatus('Archivo exportado. Guárdalo para abrirlo en otra computadora.')
+  }
+
+  const reviewScope = () => {
+    const readiness = checkCalculationReadiness(project)
+    if (readiness.status === 'invalid-input') {
+      setStatus(readiness.issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    setStatus(readiness.reason)
+  }
+
+  const importProject = async (file?: File) => {
+    if (!file) return
+
+    try {
+      const candidate: unknown = JSON.parse(await file.text())
+      if (!isProjectDocument(candidate)) {
+        throw new Error('El archivo no corresponde al esquema compatible de AndeLogic Footing.')
+      }
+
+      const imported: ProjectDocument = {
+        ...candidate,
+        projectId: crypto.randomUUID(),
+        name: `Importado — ${candidate.name}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      await browserProjectRepository.save(imported)
+      setProject(imported)
+      await refreshProjects()
+      setStatus('Proyecto importado como una copia local. Conserva el archivo original como respaldo.')
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'No fue posible importar el archivo.')
+    } finally {
+      if (importInput.current) importInput.current.value = ''
+    }
+  }
+
+  return (
+    <main className="app-shell">
+      <header className="topbar">
+        <a className="brand" href="/" aria-label="AndeLogic Footing">
+          <span className="brand-mark">A</span>
+          <span>AndeLogic <strong>Footing</strong></span>
+        </a>
+        <span className="prototype-badge">PROTOCOLO · PERSISTENCIA</span>
+      </header>
+
+      <section className="intro">
+        <p className="eyebrow">Producto 01 · Ecuador</p>
+        <h1>Tu proyecto vive contigo, no en un servidor.</h1>
+        <p>
+          Esta primera pantalla permite comprobar la biblioteca local y el archivo portable. El motor
+          de zapatas todavía no está implementado: ningún dato mostrado aquí es un cálculo de diseño.
+        </p>
+      </section>
+
+      <section className="workspace" aria-label="Prototipo de proyecto">
+        <aside className="project-list">
+          <div className="section-heading">
+            <p>Biblioteca local</p>
+            <button type="button" className="text-button" onClick={() => {
+              setProject(createNewProject())
+              setStatus('Proyecto nuevo: guárdalo cuando quieras conservarlo.')
+            }}>
+              + Nuevo
+            </button>
+          </div>
+          <p className="storage-note">Solo se guarda en este navegador y dispositivo.</p>
+          {projects.length === 0 ? (
+            <p className="empty-state">Aún no hay proyectos guardados.</p>
+          ) : (
+            <ul>
+              {projects.map((item) => (
+                <li key={item.projectId}>
+                  <button
+                    type="button"
+                    className={item.projectId === project.projectId ? 'project-item selected' : 'project-item'}
+                    onClick={() => void openProject(item.projectId)}
+                  >
+                    <strong>{item.name}</strong>
+                    <span>{new Date(item.updatedAt).toLocaleString('es-EC')}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </aside>
+
+        <section className="editor">
+          <div className="editor-heading">
+            <div>
+              <p className="eyebrow">Documento de proyecto</p>
+              <input
+                className="project-name"
+                value={project.name}
+                onChange={(event) => setProject((current) => ({ ...current, name: event.target.value }))}
+                aria-label="Nombre del proyecto"
+              />
+            </div>
+            <span className="profile">{project.standardProfile}</span>
+          </div>
+
+          <div className="notice">
+            <strong>Alcance actual:</strong> prueba de almacenamiento. Las verificaciones NEC/ACI permanecen bloqueadas hasta completar trazabilidad y casos técnicos.
+          </div>
+
+          <div className="field-grid">
+            {inputFields.map(({ key, label, unit }) => (
+              <label key={key}>
+                <span>{label}</span>
+                <div className="number-input">
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={project.inputSnapshot[key]}
+                    onChange={(event) => updateInput(key, event.target.value)}
+                  />
+                  <small>{unit}</small>
+                </div>
+              </label>
+            ))}
+          </div>
+
+          <div className="actions">
+            <button type="button" className="secondary" onClick={reviewScope}>
+              Revisar alcance
+            </button>
+            <button type="button" className="primary" onClick={() => void saveProject()}>
+              Guardar en este equipo
+            </button>
+            <button type="button" className="secondary" onClick={exportProject}>
+              Descargar archivo
+            </button>
+            <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
+              Abrir archivo
+            </button>
+            <input
+              ref={importInput}
+              className="visually-hidden"
+              type="file"
+              accept="application/json,.json"
+              onChange={(event) => void importProject(event.target.files?.[0])}
+            />
+          </div>
+          <p className="status" role="status">{status}</p>
+        </section>
+      </section>
+    </main>
+  )
+}
+
+export default App
