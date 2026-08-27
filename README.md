@@ -38,6 +38,7 @@ La presión media es un resultado experimental con carga centrada y presión uni
 - [Trazabilidad normativa](docs/06-normative-traceability.md)
 - [Registro de casos de validación](docs/07-validation-case-register.md)
 - [Persistencia y archivos de proyecto](docs/08-project-persistence.md)
+- [Protocolo de contraste externo](docs/09-external-benchmark-protocol.md)
 - [Guía de contribución para IA y colaboradores](AGENTS.md)
 
 ## Principio rector

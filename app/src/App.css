@@ -24,6 +24,36 @@ h1 { color: #f6f4eb; letter-spacing: -.06em; font-size: clamp(2.65rem, 6vw, 5.75
 .project-name { width: min(100%, 580px); color: #f6f4eb; background: transparent; border: 0; outline: none; padding: 0; font-size: clamp(1.65rem, 3vw, 2.5rem); font-weight: 700; letter-spacing: -.04em; }
 .notice { margin: 30px 0; border-left: 2px solid #d5fa55; color: #a9bec6; background: #0d2530; padding: 14px 16px; line-height: 1.5; font-size: .9rem; }
 .notice strong { color: #eaf1df; }
+.validation-panel { margin: 30px 0; padding: 22px; border: 1px solid #31505c; background: linear-gradient(145deg, #0a222e, #081923); }
+.validation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+.validation-heading h2 { margin: 0; color: #eff6ec; font-size: 1.15rem; }
+.validation-lock { flex: none; border: 1px solid #81584f; color: #f1aa98; background: #2a1b1c; border-radius: 999px; padding: 7px 10px; font-size: .7rem; font-weight: 800; letter-spacing: .06em; }
+.validation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.validation-module { min-width: 0; padding: 14px; border: 1px solid #29404c; background: #071720; }
+.validation-module > div { display: flex; align-items: center; gap: 9px; }
+.validation-module strong { color: #e8f1ef; font-size: .84rem; }
+.module-state { flex: none; color: #e8a18f; background: #2d1d1e; border-radius: 999px; padding: 4px 7px; font-size: .58rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.validation-module.internal-testing .module-state { color: #d5fa55; background: #273318; }
+.validation-module p { min-height: 2.8em; margin: 10px 0; color: #8fa8b0; font-size: .72rem; line-height: 1.4; }
+.validation-module small { color: #6f9099; font-size: .65rem; }
+.technical-drawings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 30px 0; }
+.footing-diagram { margin: 0; padding: 18px; border: 1px solid #3b5863; background: #081923; }
+.footing-diagram figcaption { display: grid; gap: 5px; margin-bottom: 12px; }
+.footing-diagram figcaption span { color: #d5fa55; font-size: .68rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.footing-diagram figcaption strong { color: #eff6ec; font-size: .95rem; }
+.footing-diagram svg { display: block; width: 100%; max-height: 330px; color: #7999a3; }
+.diagram-frame { fill: #071720; stroke: #31505c; }
+.diagram-grid { color: #55808a; }
+.footing-shape { fill: #1a5360; stroke: #93e1d9; stroke-width: 2; }
+.column-shape { fill: #d5fa55; stroke: #f5ffd2; stroke-width: 1.5; }
+.center-line, .extension-line { stroke: #8fa9af; stroke-width: 1; }
+.center-line { stroke-dasharray: 3 3; }
+.dimension-line { stroke: #9cb9c0; stroke-width: 1; }
+.load-arrow { stroke: #d5fa55; stroke-width: 2; }
+.diagram-label, .dimension-text { fill: #b7ced2; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.diagram-label { fill: #d5fa55; font-weight: 800; }
+.column-text { fill: #173138; font-size: 8px; font-weight: 900; letter-spacing: .06em; }
+.footing-diagram > p { color: #8ba5ad; font-size: .75rem; line-height: 1.4; margin: 12px 0 0; }
 .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 label > span { display: block; color: #a9bec6; font-size: .82rem; margin-bottom: 7px; }
 .number-input { display: flex; border: 1px solid #3b5863; background: #071720; }
@@ -46,5 +76,5 @@ label > span { display: block; color: #a9bec6; font-size: .82rem; margin-bottom:
 .result-grid strong { color: #ecf5f0; font-size: 1rem; }
 .result-limit { color: #9fb4bc; font-size: .79rem; line-height: 1.5; margin: 18px 0 0; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-@media (max-width: 720px) { .topbar { height: 62px; } .prototype-badge { display: none; } .intro { padding-top: 54px; } .workspace { grid-template-columns: 1fr; } .field-grid, .result-grid { grid-template-columns: 1fr; } .project-list { border-bottom: 1px solid #29404c; } }
-@media print { :root { color: #10242b; background: #fff; } .topbar, .intro, .project-list, .actions, .status { display: none; } .app-shell, .workspace, .editor { background: #fff; } .workspace { display: block; margin: 0; border: 0; } .editor { padding: 0; } .notice { border-color: #53707a; background: #eef4f3; color: #10242b; } .result-card { break-inside: avoid; background: #f6faf8; color: #10242b; } .result-card h2, .result-grid strong, .notice strong { color: #10242b; } .result-grid p { background: #fff; border: 1px solid #c8d7d5; } .result-limit, .result-grid span { color: #405e67; } }
+@media (max-width: 720px) { .topbar { height: 62px; } .prototype-badge { display: none; } .intro { padding-top: 54px; } .workspace, .technical-drawings { grid-template-columns: 1fr; } .field-grid, .result-grid, .validation-grid { grid-template-columns: 1fr; } .validation-heading { display: grid; } .project-list { border-bottom: 1px solid #29404c; } }
+@media print { :root { color: #10242b; background: #fff; } .topbar, .intro, .project-list, .actions, .status, .validation-panel { display: none; } .app-shell, .workspace, .editor, .footing-diagram { background: #fff; } .workspace { display: block; margin: 0; border: 0; } .editor { padding: 0; } .technical-drawings { break-inside: avoid; } .notice { border-color: #53707a; background: #eef4f3; color: #10242b; } .footing-diagram { break-inside: avoid; } .footing-diagram figcaption strong { color: #10242b; } .diagram-frame { fill: #fff; stroke: #78959c; } .footing-shape { fill: #d1e8e7; stroke: #315e67; } .column-shape { fill: #e2f39e; stroke: #526d2a; } .result-card { break-inside: avoid; background: #f6faf8; color: #10242b; } .result-card h2, .result-grid strong, .notice strong { color: #10242b; } .result-grid p { background: #fff; border: 1px solid #c8d7d5; } .result-limit, .result-grid span, .footing-diagram > p { color: #405e67; } }

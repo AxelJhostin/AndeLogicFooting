@@ -15,6 +15,7 @@ const requiredPositiveFields: Array<keyof FootingInputs> = [
   'columnLengthM',
   'footingWidthM',
   'footingLengthM',
+  'footingThicknessM',
 ]
 
 const labels: Record<keyof FootingInputs, string> = {
@@ -24,6 +25,7 @@ const labels: Record<keyof FootingInputs, string> = {
   columnLengthM: 'El largo de columna',
   footingWidthM: 'El ancho preliminar de zapata',
   footingLengthM: 'El largo preliminar de zapata',
+  footingThicknessM: 'El espesor preliminar de zapata',
 }
 
 export function validateFootingInputs(inputs: FootingInputs): ValidationIssue[] {

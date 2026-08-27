@@ -4,7 +4,7 @@
 
 - Confirmar nombre de trabajo y repositorio.
 - Obtener fuentes normativas autorizadas y registrar edición, cláusulas y parámetros.
-- Elaborar los primeros casos manuales de zapata aislada.
+- Elaborar los primeros casos independientes de zapata aislada y definir sus comparadores externos.
 - Cerrar el alcance de carga axial centrada y las exclusiones.
 
 **Salida:** una especificación que permite implementar sin inventar criterios técnicos.
@@ -14,7 +14,7 @@
 - Modelar entradas, unidades, resultados y advertencias.
 - Implementar presión de contacto, cortante unidireccional, punzonamiento y flexión.
 - Implementar pruebas antes de cada pantalla.
-- Comparar con los casos documentados.
+- Comparar con los casos documentados y al menos dos implementaciones externas compatibles.
 
 **Salida:** motor NEC puro y testeado, sin interfaz de producción.
 
@@ -36,8 +36,9 @@
 
 ## E. Prelanzamiento
 
-- Revisión técnica externa.
+- Cerrar la matriz de contrastes externos y todas sus discrepancias.
 - Pruebas exploratorias con estudiantes e ingenieros jóvenes.
+- Solicitar revisión técnica humana cuando esté disponible como capa adicional de confianza.
 - Corregir problemas de interpretación, unidades y mensajes de error.
 - Crear página oficial del producto en el portal AndeLogic.
 

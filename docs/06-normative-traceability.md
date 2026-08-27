@@ -27,7 +27,7 @@ Para cambiar una fila a “Lista para implementar” se debe registrar:
 - Cláusula, sección o tabla exacta y la interpretación técnica revisada.
 - Parámetros, unidades y límites de aplicación.
 - Función pura que aplicará la regla y al menos un caso de aceptación independiente.
-- Revisión por una persona competente y fecha.
+- Caso independiente y contrastes externos aprobados conforme a `09-external-benchmark-protocol.md`.
 
 Una referencia ambigua bloquea la implementación, no se resuelve mediante una aproximación de IA o una equivalencia supuesta entre normas.
 

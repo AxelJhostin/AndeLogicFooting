@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie'
-import type { ProjectDocument } from '../domain/projects'
+import { normalizeProjectDocument, type ProjectDocument } from '../domain/projects'
 
 class FootingDatabase extends Dexie {
   projects!: Table<ProjectDocument, string>
@@ -13,8 +13,11 @@ class FootingDatabase extends Dexie {
 const database = new FootingDatabase()
 
 export const browserProjectRepository = {
-  list: () => database.projects.orderBy('updatedAt').reverse().toArray(),
-  get: (projectId: string) => database.projects.get(projectId),
+  list: async () => (await database.projects.orderBy('updatedAt').reverse().toArray()).map(normalizeProjectDocument),
+  get: async (projectId: string) => {
+    const project = await database.projects.get(projectId)
+    return project ? normalizeProjectDocument(project) : undefined
+  },
   save: async (project: ProjectDocument) => {
     await database.projects.put(project)
     return project

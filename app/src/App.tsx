@@ -2,13 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import {
   createNewProject,
   isProjectDocument,
+  normalizeProjectDocument,
   type FootingInputs,
   type ProjectDocument,
 } from './domain/projects'
 import { checkCalculationReadiness } from './application/check-readiness'
 import { calculatePreliminaryContact, type PreliminaryContactResult } from './domain/footing/preliminary-contact'
 import { validateFootingInputs } from './domain/validation/footing-input'
+import { FootingPlanDiagram } from './components/FootingPlanDiagram'
+import { FootingElevationDiagram } from './components/FootingElevationDiagram'
 import { browserProjectRepository } from './persistence/browser-project-repository'
+import { moduleValidationCatalog } from './validation/benchmarks/catalog'
 import './App.css'
 
 type NumberField = keyof FootingInputs
@@ -20,6 +24,7 @@ const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
   { key: 'columnLengthM', label: 'Largo de columna', unit: 'm' },
   { key: 'footingWidthM', label: 'Ancho preliminar de zapata', unit: 'm' },
   { key: 'footingLengthM', label: 'Largo preliminar de zapata', unit: 'm' },
+  { key: 'footingThicknessM', label: 'Espesor preliminar de zapata', unit: 'm' },
 ]
 
 function App() {
@@ -120,7 +125,7 @@ function App() {
       }
 
       const imported: ProjectDocument = {
-        ...candidate,
+        ...normalizeProjectDocument(candidate),
         projectId: crypto.randomUUID(),
         name: `Importado — ${candidate.name}`,
         createdAt: new Date().toISOString(),
@@ -149,10 +154,10 @@ function App() {
 
       <section className="intro">
         <p className="eyebrow">Producto 01 · Ecuador</p>
-        <h1>Tu proyecto vive contigo, no en un servidor.</h1>
+        <h1>Diseño visible. Evidencia verificable.</h1>
         <p>
-          Esta primera pantalla permite comprobar la biblioteca local y el archivo portable. El motor
-          de zapatas todavía no está implementado: ningún dato mostrado aquí es un cálculo de diseño.
+          Prototipo local-first para construir un calculador de zapatas auditable. Cada módulo normativo
+          permanece bloqueado hasta coincidir con fuentes trazables y comparadores independientes.
         </p>
       </section>
 
@@ -204,7 +209,45 @@ function App() {
           </div>
 
           <div className="notice">
-            <strong>Alcance actual:</strong> prueba de almacenamiento. Las verificaciones NEC/ACI permanecen bloqueadas hasta completar trazabilidad y casos técnicos.
+            <strong>Alcance actual:</strong> zapata aislada rectangular, columna centrada y carga axial. El contacto P/A es experimental; NEC/ACI permanece bloqueado hasta completar trazabilidad y contrastes externos.
+          </div>
+
+          <section className="validation-panel" aria-labelledby="validation-title">
+            <div className="validation-heading">
+              <div>
+                <p className="eyebrow">Control de confianza</p>
+                <h2 id="validation-title">Estado real de los módulos</h2>
+              </div>
+              <span className="validation-lock">0 módulos liberados</span>
+            </div>
+            <div className="validation-grid">
+              {moduleValidationCatalog.map((module) => (
+                <article key={module.id} className={`validation-module ${module.state}`}>
+                  <div>
+                    <span className="module-state">
+                      {module.state === 'internal-testing' ? 'Prueba interna' : module.state === 'approved' ? 'Aprobado' : 'Bloqueado'}
+                    </span>
+                    <strong>{module.label}</strong>
+                  </div>
+                  <p>{module.note}</p>
+                  <small>{module.completedExternalBenchmarks}/{module.requiredExternalBenchmarks} evidencias externas completas</small>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <div className="technical-drawings">
+            <FootingPlanDiagram
+              footingWidthM={project.inputSnapshot.footingWidthM}
+              footingLengthM={project.inputSnapshot.footingLengthM}
+              columnWidthM={project.inputSnapshot.columnWidthM}
+              columnLengthM={project.inputSnapshot.columnLengthM}
+            />
+            <FootingElevationDiagram
+              footingWidthM={project.inputSnapshot.footingWidthM}
+              columnWidthM={project.inputSnapshot.columnWidthM}
+              footingThicknessM={project.inputSnapshot.footingThicknessM}
+            />
           </div>
 
           <div className="field-grid">

@@ -11,7 +11,10 @@ export type FootingInputs = {
   columnLengthM: number
   footingWidthM: number
   footingLengthM: number
+  footingThicknessM: number
 }
+
+export const DEFAULT_FOOTING_THICKNESS_M = 0.45
 
 export type ProjectDocument = {
   schemaVersion: number
@@ -47,10 +50,24 @@ export function createNewProject(): ProjectDocument {
       columnLengthM: 0.3,
       footingWidthM: 1.5,
       footingLengthM: 1.5,
+      footingThicknessM: DEFAULT_FOOTING_THICKNESS_M,
     },
     warnings: [
       'Prototipo de persistencia: todavía no ejecuta verificaciones ni diseño estructural.',
     ],
+  }
+}
+
+/** Mantiene legibles los proyectos locales creados antes de añadir el espesor. */
+export function normalizeProjectDocument(project: ProjectDocument): ProjectDocument {
+  const legacyInputs = project.inputSnapshot as Partial<FootingInputs>
+  const footingThicknessM = Number.isFinite(legacyInputs.footingThicknessM) && legacyInputs.footingThicknessM! > 0
+    ? legacyInputs.footingThicknessM!
+    : DEFAULT_FOOTING_THICKNESS_M
+
+  return {
+    ...project,
+    inputSnapshot: { ...project.inputSnapshot, footingThicknessM },
   }
 }
 

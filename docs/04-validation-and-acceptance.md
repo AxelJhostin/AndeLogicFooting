@@ -28,13 +28,15 @@ Antes de publicar se prueban, como mínimo:
 
 Estos casos se ejecutan sin IndexedDB real para probar el documento y las migraciones, y con una base temporal para comprobar el adaptador local.
 
-## Revisión técnica
+## Contraste técnico independiente
 
 Antes de llamar al producto “profesional”:
 
-- Un ingeniero estructural o geotécnico externo revisa al menos el procedimiento y los casos principales.
-- Se documentan discrepancias, decisiones y límites aceptados.
+- Cada módulo cumple el [protocolo de contraste externo](09-external-benchmark-protocol.md).
+- Al menos un caso principal se compara con una referencia pública o cálculo independiente y dos implementaciones externas identificadas por producto y versión.
+- Se documentan discrepancias, decisiones y límites aceptados; una diferencia sin resolver bloquea el módulo.
 - Se confirma que el informe geotécnico sigue siendo una entrada del usuario, no una salida estimada por la aplicación.
+- Una revisión profesional futura se considera una capa adicional valiosa, pero no reemplaza la evidencia reproducible.
 
 ## Definición de terminado del Producto 01
 
@@ -42,6 +44,7 @@ Antes de llamar al producto “profesional”:
 - Los dos perfiles publicados tienen fuentes, versión y matriz de pruebas completas.
 - Todas las verificaciones muestran resultado, ecuación o procedimiento, entradas y referencia aplicable.
 - Los casos de regresión pasan automáticamente.
+- La matriz de contrastes externos cumple las fuentes mínimas y no contiene discrepancias bloqueantes.
 - La aplicación bloquea datos inválidos y casos fuera de alcance.
 - El informe identifica producto, versión del motor, perfil normativo, entradas, resultados y advertencias.
 - El proyecto puede guardarse localmente, exportarse e importarse sin perder trazabilidad de versiones.
