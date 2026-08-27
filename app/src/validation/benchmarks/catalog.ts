@@ -1,4 +1,4 @@
-export type ModuleValidationState = 'internal-testing' | 'not-implemented' | 'approved'
+export type ModuleValidationState = 'internal-testing' | 'pending-review' | 'approved'
 
 export type ModuleValidationRecord = {
   id: string
@@ -21,25 +21,25 @@ export const moduleValidationCatalog: ModuleValidationRecord[] = [
   {
     id: 'one-way-shear',
     label: 'Cortante unidireccional',
-    state: 'not-implemented',
+    state: 'pending-review',
     completedExternalBenchmarks: 0,
     requiredExternalBenchmarks: 3,
-    note: 'Bloqueado hasta completar fuente, cláusula, casos y comparadores compatibles.',
+    note: 'Pendiente de tu revisión de fuente, cláusula, casos y comparadores compatibles.',
   },
   {
     id: 'punching-shear',
     label: 'Punzonamiento',
-    state: 'not-implemented',
+    state: 'pending-review',
     completedExternalBenchmarks: 0,
     requiredExternalBenchmarks: 3,
-    note: 'Bloqueado hasta completar fuente, cláusula, casos y comparadores compatibles.',
+    note: 'Pendiente de tu revisión de fuente, cláusula, casos y comparadores compatibles.',
   },
   {
     id: 'flexure-reinforcement',
     label: 'Flexión y refuerzo',
-    state: 'not-implemented',
+    state: 'pending-review',
     completedExternalBenchmarks: 0,
     requiredExternalBenchmarks: 3,
-    note: 'Bloqueado hasta completar fuente, cláusula, casos y comparadores compatibles.',
+    note: 'Pendiente de tu revisión de fuente, cláusula, casos y comparadores compatibles.',
   },
 ]

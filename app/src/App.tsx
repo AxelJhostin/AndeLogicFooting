@@ -157,7 +157,7 @@ function App() {
         <h1>Diseño visible. Evidencia verificable.</h1>
         <p>
           Prototipo local-first para construir un calculador de zapatas auditable. Cada módulo normativo
-          permanece bloqueado hasta coincidir con fuentes trazables y comparadores independientes.
+          avanza con tu revisión de fuentes trazables y comparadores independientes.
         </p>
       </section>
 
@@ -209,7 +209,7 @@ function App() {
           </div>
 
           <div className="notice">
-            <strong>Alcance actual:</strong> zapata aislada rectangular, columna centrada y carga axial. El contacto P/A es experimental; NEC/ACI permanece bloqueado hasta completar trazabilidad y contrastes externos.
+            <strong>Alcance actual:</strong> zapata aislada rectangular, columna centrada y carga axial. El contacto P/A es experimental; NEC/ACI está pendiente de tu revisión de trazabilidad y contrastes externos.
           </div>
 
           <section className="validation-panel" aria-labelledby="validation-title">
@@ -225,7 +225,7 @@ function App() {
                 <article key={module.id} className={`validation-module ${module.state}`}>
                   <div>
                     <span className="module-state">
-                      {module.state === 'internal-testing' ? 'Prueba interna' : module.state === 'approved' ? 'Aprobado' : 'Bloqueado'}
+                      {module.state === 'internal-testing' ? 'Prueba interna' : module.state === 'approved' ? 'Aprobado' : 'Pendiente de revisión'}
                     </span>
                     <strong>{module.label}</strong>
                   </div>

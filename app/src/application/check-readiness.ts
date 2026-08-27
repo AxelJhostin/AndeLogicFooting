@@ -4,7 +4,7 @@ import { getStandardProfile } from '../standards/profiles'
 
 export type CalculationReadiness =
   | { status: 'invalid-input'; issues: ValidationIssue[] }
-  | { status: 'blocked'; reason: string }
+  | { status: 'pending-review'; reason: string }
 
 export function checkCalculationReadiness(project: ProjectDocument): CalculationReadiness {
   const issues = validateFootingInputs(project.inputSnapshot)
@@ -13,7 +13,7 @@ export function checkCalculationReadiness(project: ProjectDocument): Calculation
   const profile = getStandardProfile(project.standardProfile)
 
   return {
-    status: 'blocked',
+    status: 'pending-review',
     reason: `${profile.label}: ${profile.releaseBlocker}`,
   }
 }
