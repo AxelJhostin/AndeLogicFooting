@@ -6,7 +6,7 @@ Herramienta especializada para el diseño y la verificación de **zapatas aislad
 
 ## Estado
 
-**Fase de definición y validación.** Ya existe un prototipo de interfaz para probar la biblioteca local y los archivos portables. El motor de cálculo todavía no está implementado; ningún resultado podrá considerarse profesional hasta completar los casos de validación y la revisión técnica definidos en este repositorio.
+**Fase de definición y validación.** Ya existe un prototipo de interfaz para probar la biblioteca local, los archivos portables y la presión media de contacto experimental. El motor normativo de diseño todavía no está implementado; ningún resultado podrá considerarse profesional hasta completar los casos de validación y la revisión técnica definidos en este repositorio.
 
 ## Probar el prototipo
 
@@ -23,8 +23,10 @@ Abre la dirección que muestre la terminal, normalmente [http://localhost:5173](
 2. Pulsa **Guardar en este equipo**.
 3. Recarga la página y abre el proyecto desde la biblioteca local.
 4. Pulsa **Descargar archivo**, luego **Abrir archivo** para importarlo como copia en el mismo navegador u otro equipo.
+5. Pulsa **Calcular contacto preliminar** para evaluar `P / A`, el área mínima orientativa y el lado cuadrado equivalente frente a la capacidad admisible que ingresaste.
+6. Pulsa **Imprimir informe** si quieres entregar el caso y sus supuestos a un revisor.
 
-Este flujo solo prueba almacenamiento y portabilidad; no produce un diseño de cimentación.
+La presión media es un resultado experimental con carga centrada y presión uniforme. No incorpora peso propio, combinaciones de carga, excentricidad, asentamientos, cortantes, punzonamiento, flexión ni armado; no produce un diseño de cimentación.
 
 ## Documentación
 

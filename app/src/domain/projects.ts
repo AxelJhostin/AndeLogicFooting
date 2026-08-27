@@ -1,6 +1,8 @@
 export const PROJECT_SCHEMA_VERSION = 1
 
-export type StandardProfile = 'NEC-PENDING' | 'ACI-318-25-PENDING'
+import type { StandardProfileId } from '../standards/profiles'
+
+export type StandardProfile = StandardProfileId
 
 export type FootingInputs = {
   axialLoadKn: number

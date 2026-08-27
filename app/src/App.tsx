@@ -6,6 +6,8 @@ import {
   type ProjectDocument,
 } from './domain/projects'
 import { checkCalculationReadiness } from './application/check-readiness'
+import { calculatePreliminaryContact, type PreliminaryContactResult } from './domain/footing/preliminary-contact'
+import { validateFootingInputs } from './domain/validation/footing-input'
 import { browserProjectRepository } from './persistence/browser-project-repository'
 import './App.css'
 
@@ -24,6 +26,7 @@ function App() {
   const [project, setProject] = useState<ProjectDocument>(createNewProject)
   const [projects, setProjects] = useState<ProjectDocument[]>([])
   const [status, setStatus] = useState('Proyecto nuevo: aún no está guardado en este navegador.')
+  const [preliminaryResult, setPreliminaryResult] = useState<PreliminaryContactResult | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -45,6 +48,7 @@ function App() {
   }, [])
 
   const updateInput = (key: NumberField, value: string) => {
+    setPreliminaryResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
@@ -63,6 +67,7 @@ function App() {
     const savedProject = await browserProjectRepository.get(projectId)
     if (!savedProject) return
     setProject(savedProject)
+    setPreliminaryResult(null)
     setStatus('Proyecto abierto desde la biblioteca local.')
   }
 
@@ -86,6 +91,23 @@ function App() {
     }
 
     setStatus(readiness.reason)
+  }
+
+  const calculateContact = () => {
+    const issues = validateFootingInputs(project.inputSnapshot)
+    if (issues.length > 0) {
+      setPreliminaryResult(null)
+      setStatus(issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    const result = calculatePreliminaryContact(project.inputSnapshot)
+    setPreliminaryResult(result)
+    setStatus('Resultado preliminar calculado. Revisa sus límites antes de usarlo para cualquier decisión.')
+  }
+
+  const printExperimentalReport = () => {
+    window.print()
   }
 
   const importProject = async (file?: File) => {
@@ -140,6 +162,7 @@ function App() {
             <p>Biblioteca local</p>
             <button type="button" className="text-button" onClick={() => {
               setProject(createNewProject())
+              setPreliminaryResult(null)
               setStatus('Proyecto nuevo: guárdalo cuando quieras conservarlo.')
             }}>
               + Nuevo
@@ -203,6 +226,9 @@ function App() {
           </div>
 
           <div className="actions">
+            <button type="button" className="primary" onClick={calculateContact}>
+              Calcular contacto preliminar
+            </button>
             <button type="button" className="secondary" onClick={reviewScope}>
               Revisar alcance
             </button>
@@ -215,6 +241,11 @@ function App() {
             <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
               Abrir archivo
             </button>
+            {preliminaryResult && (
+              <button type="button" className="secondary" onClick={printExperimentalReport}>
+                Imprimir informe
+              </button>
+            )}
             <input
               ref={importInput}
               className="visually-hidden"
@@ -223,6 +254,21 @@ function App() {
               onChange={(event) => void importProject(event.target.files?.[0])}
             />
           </div>
+          {preliminaryResult && (
+            <section className={preliminaryResult.status === 'pass' ? 'result-card pass' : 'result-card fail'} aria-live="polite">
+              <p className="eyebrow">Resultado experimental · sin diseño normativo</p>
+              <h2>{preliminaryResult.status === 'pass' ? 'Presión promedio dentro de la capacidad ingresada' : 'Presión promedio supera la capacidad ingresada'}</h2>
+              <div className="result-grid">
+                <p><span>Área bruta</span><strong>{preliminaryResult.grossAreaM2.toFixed(3)} m²</strong></p>
+                <p><span>Área mínima orientativa</span><strong>{preliminaryResult.minimumRequiredAreaM2.toFixed(3)} m²</strong></p>
+                <p><span>Lado cuadrado equivalente</span><strong>{preliminaryResult.equivalentSquareSideM.toFixed(3)} m</strong></p>
+                <p><span>Presión promedio</span><strong>{preliminaryResult.contactPressureKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Capacidad ingresada</span><strong>{preliminaryResult.allowableBearingKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Utilización</span><strong>{(preliminaryResult.utilization * 100).toFixed(1)}%</strong></p>
+              </div>
+              <p className="result-limit">Área mínima orientativa = carga axial / capacidad admisible; el lado es solo su equivalente cuadrado. Supone carga axial centrada y presión uniforme. No incluye peso propio, combinaciones de carga, excentricidad, asentamientos, cortantes, punzonamiento, flexión ni armado.</p>
+            </section>
+          )}
           <p className="status" role="status">{status}</p>
         </section>
       </section>

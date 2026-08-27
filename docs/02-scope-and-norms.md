@@ -30,10 +30,10 @@ La aplicación tendrá una arquitectura de perfiles normativos independientes de
 
 | Perfil | Base | Estado de lanzamiento |
 | --- | --- | --- |
-| Ecuador | NEC-SE-GC + NEC-SE-HM, con edición exacta congelada en la versión | Perfil predeterminado y obligatorio para el primer lanzamiento en Ecuador. |
+| Ecuador | NEC-SE-GC 2014 + NEC-SE-HM 2014, más las referencias complementarias cuya edición se congele y justifique | Perfil predeterminado solo cuando la matriz complete el criterio de zapatas sin asumir equivalencias. |
 | Internacional | ACI CODE-318-25, unidades SI | Perfil separado, solo se publica cuando el mapa de cláusulas, parámetros y casos de validación esté completo. |
 
-No se mostrará un interruptor “NEC / ACI” si ambas rutas no han sido implementadas y verificadas de forma independiente. La NEC remite a criterios de hormigón, pero no se asumirá que una edición de ACI posterior es automáticamente equivalente: cada perfil guarda su propia fuente, versión, parámetros, cláusulas aplicadas y pruebas.
+No se mostrará un interruptor “NEC / ACI” si ambas rutas no han sido implementadas y verificadas de forma independiente. NEC-SE-HM 2014 remite a ACI 318 para varias disposiciones y para cimentaciones sísmicas; esa remisión no autoriza a asumir que ACI 318-25 sea equivalente al perfil NEC. Cada perfil guarda sus fuentes, ediciones, parámetros, cláusulas aplicadas y pruebas.
 
 ## Gestión de fuentes
 

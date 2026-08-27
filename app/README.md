@@ -4,7 +4,9 @@ Prototipo React + TypeScript + Vite para la primera herramienta independiente de
 
 ## Estado actual
 
-La aplicación permite crear proyectos, guardarlos localmente con IndexedDB, reabrirlos después de recargar y exportarlos/importarlos como JSON versionado. No contiene cálculos ni verificaciones normativas; los campos son únicamente una prueba de persistencia.
+La aplicación permite crear proyectos, guardarlos localmente con IndexedDB, reabrirlos después de recargar y exportarlos/importarlos como JSON versionado. Incluye una evaluación experimental de presión media de contacto `P / A` frente a la capacidad admisible ingresada.
+
+No contiene diseño ni verificaciones normativas: no incluye peso propio, combinaciones de carga, excentricidad, asentamientos, cortante, punzonamiento, flexión ni armado.
 
 ## Ejecutar localmente
 

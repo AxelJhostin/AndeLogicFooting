@@ -1,0 +1,12 @@
+# Documentos de referencia con licencia: se consultan localmente y nunca se versionan.
+docs/*.rar
+docs/references/
+
+# Artefactos de la aplicación React/Vite.
+app/node_modules/
+app/dist/
+app/*.local
+
+# Sistema y editores.
+.DS_Store
+.vscode/

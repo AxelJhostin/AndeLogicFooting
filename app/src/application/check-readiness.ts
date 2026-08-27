@@ -1,5 +1,6 @@
 import type { ProjectDocument } from '../domain/projects'
 import { validateFootingInputs, type ValidationIssue } from '../domain/validation/footing-input'
+import { getStandardProfile } from '../standards/profiles'
 
 export type CalculationReadiness =
   | { status: 'invalid-input'; issues: ValidationIssue[] }
@@ -9,8 +10,10 @@ export function checkCalculationReadiness(project: ProjectDocument): Calculation
   const issues = validateFootingInputs(project.inputSnapshot)
   if (issues.length > 0) return { status: 'invalid-input', issues }
 
+  const profile = getStandardProfile(project.standardProfile)
+
   return {
     status: 'blocked',
-    reason: `El perfil ${project.standardProfile} aún no está liberado: faltan trazabilidad de cláusulas y casos de validación antes de ejecutar cálculos.`,
+    reason: `${profile.label}: ${profile.releaseBlocker}`,
   }
 }
