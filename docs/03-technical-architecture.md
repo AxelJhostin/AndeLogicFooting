@@ -38,6 +38,8 @@ src/
 
 La UI no contiene fórmulas. El motor no importa React, el navegador ni librerías de presentación. Un mismo caso de cálculo debe dar el mismo resultado en pruebas, interfaz e informe.
 
+El contrato `reports/footing-calculation-report.ts` ya produce una memoria serializable de identidad, versiones, perfil, entradas y límites. La etapa visual solo deberá renderizar este contrato, sin volver a decidir criterios técnicos.
+
 ## Contratos de datos
 
 - Todas las entradas se guardan con unidad y valor base SI.

@@ -16,6 +16,8 @@ Cada perfil normativo necesita como mínimo:
 
 Cada fixture debe conservar: fuente, edición, cláusulas aplicadas, entradas, resultados esperados, tolerancia numérica y fecha de revisión.
 
+La base actual conserva el caso interno de cadena completa `NEC-FTG-REF-001`, una falla de contacto `NEC-FTG-REF-002`, una falla de acero `NEC-FTG-REF-003` y conversiones SI explícitas. Estos fixtures son regresiones internas: aún no sustituyen los contrastes externos requeridos para liberar un módulo.
+
 ## Persistencia y archivos de proyecto
 
 Antes de publicar se prueban, como mínimo:

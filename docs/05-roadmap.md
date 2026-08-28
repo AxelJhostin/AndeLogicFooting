@@ -34,6 +34,8 @@
 - Incorporar biblioteca local IndexedDB y exportación/importación de `ProjectDocument` JSON versionado.
 - Revisar accesibilidad, móvil y rendimiento.
 
+**Avance:** existe el modelo serializable de memoria; falta conectarlo a una salida imprimible estructurada y a las instantáneas de resultados.
+
 ## E. Prelanzamiento
 
 - Cerrar la matriz de contrastes externos y todas sus discrepancias.

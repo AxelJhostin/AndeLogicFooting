@@ -18,6 +18,10 @@ Este registro controla los casos de referencia del motor. No deben añadirse res
 | NEC-FTG-008 | Guía NEC 2015 | Comparación de acero mínimo por metro | Guía práctica NEC 2015, sección 1.10.5; ejemplo de zapata | Para `h = 0.50 m`, mínimo de referencia `9.00 cm²/m` | `1e-10` interno | Referencia automatizada; revisión normativa completa pendiente |
 | NEC-FTG-009 | Guía NEC 2015 | Acero requerido por flexión para sección rectangular | Guía práctica NEC 2015, sección 1.10.5; ejemplo de zapata | Para `Mᵤ = 177.35 kN·m`, `b = 1.00 m`, `d = 0.425 m`, `f′c = 23.54 MPa` y `fy = 412.08 MPa`: `11.58 cm²/m` | `0.01 cm²/m` | Referencia automatizada; revisión normativa completa pendiente |
 | NEC-FTG-010 | Guía NEC 2015 | Resistencia a cortante unidireccional por dirección | Guía práctica NEC 2015, sección 1.10.1 | Para `f′c = 23.54 MPa`, `d = 0.425 m` y franja `2.65 m`: resistencia de referencia `696.704 kN` | `0.001 kN` | Motor puro automatizado; integración y validación completa pendientes |
+| NEC-FTG-011 | Guía NEC 2015 | Resistencia a punzonamiento para columna interior | Guía práctica NEC 2015, secciones 1.10.2-1.10.4 | Perímetro interior y alternativa más restrictiva según la geometría | `1e-10` interno | Fixture interno automatizado; contraste externo pendiente |
+| NEC-FTG-012 | Guía NEC 2015 | Longitud de desarrollo a tracción | Guía práctica NEC 2015, sección 1.10.6 | Ejemplo local reproducido con una barra de 20 mm | `0.001 m` | Fixture interno automatizado; contraste externo pendiente |
+| NEC-FTG-013 | Guía NEC 2015 | Cadena completa de zapata centrada | Fixture `NEC-FTG-REF-001` y referencias por módulo | Contacto, cortantes, flexión, acero y desarrollo alcanzan sus referencias internas | Tolerancias por módulo | Automatizado; evidencia externa pendiente |
+| NEC-FTG-014 | Guía NEC 2015 | Fallas controladas | Fixtures `NEC-FTG-REF-002` y `NEC-FTG-REF-003` | Capacidad de suelo superada y acero insuficiente se identifican sin ambigüedad | No aplica | Automatizado |
 
 ## Plantilla obligatoria por caso
 
