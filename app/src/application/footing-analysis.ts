@@ -2,9 +2,10 @@ import type { ProjectDocument } from '../domain/projects'
 import { calculateServiceContact, type ServiceContactResult } from '../domain/footing/service-contact'
 import { calculateOneWayShearDemand, type OneWayShearDemandResult } from '../domain/footing/one-way-shear-demand'
 import { calculateFlexureDemand, type FlexureDemandResult } from '../domain/footing/flexure-demand'
+import { calculatePunchingShearDemand, type PunchingShearDemandResult } from '../domain/footing/punching-shear-demand'
 import { calculateReinforcementLayout, type ReinforcementLayoutResult } from '../domain/footing/reinforcement-layout'
-import { calculateGuideMinimumReinforcement } from '../domain/footing/minimum-reinforcement'
-import { calculateGuideRequiredReinforcement } from '../domain/footing/required-reinforcement'
+import { calculateGuideMinimumReinforcement, type MinimumReinforcementResult } from '../domain/footing/minimum-reinforcement'
+import { calculateGuideRequiredReinforcement, type GuideRequiredReinforcementResult } from '../domain/footing/required-reinforcement'
 import { compareGuideReinforcement, type GuideReinforcementComparisonResult } from '../domain/footing/reinforcement-comparison'
 import { checkGuideOneWayShear, type GuideOneWayShearCheckResult } from '../domain/footing/one-way-shear-guide-check'
 import { checkGuidePunchingShear, type GuidePunchingShearResult } from '../domain/footing/punching-shear-guide-check'
@@ -15,7 +16,10 @@ export type FootingAnalysis = {
   contact: ServiceContactResult
   oneWay: OneWayShearDemandResult
   flexure: FlexureDemandResult
+  punchingDemand: PunchingShearDemandResult | null
   reinforcementLayout: ReinforcementLayoutResult
+  minimumReinforcement: MinimumReinforcementResult
+  requiredReinforcement: GuideRequiredReinforcementResult
   reinforcement: GuideReinforcementComparisonResult
   oneWayGuide: GuideOneWayShearCheckResult
   punchingGuide: GuidePunchingShearResult
@@ -64,6 +68,21 @@ export function analyzeFootingCase(project: ProjectDocument): FootingAnalysisOut
     columnWidthM: data.columnWidthM,
     columnLengthM: data.columnLengthM,
   })
+  let punchingDemand: PunchingShearDemandResult | null = null
+  if (data.punchingCriticalSectionOffsetM > 0) {
+    try {
+      punchingDemand = calculatePunchingShearDemand({
+        factoredAxialLoadKn: data.factoredAxialLoadKn,
+        footingWidthM: data.footingWidthM,
+        footingLengthM: data.footingLengthM,
+        columnWidthM: data.columnWidthM,
+        columnLengthM: data.columnLengthM,
+        criticalSectionOffsetM: data.punchingCriticalSectionOffsetM,
+      })
+    } catch {
+      // La demanda declarada de punzonamiento es opcional para la referencia de guía.
+    }
+  }
   const reinforcementLayout = calculateReinforcementLayout({
     footingWidthM: data.footingWidthM,
     footingLengthM: data.footingLengthM,
@@ -89,13 +108,13 @@ export function analyzeFootingCase(project: ProjectDocument): FootingAnalysisOut
     columnLengthM: data.columnLengthM,
     effectiveDepthM: oneWay.effectiveDepthM,
   })
-  const minimum = calculateGuideMinimumReinforcement({
+  const minimumReinforcement = calculateGuideMinimumReinforcement({
     footingThicknessM: data.footingThicknessM,
     barDiameterM: data.barDiameterM,
     barsParallelToWidthSpacingM: reinforcementLayout.barsParallelToWidth.actualSpacingM,
     barsParallelToLengthSpacingM: reinforcementLayout.barsParallelToLength.actualSpacingM,
   })
-  const required = calculateGuideRequiredReinforcement({
+  const requiredReinforcement = calculateGuideRequiredReinforcement({
     concreteStrengthMpa: data.concreteStrengthMpa,
     steelYieldStrengthMpa: data.steelYieldStrengthMpa,
     effectiveDepthM: oneWay.effectiveDepthM,
@@ -105,11 +124,11 @@ export function analyzeFootingCase(project: ProjectDocument): FootingAnalysisOut
     lengthStripWidthM: flexure.lengthDirection.stripWidthM,
   })
   const reinforcement = compareGuideReinforcement({
-    minimumAreaPerMeterMm2: minimum.minimumAreaPerMeterMm2,
-    widthProvidedAreaPerMeterMm2: minimum.barsParallelToWidth.providedAreaPerMeterMm2,
-    lengthProvidedAreaPerMeterMm2: minimum.barsParallelToLength.providedAreaPerMeterMm2,
-    widthRequiredAreaPerMeterMm2: required.widthDirection.requiredAreaPerMeterMm2,
-    lengthRequiredAreaPerMeterMm2: required.lengthDirection.requiredAreaPerMeterMm2,
+    minimumAreaPerMeterMm2: minimumReinforcement.minimumAreaPerMeterMm2,
+    widthProvidedAreaPerMeterMm2: minimumReinforcement.barsParallelToWidth.providedAreaPerMeterMm2,
+    lengthProvidedAreaPerMeterMm2: minimumReinforcement.barsParallelToLength.providedAreaPerMeterMm2,
+    widthRequiredAreaPerMeterMm2: requiredReinforcement.widthDirection.requiredAreaPerMeterMm2,
+    lengthRequiredAreaPerMeterMm2: requiredReinforcement.lengthDirection.requiredAreaPerMeterMm2,
   })
   const development = checkGuideDevelopmentLength({
     concreteStrengthMpa: data.concreteStrengthMpa,
@@ -119,5 +138,5 @@ export function analyzeFootingCase(project: ProjectDocument): FootingAnalysisOut
     availableLengthLengthM: data.developmentAvailableLengthLengthM,
   })
 
-  return { status: 'calculated', analysis: { contact, oneWay, flexure, reinforcementLayout, reinforcement, oneWayGuide, punchingGuide, development } }
+  return { status: 'calculated', analysis: { contact, oneWay, flexure, punchingDemand, reinforcementLayout, minimumReinforcement, requiredReinforcement, reinforcement, oneWayGuide, punchingGuide, development } }
 }

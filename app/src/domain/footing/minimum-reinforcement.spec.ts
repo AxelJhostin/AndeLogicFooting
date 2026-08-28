@@ -10,6 +10,7 @@ describe('calculateGuideMinimumReinforcement', () => {
       barsParallelToLengthSpacingM: 0.3,
     })
 
+    expect(result.barAreaMm2).toBeCloseTo(201.0619)
     expect(result.minimumAreaPerMeterMm2).toBeCloseTo(900)
     expect(result.barsParallelToWidth.providedAreaPerMeterMm2).toBeCloseTo(804.2477)
     expect(result.barsParallelToWidth.status).toBe('below-guide-minimum')

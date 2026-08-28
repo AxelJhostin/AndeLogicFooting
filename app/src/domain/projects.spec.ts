@@ -45,6 +45,6 @@ describe('normalizeProjectDocument', () => {
     const project = createNewProject()
     const legacyProject = { ...project, standardProfile: 'NEC-PENDING' } as unknown as ProjectDocument
 
-    expect(normalizeProjectDocument(legacyProject).standardProfile).toBe('NEC-PUBLIC-2014-PENDING')
+    expect(normalizeProjectDocument(legacyProject).standardProfile).toBe('NEC-2015-GUIDE-TRACEABLE')
   })
 })

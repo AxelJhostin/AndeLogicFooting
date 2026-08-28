@@ -13,7 +13,9 @@ describe('buildFootingCalculationReport', () => {
 
     expect(report.project.name).toBe('Caso de memoria')
     expect(report.product.productVersion).toBe(project.productVersion)
-    expect(report.profile.id).toBe('NEC-PUBLIC-2014-PENDING')
+    expect(report.profile.id).toBe('NEC-2015-GUIDE-TRACEABLE')
+    expect(report.profile.sources.find((source) => source.id === 'guide-hm-2015')?.url).toContain('GUIA-2-HORMIGON')
+    expect(report.profile.traceability.find((item) => item.id === 'reinforcement')?.reference).toContain('1.10.5')
     expect(report.inputs.find((input) => input.id === 'axialLoadKn')).toMatchObject({ value: 450, unit: 'kN' })
     expect(report.limitations).toEqual(expect.arrayContaining([
       expect.stringContaining('validación'),

@@ -57,7 +57,7 @@ export function createNewProject(): ProjectDocument {
     updatedAt: timestamp,
     productVersion: '0.1.0-prototype',
     engineVersion: 'not-implemented',
-    standardProfile: 'NEC-PUBLIC-2014-PENDING',
+    standardProfile: 'NEC-2015-GUIDE-TRACEABLE',
     inputSnapshot: {
       axialLoadKn: 0,
       factoredAxialLoadKn: 0,
@@ -108,8 +108,8 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
     ? legacyInputs.punchingCriticalSectionOffsetM!
     : 0
   const legacyProfile: string = project.standardProfile
-  const standardProfile = legacyProfile === 'NEC-PUBLIC-2014-PENDING' || legacyProfile === 'NEC-PENDING'
-    ? 'NEC-PUBLIC-2014-PENDING'
+  const standardProfile = legacyProfile === 'NEC-2015-GUIDE-TRACEABLE' || legacyProfile === 'NEC-PUBLIC-2014-PENDING' || legacyProfile === 'NEC-PENDING'
+    ? 'NEC-2015-GUIDE-TRACEABLE'
     : 'ARCHIVED-UNSUPPORTED'
 
   return {

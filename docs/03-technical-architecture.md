@@ -40,7 +40,21 @@ La UI no contiene fórmulas. El motor no importa React, el navegador ni librerí
 
 La interfaz llama a un único orquestador de caso en `application/footing-analysis.ts`. Este adapta las entradas del documento a los módulos puros y devuelve un resultado consolidado tipado; los componentes visuales solo representan ese resultado. Así, añadir una revisión exige extender el orquestador y su prueba, no duplicar cálculos en cada vista.
 
+Para la memoria de revisión, `MinimumReinforcementResult` expone además `barAreaMm2`: es un resultado geométrico ya obtenido por el módulo de dominio. La interfaz lo muestra como sustitución trazable y no vuelve a calcularlo; esta ampliación no modifica fórmulas ni criterios del motor.
+
 El contrato `reports/footing-calculation-report.ts` ya produce una memoria serializable de identidad, versiones, perfil, entradas y límites. La etapa visual solo deberá renderizar este contrato, sin volver a decidir criterios técnicos.
+
+## Trazabilidad de fuentes públicas
+
+El perfil activo es `NEC-2015-GUIDE-TRACEABLE` ("Ecuador · NEC 2015 — guía práctica trazable"). Guarda las fuentes públicas con URL, versión y alcance, y asocia cada módulo a su base técnica:
+
+- Contacto y flexión: equilibrio y geometría con carga centrada y presión uniforme.
+- Cortante unidireccional: Guía práctica NEC 2015, sección 1.10.1.
+- Punzonamiento: Guía práctica NEC 2015, secciones 1.10.2 a 1.10.4.
+- Acero mínimo y requerido: Guía práctica NEC 2015, sección 1.10.5.
+- Longitud de desarrollo: Guía práctica NEC 2015, sección 1.10.6.
+
+La memoria muestra además la condición de aplicabilidad de cada módulo y enlaza las fuentes públicas. Este perfil no combina factores de reglamentos distintos, ni declara cumplimiento NEC: para hacerlo se requerirá contrastar casos independientes y revisión profesional. Los proyectos con los identificadores históricos `NEC-PENDING` y `NEC-PUBLIC-2014-PENDING` migran explícitamente a este perfil al abrirse.
 
 ## Contratos de datos
 

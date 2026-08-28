@@ -11,6 +11,8 @@ type DirectionResult = {
 }
 
 export type MinimumReinforcementResult = {
+  /** Área geométrica de la barra usada por la referencia visual y la memoria. */
+  barAreaMm2: number
   minimumAreaPerMeterMm2: number
   minimumAreaPerMeterCm2: number
   barsParallelToWidth: DirectionResult
@@ -43,6 +45,7 @@ export function calculateGuideMinimumReinforcement(inputs: MinimumReinforcementI
   }
 
   return {
+    barAreaMm2,
     minimumAreaPerMeterMm2,
     minimumAreaPerMeterCm2: minimumAreaPerMeterMm2 / 100,
     barsParallelToWidth: direction(barsParallelToWidthSpacingM),

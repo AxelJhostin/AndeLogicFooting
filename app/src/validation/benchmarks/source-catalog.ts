@@ -16,7 +16,7 @@ export const externalBenchmarkSources: ExternalBenchmarkSource[] = [
     label: 'NEC — Portal oficial del Ministerio',
     sourceKind: 'public-reference',
     evidenceUrl: 'https://www.mit.gob.ec/norma-ecuatoriana-de-la-construccion/',
-    confirmedProfiles: ['NEC-2014'],
+    confirmedProfiles: ['NEC-2015-GUIDE-TRACEABLE'],
     status: 'candidate',
     limitation: 'La sección exacta, hipótesis y parámetro aplicable deben registrarse por cada módulo.',
   },

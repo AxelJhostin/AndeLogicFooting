@@ -1,7 +1,7 @@
 export const centeredFootingReferenceCase = {
   id: 'NEC-FTG-REF-001',
   title: 'Zapata aislada rectangular centrada - cadena interna de referencia',
-  profile: 'NEC-PUBLIC-2014-PENDING',
+  profile: 'NEC-2015-GUIDE-TRACEABLE',
   source: 'Guía práctica NEC 2015, secciones 1.10.1 a 1.10.6; valores de demanda propios con presión uniforme.',
   assumptions: [
     'Columna interior centrada.',

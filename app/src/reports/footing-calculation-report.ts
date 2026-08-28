@@ -1,5 +1,5 @@
 import type { FootingInputs, ProjectDocument } from '../domain/projects'
-import { getStandardProfile } from '../standards/profiles'
+import { getStandardProfile, type CalculationTrace, type PublicSource } from '../standards/profiles'
 
 export type ReportInput = {
   id: keyof FootingInputs
@@ -15,8 +15,10 @@ export type FootingCalculationReport = {
   profile: {
     id: string
     label: string
+    shortLabel: string
     releaseStatus: string
-    sources: string[]
+    sources: PublicSource[]
+    traceability: CalculationTrace[]
     releaseBlocker: string
   }
   inputs: ReportInput[]
@@ -61,8 +63,10 @@ export function buildFootingCalculationReport(
     profile: {
       id: profile.id,
       label: profile.label,
+      shortLabel: profile.shortLabel,
       releaseStatus: profile.releaseStatus,
       sources: profile.sources,
+      traceability: profile.traceability,
       releaseBlocker: profile.releaseBlocker,
     },
     inputs: inputDefinitions.map(({ id, label, unit }) => ({ id, label, value: project.inputSnapshot[id], unit })),
