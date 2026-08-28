@@ -16,6 +16,8 @@ Este registro controla los casos de referencia del motor. No deben añadirse res
 | NEC-FTG-006 | NEC | Entrada con excentricidad: fuera de alcance | Caso de alcance documentado | `blocked` | No aplica | Pendiente |
 | NEC-FTG-007 | NEC | Equivalencia de unidades | Fixture duplicado SI | Igualdad interna | Definida por cálculo | Pendiente |
 | NEC-FTG-008 | Guía NEC 2015 | Comparación de acero mínimo por metro | Guía práctica NEC 2015, sección 1.10.5; ejemplo de zapata | Para `h = 0.50 m`, mínimo de referencia `9.00 cm²/m` | `1e-10` interno | Referencia automatizada; revisión normativa completa pendiente |
+| NEC-FTG-009 | Guía NEC 2015 | Acero requerido por flexión para sección rectangular | Guía práctica NEC 2015, sección 1.10.5; ejemplo de zapata | Para `Mᵤ = 177.35 kN·m`, `b = 1.00 m`, `d = 0.425 m`, `f′c = 23.54 MPa` y `fy = 412.08 MPa`: `11.58 cm²/m` | `0.01 cm²/m` | Referencia automatizada; revisión normativa completa pendiente |
+| NEC-FTG-010 | Guía NEC 2015 | Resistencia a cortante unidireccional por dirección | Guía práctica NEC 2015, sección 1.10.1 | Para `f′c = 23.54 MPa`, `d = 0.425 m` y franja `2.65 m`: resistencia de referencia `696.704 kN` | `0.001 kN` | Motor puro automatizado; integración y validación completa pendientes |
 
 ## Plantilla obligatoria por caso
 

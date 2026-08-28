@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createNewProject } from '../projects'
-import { validateFootingInputs, validateOneWayShearInputs, validatePunchingShearInputs } from './footing-input'
+import { validateFootingInputs, validateGuideRequiredReinforcementInputs, validateOneWayShearInputs, validatePunchingShearInputs } from './footing-input'
 
 describe('validateFootingInputs', () => {
   it('acepta entradas geométricas y geotécnicas positivas dentro del alcance preliminar', () => {
@@ -51,6 +51,18 @@ describe('validateFootingInputs', () => {
 
     expect(validatePunchingShearInputs(inputs)).toEqual(expect.arrayContaining([
       expect.objectContaining({ field: 'punchingCriticalSectionOffsetM', code: 'PUNCHING_OFFSET_REQUIRED' }),
+    ]))
+  })
+
+  it('requiere resistencias de materiales y profundidad efectiva para el acero requerido de guía', () => {
+    const inputs = createNewProject().inputSnapshot
+    inputs.axialLoadKn = 450
+    inputs.allowableBearingKpa = 180
+    inputs.factoredAxialLoadKn = 650
+
+    expect(validateGuideRequiredReinforcementInputs(inputs)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ field: 'concreteStrengthMpa', code: 'MATERIAL_STRENGTH_REQUIRED' }),
+      expect.objectContaining({ field: 'steelYieldStrengthMpa', code: 'MATERIAL_STRENGTH_REQUIRED' }),
     ]))
   })
 })

@@ -13,7 +13,9 @@ import { calculatePunchingShearDemand, type PunchingShearDemandResult } from './
 import { calculateFlexureDemand, type FlexureDemandResult } from './domain/footing/flexure-demand'
 import { calculateReinforcementLayout as buildReinforcementLayout, type ReinforcementLayoutResult } from './domain/footing/reinforcement-layout'
 import { calculateGuideMinimumReinforcement, type MinimumReinforcementResult } from './domain/footing/minimum-reinforcement'
-import { validateFootingInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
+import { calculateGuideRequiredReinforcement, type GuideRequiredReinforcementResult } from './domain/footing/required-reinforcement'
+import { compareGuideReinforcement, type GuideReinforcementComparisonResult } from './domain/footing/reinforcement-comparison'
+import { validateFootingInputs, validateGuideRequiredReinforcementInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
 import { FootingPlanDiagram } from './components/FootingPlanDiagram'
 import { FootingElevationDiagram } from './components/FootingElevationDiagram'
 import { FootingMomentDiagram } from './components/FootingMomentDiagram'
@@ -38,6 +40,8 @@ const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
   { key: 'footingThicknessM', label: 'Espesor preliminar de zapata', unit: 'm' },
   { key: 'concreteCoverM', label: 'Recubrimiento inferior', unit: 'm' },
   { key: 'barDiameterM', label: 'Diámetro de barra considerado', unit: 'm' },
+  { key: 'concreteStrengthMpa', label: 'Resistencia del hormigón f′c', unit: 'MPa' },
+  { key: 'steelYieldStrengthMpa', label: 'Fluencia del acero fy', unit: 'MPa' },
   { key: 'punchingCriticalSectionOffsetM', label: 'Distancia al perímetro crítico de punzonamiento', unit: 'm' },
   { key: 'barsParallelToWidthMaxSpacingM', label: 'Separación máxima: barras paralelas a B', unit: 'm' },
   { key: 'barsParallelToLengthMaxSpacingM', label: 'Separación máxima: barras paralelas a L', unit: 'm' },
@@ -53,6 +57,8 @@ function App() {
   const [flexureResult, setFlexureResult] = useState<FlexureDemandResult | null>(null)
   const [reinforcementLayout, setReinforcementLayout] = useState<ReinforcementLayoutResult | null>(null)
   const [minimumReinforcementResult, setMinimumReinforcementResult] = useState<MinimumReinforcementResult | null>(null)
+  const [requiredReinforcementResult, setRequiredReinforcementResult] = useState<GuideRequiredReinforcementResult | null>(null)
+  const [reinforcementComparisonResult, setReinforcementComparisonResult] = useState<GuideReinforcementComparisonResult | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -80,6 +86,8 @@ function App() {
     setFlexureResult(null)
     setReinforcementLayout(null)
     setMinimumReinforcementResult(null)
+    setRequiredReinforcementResult(null)
+    setReinforcementComparisonResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
@@ -93,6 +101,8 @@ function App() {
     setFlexureResult(null)
     setReinforcementLayout(null)
     setMinimumReinforcementResult(null)
+    setRequiredReinforcementResult(null)
+    setReinforcementComparisonResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, bearingCapacityBasis: basis },
@@ -117,6 +127,8 @@ function App() {
     setFlexureResult(null)
     setReinforcementLayout(null)
     setMinimumReinforcementResult(null)
+    setRequiredReinforcementResult(null)
+    setReinforcementComparisonResult(null)
     setStatus('Proyecto abierto desde la biblioteca local.')
   }
 
@@ -270,6 +282,86 @@ function App() {
     }
   }
 
+  const calculateGuideRequiredSteel = () => {
+    const inputs = project.inputSnapshot
+    const issues = validateGuideRequiredReinforcementInputs(inputs)
+    if (issues.length > 0) {
+      setRequiredReinforcementResult(null)
+      setStatus(issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    const flexure = calculateFlexureDemand({
+      factoredAxialLoadKn: inputs.factoredAxialLoadKn,
+      footingWidthM: inputs.footingWidthM,
+      footingLengthM: inputs.footingLengthM,
+      columnWidthM: inputs.columnWidthM,
+      columnLengthM: inputs.columnLengthM,
+    })
+    const result = calculateGuideRequiredReinforcement({
+      concreteStrengthMpa: inputs.concreteStrengthMpa,
+      steelYieldStrengthMpa: inputs.steelYieldStrengthMpa,
+      effectiveDepthM: inputs.footingThicknessM - inputs.concreteCoverM - inputs.barDiameterM / 2,
+      widthMomentDemandKnM: flexure.widthDirection.momentDemandKnM,
+      widthStripWidthM: flexure.widthDirection.stripWidthM,
+      lengthMomentDemandKnM: flexure.lengthDirection.momentDemandKnM,
+      lengthStripWidthM: flexure.lengthDirection.stripWidthM,
+    })
+    setFlexureResult(flexure)
+    setRequiredReinforcementResult(result)
+    setStatus('Acero requerido de referencia calculado con los momentos visibles. Revisa también el acero mínimo y el detallado.')
+  }
+
+  const compareGuideSteel = () => {
+    const inputs = project.inputSnapshot
+    const issues = validateGuideRequiredReinforcementInputs(inputs)
+    if (issues.length > 0) {
+      setReinforcementComparisonResult(null)
+      setStatus(issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    try {
+      const minimum = calculateGuideMinimumReinforcement({
+        footingThicknessM: inputs.footingThicknessM,
+        barDiameterM: inputs.barDiameterM,
+        barsParallelToWidthSpacingM: inputs.barsParallelToWidthMaxSpacingM,
+        barsParallelToLengthSpacingM: inputs.barsParallelToLengthMaxSpacingM,
+      })
+      const flexure = calculateFlexureDemand({
+        factoredAxialLoadKn: inputs.factoredAxialLoadKn,
+        footingWidthM: inputs.footingWidthM,
+        footingLengthM: inputs.footingLengthM,
+        columnWidthM: inputs.columnWidthM,
+        columnLengthM: inputs.columnLengthM,
+      })
+      const required = calculateGuideRequiredReinforcement({
+        concreteStrengthMpa: inputs.concreteStrengthMpa,
+        steelYieldStrengthMpa: inputs.steelYieldStrengthMpa,
+        effectiveDepthM: inputs.footingThicknessM - inputs.concreteCoverM - inputs.barDiameterM / 2,
+        widthMomentDemandKnM: flexure.widthDirection.momentDemandKnM,
+        widthStripWidthM: flexure.widthDirection.stripWidthM,
+        lengthMomentDemandKnM: flexure.lengthDirection.momentDemandKnM,
+        lengthStripWidthM: flexure.lengthDirection.stripWidthM,
+      })
+      const comparison = compareGuideReinforcement({
+        minimumAreaPerMeterMm2: minimum.minimumAreaPerMeterMm2,
+        widthProvidedAreaPerMeterMm2: minimum.barsParallelToWidth.providedAreaPerMeterMm2,
+        lengthProvidedAreaPerMeterMm2: minimum.barsParallelToLength.providedAreaPerMeterMm2,
+        widthRequiredAreaPerMeterMm2: required.widthDirection.requiredAreaPerMeterMm2,
+        lengthRequiredAreaPerMeterMm2: required.lengthDirection.requiredAreaPerMeterMm2,
+      })
+      setFlexureResult(flexure)
+      setMinimumReinforcementResult(minimum)
+      setRequiredReinforcementResult(required)
+      setReinforcementComparisonResult(comparison)
+      setStatus('Comparación integrada de acero terminada. Es una referencia de guía; el detallado y las resistencias pendientes siguen visibles.')
+    } catch (error) {
+      setReinforcementComparisonResult(null)
+      setStatus(error instanceof Error ? error.message : 'No fue posible comparar el acero de referencia.')
+    }
+  }
+
   const printExperimentalReport = () => {
     window.print()
   }
@@ -332,6 +424,8 @@ function App() {
       setFlexureResult(null)
       setReinforcementLayout(null)
       setMinimumReinforcementResult(null)
+      setRequiredReinforcementResult(null)
+      setReinforcementComparisonResult(null)
               setStatus('Proyecto nuevo: guárdalo cuando quieras conservarlo.')
             }}>
               + Nuevo
@@ -466,6 +560,12 @@ function App() {
             <button type="button" className="secondary" onClick={calculateGuideMinimumSteel}>
               Revisar acero mínimo de guía
             </button>
+            <button type="button" className="secondary" onClick={calculateGuideRequiredSteel}>
+              Calcular acero requerido de guía
+            </button>
+            <button type="button" className="primary" onClick={compareGuideSteel}>
+              Comparar acero de referencia
+            </button>
             <button type="button" className="secondary" onClick={reviewScope}>
               Revisar alcance
             </button>
@@ -478,7 +578,7 @@ function App() {
             <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
               Abrir archivo
             </button>
-            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult) && (
+            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult || requiredReinforcementResult || reinforcementComparisonResult) && (
               <button type="button" className="secondary" onClick={printExperimentalReport}>
                 Imprimir informe
               </button>
@@ -590,6 +690,36 @@ function App() {
                 <p><span>Estado · paralelas a L</span><strong>{minimumReinforcementResult.barsParallelToLength.status === 'meets-guide-minimum' ? 'Alcanza el mínimo de guía' : 'No alcanza el mínimo de guía'}</strong></p>
               </div>
               <p className="result-limit">Referencia obtenida del ejemplo de zapatas de la Guía práctica de hormigón armado conforme a NEC 2015, sección 1.10.5. Compara únicamente el acero declarado por metro con el mínimo mostrado por la guía. No calcula acero requerido por momento, resistencia, anclaje, separaciones normativas ni cumplimiento NEC completo.</p>
+            </section>
+          )}
+          {requiredReinforcementResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Acero requerido · referencia de guía NEC 2015</p>
+              <h2>Resultado por las dos direcciones de flexión</h2>
+              <div className="result-grid">
+                <p><span>Profundidad efectiva usada</span><strong>{requiredReinforcementResult.effectiveDepthM.toFixed(3)} m</strong></p>
+                <p><span>f′c declarado</span><strong>{requiredReinforcementResult.concreteStrengthMpa.toFixed(2)} MPa</strong></p>
+                <p><span>fy declarado</span><strong>{requiredReinforcementResult.steelYieldStrengthMpa.toFixed(2)} MPa</strong></p>
+                <p><span>Factor de reducción de guía</span><strong>φ = {requiredReinforcementResult.strengthReductionFactor.toFixed(2)}</strong></p>
+                <p><span>Acero requerido · dirección B</span><strong>{requiredReinforcementResult.widthDirection.requiredAreaPerMeterCm2 === null ? 'Sección insuficiente' : `${requiredReinforcementResult.widthDirection.requiredAreaPerMeterCm2.toFixed(2)} cm²/m`}</strong></p>
+                <p><span>Acero requerido · dirección L</span><strong>{requiredReinforcementResult.lengthDirection.requiredAreaPerMeterCm2 === null ? 'Sección insuficiente' : `${requiredReinforcementResult.lengthDirection.requiredAreaPerMeterCm2.toFixed(2)} cm²/m`}</strong></p>
+              </div>
+              <p className="result-limit">La aplicación toma los momentos en cara de columna ya calculados y la profundidad efectiva declarada. Reproduce la expresión mostrada en el ejemplo de zapata de la Guía práctica conforme a NEC 2015, sección 1.10.5. Si indica “sección insuficiente”, la expresión no tiene solución real para esos datos; no selecciona automáticamente otra sección. Falta comparar con el acero mínimo, verificar resistencia, cuantías, corte, desarrollo y el resto de requisitos antes de cualquier conclusión de diseño.</p>
+            </section>
+          )}
+          {reinforcementComparisonResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Acero declarado frente a referencia de guía</p>
+              <h2>Comparación integrada por dirección</h2>
+              <div className="result-grid">
+                <p><span>Acero colocado · dirección B</span><strong>{(reinforcementComparisonResult.widthDirection.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m</strong></p>
+                <p><span>Exigencia de referencia · B</span><strong>{reinforcementComparisonResult.widthDirection.requiredReferenceAreaPerMeterCm2 === null ? 'Sección insuficiente' : `${reinforcementComparisonResult.widthDirection.requiredReferenceAreaPerMeterCm2.toFixed(2)} cm²/m`}</strong></p>
+                <p><span>Estado · B</span><strong>{reinforcementComparisonResult.widthDirection.status === 'meets-guide-reference' ? 'Alcanza referencia de guía' : reinforcementComparisonResult.widthDirection.status === 'below-guide-reference' ? 'No alcanza referencia de guía' : 'Sección insuficiente'}</strong></p>
+                <p><span>Acero colocado · dirección L</span><strong>{(reinforcementComparisonResult.lengthDirection.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m</strong></p>
+                <p><span>Exigencia de referencia · L</span><strong>{reinforcementComparisonResult.lengthDirection.requiredReferenceAreaPerMeterCm2 === null ? 'Sección insuficiente' : `${reinforcementComparisonResult.lengthDirection.requiredReferenceAreaPerMeterCm2.toFixed(2)} cm²/m`}</strong></p>
+                <p><span>Estado · L</span><strong>{reinforcementComparisonResult.lengthDirection.status === 'meets-guide-reference' ? 'Alcanza referencia de guía' : reinforcementComparisonResult.lengthDirection.status === 'below-guide-reference' ? 'No alcanza referencia de guía' : 'Sección insuficiente'}</strong></p>
+              </div>
+              <p className="result-limit">La exigencia de cada dirección es el mayor valor entre el acero mínimo y el requerido de las referencias de guía ya mostradas. Esta tarjeta no incorpora nuevas reglas ni equivale a una aprobación NEC: deben cerrarse corte, punzonamiento, resistencia, detallado, desarrollo y la matriz de contraste externo.</p>
             </section>
           )}
           <p className="status" role="status">{status}</p>

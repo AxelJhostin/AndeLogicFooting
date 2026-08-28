@@ -21,6 +21,8 @@ describe('normalizeProjectDocument', () => {
     delete legacyInputs.concreteCoverM
     delete legacyInputs.barDiameterM
     delete legacyInputs.punchingCriticalSectionOffsetM
+    delete legacyInputs.concreteStrengthMpa
+    delete legacyInputs.steelYieldStrengthMpa
 
     const normalized = normalizeProjectDocument({
       ...currentProject,
@@ -31,6 +33,8 @@ describe('normalizeProjectDocument', () => {
     expect(normalized.inputSnapshot.concreteCoverM).toBe(0.075)
     expect(normalized.inputSnapshot.barDiameterM).toBe(0.016)
     expect(normalized.inputSnapshot.punchingCriticalSectionOffsetM).toBe(0)
+    expect(normalized.inputSnapshot.concreteStrengthMpa).toBe(0)
+    expect(normalized.inputSnapshot.steelYieldStrengthMpa).toBe(0)
   })
 
   it('migra el identificador NEC previo al perfil público actual', () => {

@@ -20,6 +20,8 @@ export type FootingInputs = {
   footingThicknessM: number
   concreteCoverM: number
   barDiameterM: number
+  concreteStrengthMpa: number
+  steelYieldStrengthMpa: number
   punchingCriticalSectionOffsetM: number
   barsParallelToWidthMaxSpacingM: number
   barsParallelToLengthMaxSpacingM: number
@@ -70,6 +72,8 @@ export function createNewProject(): ProjectDocument {
       footingThicknessM: DEFAULT_FOOTING_THICKNESS_M,
       concreteCoverM: 0.075,
       barDiameterM: 0.016,
+      concreteStrengthMpa: 0,
+      steelYieldStrengthMpa: 0,
       punchingCriticalSectionOffsetM: 0,
       barsParallelToWidthMaxSpacingM: 0,
       barsParallelToLengthMaxSpacingM: 0,
@@ -118,6 +122,8 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
       factoredAxialLoadKn: Number.isFinite(legacyInputs.factoredAxialLoadKn) && legacyInputs.factoredAxialLoadKn! >= 0 ? legacyInputs.factoredAxialLoadKn! : 0,
       concreteCoverM,
       barDiameterM,
+      concreteStrengthMpa: Number.isFinite(legacyInputs.concreteStrengthMpa) && legacyInputs.concreteStrengthMpa! >= 0 ? legacyInputs.concreteStrengthMpa! : 0,
+      steelYieldStrengthMpa: Number.isFinite(legacyInputs.steelYieldStrengthMpa) && legacyInputs.steelYieldStrengthMpa! >= 0 ? legacyInputs.steelYieldStrengthMpa! : 0,
       punchingCriticalSectionOffsetM,
       barsParallelToWidthMaxSpacingM: Number.isFinite(legacyInputs.barsParallelToWidthMaxSpacingM) && legacyInputs.barsParallelToWidthMaxSpacingM! >= 0 ? legacyInputs.barsParallelToWidthMaxSpacingM! : 0,
       barsParallelToLengthMaxSpacingM: Number.isFinite(legacyInputs.barsParallelToLengthMaxSpacingM) && legacyInputs.barsParallelToLengthMaxSpacingM! >= 0 ? legacyInputs.barsParallelToLengthMaxSpacingM! : 0,

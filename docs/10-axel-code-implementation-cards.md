@@ -20,7 +20,8 @@ Cada ficha cerrada se convierte en:
 | AXC-FTG-002 | Cortante unidireccional | Demanda física documentada; resistencia pendiente | Demanda implementada en ambos ejes |
 | AXC-FTG-003 | Punzonamiento | Demanda física con perímetro declarado; resistencia pendiente | Demanda y gráfica implementadas |
 | AXC-FTG-004 | Flexión | Demanda física en la cara de columna; resistencia pendiente | Demanda y diagrama implementados |
-| AXC-FTG-005 | Refuerzo y desarrollo | Referencia pública parcial localizada; diseño completo pendiente | Acero mínimo de guía implementado; acero requerido y desarrollo pendientes |
+| AXC-FTG-005 | Refuerzo y desarrollo | Referencia pública parcial localizada; diseño completo pendiente | Acero mínimo y acero requerido de guía implementados; desarrollo pendiente |
+| AXC-FTG-006 | Resistencia a cortante unidireccional | Referencia pública parcial localizada; otros casos pendientes | Motor puro de referencia implementado; interfaz pendiente |
 
 ## Plantilla obligatoria
 
@@ -134,3 +135,13 @@ Las fichas pueden citar el número de una norma consultada por Axel para trazabi
 La aplicación compara el acero inferior declarado por metro en cada dirección con el mínimo ilustrado en el ejemplo de zapatas de la *Guía práctica para el diseño de estructuras de hormigón armado de conformidad con NEC 2015*, sección 1.10.5. La guía muestra el valor `Amin = 0.0018 × b × h`; el motor lo aplica con una franja de un metro y expresa ambos resultados en cm²/m.
 
 La salida se denomina deliberadamente **referencia de guía**. No constituye una verificación NEC completa: no dimensiona el acero requerido por flexión, no verifica resistencia, cuantía máxima, separación normativa, longitud de desarrollo ni anclaje. Cada una de esas comprobaciones requiere su propia ficha, fuente exacta, límites de aplicación y casos independientes.
+
+La segunda parte de esta ficha reproduce la expresión de acero requerido mostrada en el mismo ejemplo para una sección rectangular. Las entradas obligatorias son el momento último de cada franja, el ancho de esa franja, la profundidad efectiva, `f′c` y `fy`; el factor de reducción usado es el que presenta la guía en ese desarrollo. El motor normaliza el resultado a cm²/m, comprueba si la raíz tiene solución real y marca una sección insuficiente cuando no la tiene. No adopta automáticamente un nuevo espesor ni cambia barras.
+
+La comparación integrada exige, por cada dirección, el mayor valor entre el mínimo y el requerido de referencia, y lo confronta con el acero declarado mediante diámetro y separación. Es una síntesis de resultados existentes; no habilita una aprobación normativa ni reemplaza las revisiones pendientes de corte, resistencia y desarrollo.
+
+## Sexta ficha: AXC-FTG-006 — resistencia a cortante unidireccional de referencia
+
+La guía práctica NEC 2015, sección 1.10.1, presenta una comprobación por tensión de cortante en una sección a profundidad efectiva de la cara de columna. El motor aplica esa expresión únicamente a la demanda uniforme ya calculada por AndeLogic, con hormigón de peso normal, y compara cada dirección contra la resistencia de referencia reducida que muestra el ejemplo. Las entradas visibles son `f′c`, `d`, ancho de la sección y demanda última.
+
+Este resultado no cubre presión trapezoidal, excentricidad, carga sísmica, armadura de cortante, otras condiciones de material ni todos los requisitos de la NEC. Por ahora existe como función pura y prueba reproducible; todavía no habilita ningún resultado normativo en la interfaz.

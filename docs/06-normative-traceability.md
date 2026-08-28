@@ -14,7 +14,8 @@ No se implementará una fila marcada como pendiente. Las referencias se completa
 | NEC-FTG-002 | NEC-SE-HM + referencia complementaria | Cortante unidireccional | `NEC-SRC-003`; fuente complementaria autorizada pendiente | NEC-SE-HM, capítulo 5 como marco; cláusula aplicable a zapatas pendiente | `standards/nec` | `NEC-FTG-002` | Bloqueada por referencia complementaria |
 | NEC-FTG-003 | NEC-SE-HM + referencia complementaria | Cortante por punzonamiento | `NEC-SRC-003`; fuente complementaria autorizada pendiente | NEC-SE-HM lista punzonamiento en otros elementos; cláusula aplicable a zapatas pendiente | `standards/nec` | `NEC-FTG-003` | Bloqueada por referencia complementaria |
 | NEC-FTG-004 | NEC-SE-HM + referencia complementaria | Flexión y acero inferior | `NEC-SRC-003`; fuente complementaria autorizada pendiente | NEC-SE-HM, capítulo 4 como marco; criterio de zapatas pendiente | `standards/nec` | `NEC-FTG-004` | Bloqueada por referencia complementaria |
-| NEC-FTG-005 | Guía práctica NEC 2015 | Acero mínimo de referencia por metro | `NEC-SRC-004` | Sección 1.10.5, ejemplo de zapata | `domain/footing/minimum-reinforcement` | `NEC-FTG-008` | Implementada como referencia de guía; no es verificación NEC completa |
+| NEC-FTG-005 | Guía práctica NEC 2015 | Acero mínimo y requerido de referencia por metro | `NEC-SRC-004` | Sección 1.10.5, ejemplo de zapata | `domain/footing/minimum-reinforcement` + `domain/footing/required-reinforcement` | `NEC-FTG-008`, `NEC-FTG-009` | Implementada como referencia de guía; no es verificación NEC completa |
+| NEC-FTG-006 | Guía práctica NEC 2015 | Resistencia de cortante unidireccional de referencia | `NEC-SRC-004` | Sección 1.10.1, ejemplo de zapata; hormigón de peso normal y carga centrada uniforme en el motor | `domain/footing/one-way-shear-guide-check` | `NEC-FTG-010` | Motor puro implementado como referencia de guía; integración y validación completa pendientes |
 
 ## Criterio para completar una fila
 

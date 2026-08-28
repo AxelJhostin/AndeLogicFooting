@@ -8,6 +8,7 @@ export type ValidationIssue = {
     | 'FOOTING_NOT_LARGER_THAN_COLUMN'
     | 'FACTORED_LOAD_REQUIRED'
     | 'INVALID_EFFECTIVE_DEPTH'
+    | 'MATERIAL_STRENGTH_REQUIRED'
     | 'PUNCHING_OFFSET_REQUIRED'
     | 'PUNCHING_PERIMETER_OUTSIDE_FOOTING'
   field: keyof FootingInputs
@@ -47,6 +48,8 @@ const labels: Record<keyof FootingInputs, string> = {
   footingThicknessM: 'El espesor preliminar de zapata',
   concreteCoverM: 'El recubrimiento inferior',
   barDiameterM: 'El diámetro de barra considerado',
+  concreteStrengthMpa: 'La resistencia a compresión del hormigón f′c',
+  steelYieldStrengthMpa: 'El esfuerzo de fluencia del acero fy',
   punchingCriticalSectionOffsetM: 'La distancia al perímetro crítico de punzonamiento',
   barsParallelToWidthMaxSpacingM: 'La separación máxima de barras paralelas a B',
   barsParallelToLengthMaxSpacingM: 'La separación máxima de barras paralelas a L',
@@ -125,6 +128,35 @@ export function validateFlexureInputs(inputs: FootingInputs): ValidationIssue[] 
       field: 'factoredAxialLoadKn',
       message: 'La demanda de flexión requiere una carga axial última mayor que cero.',
     })
+  }
+
+  return issues
+}
+
+export function validateGuideRequiredReinforcementInputs(inputs: FootingInputs): ValidationIssue[] {
+  const issues = validateFlexureInputs(inputs)
+  const hasPhysicalDepth = Number.isFinite(inputs.concreteCoverM)
+    && inputs.concreteCoverM >= 0
+    && Number.isFinite(inputs.barDiameterM)
+    && inputs.barDiameterM > 0
+    && inputs.footingThicknessM - inputs.concreteCoverM - inputs.barDiameterM / 2 > 0
+
+  if (!hasPhysicalDepth) {
+    issues.push({
+      code: 'INVALID_EFFECTIVE_DEPTH',
+      field: 'concreteCoverM',
+      message: 'El acero requerido necesita una profundidad efectiva positiva a partir de espesor, recubrimiento y diámetro.',
+    })
+  }
+
+  for (const field of ['concreteStrengthMpa', 'steelYieldStrengthMpa'] as const) {
+    if (!Number.isFinite(inputs[field]) || inputs[field] <= 0) {
+      issues.push({
+        code: 'MATERIAL_STRENGTH_REQUIRED',
+        field,
+        message: `${labels[field]} debe ser un valor mayor que cero en MPa.`,
+      })
+    }
   }
 
   return issues
