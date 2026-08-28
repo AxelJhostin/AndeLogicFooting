@@ -32,7 +32,7 @@ export const moduleValidationCatalog: ModuleValidationRecord[] = [
     state: 'internal-testing',
     completedExternalBenchmarks: 0,
     requiredExternalBenchmarks: 3,
-    note: 'Demanda por equilibrio y perímetro declarado implementados; resistencia y contraste normativo pendientes.',
+    note: 'Demanda y referencia de resistencia para columna interior centrada implementadas; contraste normativo pendiente.',
   },
   {
     id: 'flexure-reinforcement',

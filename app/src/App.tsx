@@ -16,7 +16,9 @@ import { calculateGuideMinimumReinforcement, type MinimumReinforcementResult } f
 import { calculateGuideRequiredReinforcement, type GuideRequiredReinforcementResult } from './domain/footing/required-reinforcement'
 import { compareGuideReinforcement, type GuideReinforcementComparisonResult } from './domain/footing/reinforcement-comparison'
 import { checkGuideOneWayShear, type GuideOneWayShearCheckResult } from './domain/footing/one-way-shear-guide-check'
-import { validateFootingInputs, validateGuideOneWayShearInputs, validateGuideRequiredReinforcementInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
+import { checkGuidePunchingShear, type GuidePunchingShearResult } from './domain/footing/punching-shear-guide-check'
+import { checkGuideDevelopmentLength, type GuideDevelopmentLengthResult } from './domain/footing/development-length-guide-check'
+import { validateFootingInputs, validateGuideOneWayShearInputs, validateGuidePunchingShearInputs, validateGuideRequiredReinforcementInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
 import { FootingPlanDiagram } from './components/FootingPlanDiagram'
 import { FootingElevationDiagram } from './components/FootingElevationDiagram'
 import { FootingMomentDiagram } from './components/FootingMomentDiagram'
@@ -43,6 +45,8 @@ const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
   { key: 'barDiameterM', label: 'Diámetro de barra considerado', unit: 'm' },
   { key: 'concreteStrengthMpa', label: 'Resistencia del hormigón f′c', unit: 'MPa' },
   { key: 'steelYieldStrengthMpa', label: 'Fluencia del acero fy', unit: 'MPa' },
+  { key: 'developmentAvailableLengthWidthM', label: 'Longitud disponible de desarrollo · B', unit: 'm' },
+  { key: 'developmentAvailableLengthLengthM', label: 'Longitud disponible de desarrollo · L', unit: 'm' },
   { key: 'punchingCriticalSectionOffsetM', label: 'Distancia al perímetro crítico de punzonamiento', unit: 'm' },
   { key: 'barsParallelToWidthMaxSpacingM', label: 'Separación máxima: barras paralelas a B', unit: 'm' },
   { key: 'barsParallelToLengthMaxSpacingM', label: 'Separación máxima: barras paralelas a L', unit: 'm' },
@@ -61,6 +65,8 @@ function App() {
   const [requiredReinforcementResult, setRequiredReinforcementResult] = useState<GuideRequiredReinforcementResult | null>(null)
   const [reinforcementComparisonResult, setReinforcementComparisonResult] = useState<GuideReinforcementComparisonResult | null>(null)
   const [oneWayShearGuideResult, setOneWayShearGuideResult] = useState<GuideOneWayShearCheckResult | null>(null)
+  const [punchingShearGuideResult, setPunchingShearGuideResult] = useState<GuidePunchingShearResult | null>(null)
+  const [developmentLengthResult, setDevelopmentLengthResult] = useState<GuideDevelopmentLengthResult | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -91,6 +97,8 @@ function App() {
     setRequiredReinforcementResult(null)
     setReinforcementComparisonResult(null)
     setOneWayShearGuideResult(null)
+    setPunchingShearGuideResult(null)
+    setDevelopmentLengthResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
@@ -107,6 +115,8 @@ function App() {
     setRequiredReinforcementResult(null)
     setReinforcementComparisonResult(null)
     setOneWayShearGuideResult(null)
+    setPunchingShearGuideResult(null)
+    setDevelopmentLengthResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, bearingCapacityBasis: basis },
@@ -134,6 +144,8 @@ function App() {
     setRequiredReinforcementResult(null)
     setReinforcementComparisonResult(null)
     setOneWayShearGuideResult(null)
+    setPunchingShearGuideResult(null)
+    setDevelopmentLengthResult(null)
     setStatus('Proyecto abierto desde la biblioteca local.')
   }
 
@@ -262,6 +274,33 @@ function App() {
     setStatus('Demanda de punzonamiento calculada. La distancia del perímetro es una hipótesis declarada; la resistencia NEC continúa pendiente.')
   }
 
+  const checkGuidePunchingShearReference = () => {
+    const issues = validateGuidePunchingShearInputs(project.inputSnapshot)
+    if (issues.length > 0) {
+      setPunchingShearGuideResult(null)
+      setStatus(issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    const inputs = project.inputSnapshot
+    try {
+      const result = checkGuidePunchingShear({
+        concreteStrengthMpa: inputs.concreteStrengthMpa,
+        factoredAxialLoadKn: inputs.factoredAxialLoadKn,
+        footingWidthM: inputs.footingWidthM,
+        footingLengthM: inputs.footingLengthM,
+        columnWidthM: inputs.columnWidthM,
+        columnLengthM: inputs.columnLengthM,
+        effectiveDepthM: inputs.footingThicknessM - inputs.concreteCoverM - inputs.barDiameterM / 2,
+      })
+      setPunchingShearGuideResult(result)
+      setStatus('Punzonamiento comparado con la referencia de guía para columna interior centrada. No es una verificación NEC liberada.')
+    } catch (error) {
+      setPunchingShearGuideResult(null)
+      setStatus(error instanceof Error ? error.message : 'No fue posible revisar el punzonamiento de guía.')
+    }
+  }
+
   const calculateFlexure = () => {
     const issues = validateFlexureInputs(project.inputSnapshot)
     if (issues.length > 0) {
@@ -305,14 +344,23 @@ function App() {
   const calculateGuideMinimumSteel = () => {
     const inputs = project.inputSnapshot
     try {
+      const layout = buildReinforcementLayout({
+        footingWidthM: inputs.footingWidthM,
+        footingLengthM: inputs.footingLengthM,
+        concreteCoverM: inputs.concreteCoverM,
+        barDiameterM: inputs.barDiameterM,
+        barsParallelToWidthMaxSpacingM: inputs.barsParallelToWidthMaxSpacingM,
+        barsParallelToLengthMaxSpacingM: inputs.barsParallelToLengthMaxSpacingM,
+      })
       const result = calculateGuideMinimumReinforcement({
         footingThicknessM: inputs.footingThicknessM,
         barDiameterM: inputs.barDiameterM,
-        barsParallelToWidthSpacingM: inputs.barsParallelToWidthMaxSpacingM,
-        barsParallelToLengthSpacingM: inputs.barsParallelToLengthMaxSpacingM,
+        barsParallelToWidthSpacingM: layout.barsParallelToWidth.actualSpacingM,
+        barsParallelToLengthSpacingM: layout.barsParallelToLength.actualSpacingM,
       })
+      setReinforcementLayout(layout)
       setMinimumReinforcementResult(result)
-      setStatus('Referencia de acero mínimo de la guía calculada. Aún no sustituye el diseño de acero requerido por flexión.')
+      setStatus('Referencia de acero mínimo de la guía calculada con la separación real del plano. Aún no sustituye el diseño de acero requerido por flexión.')
     } catch (error) {
       setMinimumReinforcementResult(null)
       setStatus(error instanceof Error ? error.message : 'No fue posible revisar el acero mínimo de guía.')
@@ -349,22 +397,50 @@ function App() {
     setStatus('Acero requerido de referencia calculado con los momentos visibles. Revisa también el acero mínimo y el detallado.')
   }
 
+  const checkGuideDevelopmentLengthReference = () => {
+    const inputs = project.inputSnapshot
+    try {
+      const result = checkGuideDevelopmentLength({
+        concreteStrengthMpa: inputs.concreteStrengthMpa,
+        steelYieldStrengthMpa: inputs.steelYieldStrengthMpa,
+        barDiameterM: inputs.barDiameterM,
+        availableLengthWidthM: inputs.developmentAvailableLengthWidthM,
+        availableLengthLengthM: inputs.developmentAvailableLengthLengthM,
+      })
+      setDevelopmentLengthResult(result)
+      setStatus('Longitud de desarrollo comparada con la referencia de guía. Revisa que los largos declarados correspondan al detalle real.')
+    } catch (error) {
+      setDevelopmentLengthResult(null)
+      setStatus(error instanceof Error ? error.message : 'No fue posible revisar la longitud de desarrollo.')
+    }
+  }
+
   const compareGuideSteel = () => {
     const inputs = project.inputSnapshot
     const issues = validateGuideRequiredReinforcementInputs(inputs)
     if (issues.length > 0) {
       setReinforcementComparisonResult(null)
       setOneWayShearGuideResult(null)
+      setPunchingShearGuideResult(null)
+      setDevelopmentLengthResult(null)
       setStatus(issues.map((issue) => issue.message).join(' '))
       return
     }
 
     try {
+      const layout = buildReinforcementLayout({
+        footingWidthM: inputs.footingWidthM,
+        footingLengthM: inputs.footingLengthM,
+        concreteCoverM: inputs.concreteCoverM,
+        barDiameterM: inputs.barDiameterM,
+        barsParallelToWidthMaxSpacingM: inputs.barsParallelToWidthMaxSpacingM,
+        barsParallelToLengthMaxSpacingM: inputs.barsParallelToLengthMaxSpacingM,
+      })
       const minimum = calculateGuideMinimumReinforcement({
         footingThicknessM: inputs.footingThicknessM,
         barDiameterM: inputs.barDiameterM,
-        barsParallelToWidthSpacingM: inputs.barsParallelToWidthMaxSpacingM,
-        barsParallelToLengthSpacingM: inputs.barsParallelToLengthMaxSpacingM,
+        barsParallelToWidthSpacingM: layout.barsParallelToWidth.actualSpacingM,
+        barsParallelToLengthSpacingM: layout.barsParallelToLength.actualSpacingM,
       })
       const flexure = calculateFlexureDemand({
         factoredAxialLoadKn: inputs.factoredAxialLoadKn,
@@ -390,6 +466,7 @@ function App() {
         lengthRequiredAreaPerMeterMm2: required.lengthDirection.requiredAreaPerMeterMm2,
       })
       setFlexureResult(flexure)
+      setReinforcementLayout(layout)
       setMinimumReinforcementResult(minimum)
       setRequiredReinforcementResult(required)
       setReinforcementComparisonResult(comparison)
@@ -592,6 +669,9 @@ function App() {
             <button type="button" className="primary" onClick={calculatePunchingShear}>
               Calcular demanda de punzonamiento
             </button>
+            <button type="button" className="secondary" onClick={checkGuidePunchingShearReference}>
+              Revisar punzonamiento de guía
+            </button>
             <button type="button" className="primary" onClick={calculateFlexure}>
               Calcular demanda de flexión
             </button>
@@ -607,6 +687,9 @@ function App() {
             <button type="button" className="primary" onClick={compareGuideSteel}>
               Comparar acero de referencia
             </button>
+            <button type="button" className="secondary" onClick={checkGuideDevelopmentLengthReference}>
+              Revisar desarrollo de guía
+            </button>
             <button type="button" className="secondary" onClick={reviewScope}>
               Revisar alcance
             </button>
@@ -619,7 +702,7 @@ function App() {
             <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
               Abrir archivo
             </button>
-            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult || requiredReinforcementResult || reinforcementComparisonResult || oneWayShearGuideResult) && (
+            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult || requiredReinforcementResult || reinforcementComparisonResult || oneWayShearGuideResult || punchingShearGuideResult || developmentLengthResult) && (
               <button type="button" className="secondary" onClick={printExperimentalReport}>
                 Imprimir informe
               </button>
@@ -708,6 +791,24 @@ function App() {
               <p className="result-limit">El rectángulo punteado del plano representa el perímetro crítico declarado. El motor integra la presión última uniforme sobre el área exterior. Este resultado no calcula resistencia de punzonamiento, factores de reducción ni cumplimiento NEC.</p>
             </section>
           )}
+          {punchingShearGuideResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Punzonamiento · referencia de guía NEC 2015</p>
+              <h2>Demanda frente a resistencia de columna interior</h2>
+              <div className="result-grid">
+                <p><span>Tipo de columna</span><strong>{punchingShearGuideResult.columnShape === 'square' ? 'Cuadrada' : 'Rectangular'}</strong></p>
+                <p><span>Distancia del perímetro a la cara</span><strong>{punchingShearGuideResult.criticalSectionOffsetM.toFixed(3)} m</strong></p>
+                <p><span>Perímetro crítico b₀</span><strong>{punchingShearGuideResult.criticalPerimeterM.toFixed(3)} m</strong></p>
+                <p><span>Demanda Vᵤ</span><strong>{punchingShearGuideResult.shearDemandKn.toFixed(2)} kN</strong></p>
+                <p><span>Alternativa gobernante</span><strong>{punchingShearGuideResult.governingAlternative === 'square-only' ? 'Única para columna cuadrada' : punchingShearGuideResult.governingAlternative.replace('alternative-', 'Alternativa ')}</strong></p>
+                <p><span>Tensión de referencia gobernante</span><strong>{punchingShearGuideResult.governingConcreteShearStressMpa.toFixed(3)} MPa</strong></p>
+                <p><span>Resistencia de referencia</span><strong>{punchingShearGuideResult.designShearStrengthKn.toFixed(2)} kN</strong></p>
+                <p><span>Utilización</span><strong>{(punchingShearGuideResult.utilization * 100).toFixed(1)}%</strong></p>
+                <p><span>Estado</span><strong>{punchingShearGuideResult.status === 'meets-guide-reference' ? 'Alcanza referencia de guía' : 'No alcanza referencia de guía'}</strong></p>
+              </div>
+              <p className="result-limit">Esta referencia usa un perímetro a media profundidad efectiva, columna interior centrada, hormigón de peso normal y presión última uniforme. Se bloquea si el perímetro sale de la zapata. No cubre borde, esquina, excentricidad, momentos transmitidos, sismo ni un cumplimiento NEC liberado.</p>
+            </section>
+          )}
           {flexureResult && (
             <section className="result-card demand-only" aria-live="polite">
               <p className="eyebrow">Flexión · demanda por equilibrio</p>
@@ -735,7 +836,7 @@ function App() {
                 <p><span>Barras paralelas a L</span><strong>{reinforcementLayout.barsParallelToLength.count} barras</strong></p>
                 <p><span>Separación real paralelas a L</span><strong>{reinforcementLayout.barsParallelToLength.actualSpacingM.toFixed(3)} m</strong></p>
               </div>
-              <p className="result-limit">Las cantidades se distribuyen dentro del recubrimiento declarado usando la separación máxima ingresada. No verifica área de acero, cuantía, separación normativa, anclaje ni resistencia.</p>
+              <p className="result-limit">Las cantidades se distribuyen dentro del recubrimiento declarado usando la separación máxima ingresada. La separación real calculada alimenta las referencias de acero; aún no verifica separación normativa, anclaje ni resistencia completa.</p>
             </section>
           )}
           {minimumReinforcementResult && (
@@ -780,6 +881,21 @@ function App() {
                 <p><span>Estado · L</span><strong>{reinforcementComparisonResult.lengthDirection.status === 'meets-guide-reference' ? 'Alcanza referencia de guía' : reinforcementComparisonResult.lengthDirection.status === 'below-guide-reference' ? 'No alcanza referencia de guía' : 'Sección insuficiente'}</strong></p>
               </div>
               <p className="result-limit">La exigencia de cada dirección es el mayor valor entre el acero mínimo y el requerido de las referencias de guía ya mostradas. Esta tarjeta no incorpora nuevas reglas ni equivale a una aprobación NEC: deben cerrarse corte, punzonamiento, resistencia, detallado, desarrollo y la matriz de contraste externo.</p>
+            </section>
+          )}
+          {developmentLengthResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Longitud de desarrollo · referencia de guía NEC 2015</p>
+              <h2>Longitud requerida frente a largo declarado</h2>
+              <div className="result-grid">
+                <p><span>Longitud requerida de referencia</span><strong>{developmentLengthResult.requiredDevelopmentLengthM.toFixed(3)} m</strong></p>
+                <p><span>Diámetro considerado</span><strong>{(developmentLengthResult.barDiameterM * 1000).toFixed(0)} mm</strong></p>
+                <p><span>Largo disponible declarado · B</span><strong>{developmentLengthResult.widthDirection.availableLengthM.toFixed(3)} m</strong></p>
+                <p><span>Estado · B</span><strong>{developmentLengthResult.widthDirection.status === 'meets-guide-reference' ? 'Alcanza referencia de guía' : 'No alcanza referencia de guía'}</strong></p>
+                <p><span>Largo disponible declarado · L</span><strong>{developmentLengthResult.lengthDirection.availableLengthM.toFixed(3)} m</strong></p>
+                <p><span>Estado · L</span><strong>{developmentLengthResult.lengthDirection.status === 'meets-guide-reference' ? 'Alcanza referencia de guía' : 'No alcanza referencia de guía'}</strong></p>
+              </div>
+              <p className="result-limit">Referencia limitada al caso de la Guía práctica conforme a NEC 2015, sección 1.10.6: barra sin recubrimiento especial, otros casos y hormigón de peso normal. El largo disponible es un dato declarado desde el detalle; esta tarjeta no evalúa ganchos, patillas, empalmes, barras superiores ni otras condiciones de anclaje.</p>
             </section>
           )}
           <p className="status" role="status">{status}</p>

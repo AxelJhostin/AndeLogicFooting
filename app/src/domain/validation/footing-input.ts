@@ -50,6 +50,8 @@ const labels: Record<keyof FootingInputs, string> = {
   barDiameterM: 'El diámetro de barra considerado',
   concreteStrengthMpa: 'La resistencia a compresión del hormigón f′c',
   steelYieldStrengthMpa: 'El esfuerzo de fluencia del acero fy',
+  developmentAvailableLengthWidthM: 'La longitud disponible de desarrollo en dirección B',
+  developmentAvailableLengthLengthM: 'La longitud disponible de desarrollo en dirección L',
   punchingCriticalSectionOffsetM: 'La distancia al perímetro crítico de punzonamiento',
   barsParallelToWidthMaxSpacingM: 'La separación máxima de barras paralelas a B',
   barsParallelToLengthMaxSpacingM: 'La separación máxima de barras paralelas a L',
@@ -173,6 +175,31 @@ export function validateGuideOneWayShearInputs(inputs: FootingInputs): Validatio
     })
   }
 
+  return issues
+}
+
+export function validateGuidePunchingShearInputs(inputs: FootingInputs): ValidationIssue[] {
+  const issues = validateFlexureInputs(inputs)
+  const hasPhysicalDepth = Number.isFinite(inputs.concreteCoverM)
+    && inputs.concreteCoverM >= 0
+    && Number.isFinite(inputs.barDiameterM)
+    && inputs.barDiameterM > 0
+    && inputs.footingThicknessM - inputs.concreteCoverM - inputs.barDiameterM / 2 > 0
+
+  if (!hasPhysicalDepth) {
+    issues.push({
+      code: 'INVALID_EFFECTIVE_DEPTH',
+      field: 'concreteCoverM',
+      message: 'El punzonamiento de guía necesita una profundidad efectiva positiva.',
+    })
+  }
+  if (!Number.isFinite(inputs.concreteStrengthMpa) || inputs.concreteStrengthMpa <= 0) {
+    issues.push({
+      code: 'MATERIAL_STRENGTH_REQUIRED',
+      field: 'concreteStrengthMpa',
+      message: `${labels.concreteStrengthMpa} debe ser un valor mayor que cero en MPa.`,
+    })
+  }
   return issues
 }
 

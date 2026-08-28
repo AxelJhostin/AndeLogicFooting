@@ -22,6 +22,8 @@ export type FootingInputs = {
   barDiameterM: number
   concreteStrengthMpa: number
   steelYieldStrengthMpa: number
+  developmentAvailableLengthWidthM: number
+  developmentAvailableLengthLengthM: number
   punchingCriticalSectionOffsetM: number
   barsParallelToWidthMaxSpacingM: number
   barsParallelToLengthMaxSpacingM: number
@@ -74,6 +76,8 @@ export function createNewProject(): ProjectDocument {
       barDiameterM: 0.016,
       concreteStrengthMpa: 0,
       steelYieldStrengthMpa: 0,
+      developmentAvailableLengthWidthM: 0,
+      developmentAvailableLengthLengthM: 0,
       punchingCriticalSectionOffsetM: 0,
       barsParallelToWidthMaxSpacingM: 0,
       barsParallelToLengthMaxSpacingM: 0,
@@ -124,6 +128,8 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
       barDiameterM,
       concreteStrengthMpa: Number.isFinite(legacyInputs.concreteStrengthMpa) && legacyInputs.concreteStrengthMpa! >= 0 ? legacyInputs.concreteStrengthMpa! : 0,
       steelYieldStrengthMpa: Number.isFinite(legacyInputs.steelYieldStrengthMpa) && legacyInputs.steelYieldStrengthMpa! >= 0 ? legacyInputs.steelYieldStrengthMpa! : 0,
+      developmentAvailableLengthWidthM: Number.isFinite(legacyInputs.developmentAvailableLengthWidthM) && legacyInputs.developmentAvailableLengthWidthM! >= 0 ? legacyInputs.developmentAvailableLengthWidthM! : 0,
+      developmentAvailableLengthLengthM: Number.isFinite(legacyInputs.developmentAvailableLengthLengthM) && legacyInputs.developmentAvailableLengthLengthM! >= 0 ? legacyInputs.developmentAvailableLengthLengthM! : 0,
       punchingCriticalSectionOffsetM,
       barsParallelToWidthMaxSpacingM: Number.isFinite(legacyInputs.barsParallelToWidthMaxSpacingM) && legacyInputs.barsParallelToWidthMaxSpacingM! >= 0 ? legacyInputs.barsParallelToWidthMaxSpacingM! : 0,
       barsParallelToLengthMaxSpacingM: Number.isFinite(legacyInputs.barsParallelToLengthMaxSpacingM) && legacyInputs.barsParallelToLengthMaxSpacingM! >= 0 ? legacyInputs.barsParallelToLengthMaxSpacingM! : 0,

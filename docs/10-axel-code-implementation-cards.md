@@ -22,6 +22,8 @@ Cada ficha cerrada se convierte en:
 | AXC-FTG-004 | Flexión | Demanda física en la cara de columna; resistencia pendiente | Demanda y diagrama implementados |
 | AXC-FTG-005 | Refuerzo y desarrollo | Referencia pública parcial localizada; diseño completo pendiente | Acero mínimo y acero requerido de guía implementados; desarrollo pendiente |
 | AXC-FTG-006 | Resistencia a cortante unidireccional | Referencia pública parcial localizada; otros casos pendientes | Motor y resultado de referencia integrados; validación completa pendiente |
+| AXC-FTG-007 | Resistencia a punzonamiento | Referencia pública parcial localizada; solo columna interior centrada | Motor y resultado de referencia integrados; validación completa pendiente |
+| AXC-FTG-008 | Longitud de desarrollo | Referencia pública parcial localizada; largo disponible debe ser declarado | Motor y resultado de referencia integrados; validación completa pendiente |
 
 ## Plantilla obligatoria
 
@@ -138,10 +140,22 @@ La salida se denomina deliberadamente **referencia de guía**. No constituye una
 
 La segunda parte de esta ficha reproduce la expresión de acero requerido mostrada en el mismo ejemplo para una sección rectangular. Las entradas obligatorias son el momento último de cada franja, el ancho de esa franja, la profundidad efectiva, `f′c` y `fy`; el factor de reducción usado es el que presenta la guía en ese desarrollo. El motor normaliza el resultado a cm²/m, comprueba si la raíz tiene solución real y marca una sección insuficiente cuando no la tiene. No adopta automáticamente un nuevo espesor ni cambia barras.
 
-La comparación integrada exige, por cada dirección, el mayor valor entre el mínimo y el requerido de referencia, y lo confronta con el acero declarado mediante diámetro y separación. Es una síntesis de resultados existentes; no habilita una aprobación normativa ni reemplaza las revisiones pendientes de corte, resistencia y desarrollo.
+La comparación integrada exige, por cada dirección, el mayor valor entre el mínimo y el requerido de referencia, y lo confronta con el acero obtenido de la distribución geométrica real de diámetro y separación máxima declarados. Es una síntesis de resultados existentes; no habilita una aprobación normativa ni reemplaza las revisiones pendientes de corte, resistencia y desarrollo.
 
 ## Sexta ficha: AXC-FTG-006 — resistencia a cortante unidireccional de referencia
 
 La guía práctica NEC 2015, sección 1.10.1, presenta una comprobación por tensión de cortante en una sección a profundidad efectiva de la cara de columna. El motor aplica esa expresión únicamente a la demanda uniforme ya calculada por AndeLogic, con hormigón de peso normal, y compara cada dirección contra la resistencia de referencia reducida que muestra el ejemplo. Las entradas visibles son `f′c`, `d`, ancho de la sección y demanda última.
 
 Este resultado no cubre presión trapezoidal, excentricidad, carga sísmica, armadura de cortante, otras condiciones de material ni todos los requisitos de la NEC. Está disponible en la interfaz como referencia de guía, acompañado de sus límites; no habilita un resultado normativo.
+
+## Séptima ficha: AXC-FTG-007 — resistencia a punzonamiento de referencia
+
+La guía práctica NEC 2015, secciones 1.10.2 a 1.10.4, presenta alternativas de resistencia para el perímetro crítico de una columna interior. El módulo inicial solo acepta una columna rectangular centrada, una presión última uniforme y hormigón de peso normal. Forma el perímetro a una mitad de la profundidad efectiva desde las caras de la columna y toma el menor resultado de las alternativas que la guía muestra para ese caso.
+
+Se bloquean expresamente la excentricidad, los momentos transmitidos, columnas de borde o esquina, hormigón liviano, presión no uniforme y cualquier interpretación fuera de ese ejemplo. El resultado será una referencia de guía hasta completar contrastes y la matriz NEC.
+
+## Octava ficha: AXC-FTG-008 — longitud de desarrollo a tracción de referencia
+
+La guía práctica NEC 2015, sección 1.10.6, presenta una expresión de desarrollo a tracción y ejemplifica barras sin recubrimiento especial, hormigón de peso normal y coeficientes de modificación unitarios. El módulo inicial aplicará solamente ese caso y comparará la longitud requerida con el largo disponible declarado por el usuario para cada dirección.
+
+El largo disponible no se infiere automáticamente de la zapata: debe especificarse desde la cara o sección que el detalle técnico determine hasta el extremo efectivo de la barra. Quedan fuera del módulo inicial barras con recubrimiento especial, hormigón liviano, ganchos, patillas, empalmes, barras superiores y cualquier condición de detalle no declarada.
