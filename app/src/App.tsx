@@ -23,6 +23,7 @@ import { FootingPlanDiagram } from './components/FootingPlanDiagram'
 import { FootingElevationDiagram } from './components/FootingElevationDiagram'
 import { FootingMomentDiagram } from './components/FootingMomentDiagram'
 import { FootingResultDashboard } from './components/FootingResultDashboard'
+import { FootingAnalysisDiagram } from './components/FootingAnalysisDiagram'
 import { browserProjectRepository } from './persistence/browser-project-repository'
 import { moduleValidationCatalog } from './validation/benchmarks/catalog'
 import './App.css'
@@ -43,7 +44,7 @@ const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
   { key: 'footingLengthM', label: 'Largo preliminar de zapata', unit: 'm' },
   { key: 'footingThicknessM', label: 'Espesor preliminar de zapata', unit: 'm' },
   { key: 'concreteCoverM', label: 'Recubrimiento inferior', unit: 'm' },
-  { key: 'barDiameterM', label: 'Diámetro de barra considerado', unit: 'm' },
+  { key: 'barDiameterM', label: 'Diámetro de barra considerado', unit: 'cm' },
   { key: 'concreteStrengthMpa', label: 'Resistencia del hormigón f′c', unit: 'MPa' },
   { key: 'steelYieldStrengthMpa', label: 'Fluencia del acero fy', unit: 'MPa' },
   { key: 'developmentAvailableLengthWidthM', label: 'Longitud disponible de desarrollo · B', unit: 'm' },
@@ -77,8 +78,51 @@ const inputHelp: Record<NumberField, string> = {
   barsParallelToLengthMaxSpacingM: 'Máxima separación deseada entre las barras que van en dirección L.',
 }
 
+function inputTextFromProject(inputs: FootingInputs): Record<NumberField, string> {
+  return Object.fromEntries(inputFields.map(({ key }) => [
+    key,
+    key === 'barDiameterM' ? String(inputs[key] * 100) : String(inputs[key]),
+  ])) as Record<NumberField, string>
+}
+
+const decimalEntry = /^(?:\d+(?:[.,]\d*)?|[.,]\d*)?$/
+
+const exampleCases: Array<{ name: string; inputs: FootingInputs }> = [
+  {
+    name: 'Zapata rectangular · caso demostrativo',
+    inputs: {
+      axialLoadKn: 450, factoredAxialLoadKn: 900, allowableBearingKpa: 180, bearingCapacityBasis: 'gross', removedOverburdenKpa: 0,
+      concreteUnitWeightKnM3: 24, soilCoverDepthM: 0, soilUnitWeightKnM3: 0, columnWidthM: 0.4, columnLengthM: 0.6,
+      footingWidthM: 2, footingLengthM: 3, footingThicknessM: 0.5, concreteCoverM: 0.075, barDiameterM: 0.016,
+      concreteStrengthMpa: 23.54, steelYieldStrengthMpa: 412.08, developmentAvailableLengthWidthM: 1.3, developmentAvailableLengthLengthM: 1.3,
+      punchingCriticalSectionOffsetM: 0.21, barsParallelToWidthMaxSpacingM: 0.15, barsParallelToLengthMaxSpacingM: 0.15,
+    },
+  },
+  {
+    name: 'Zapata cuadrada · caso demostrativo',
+    inputs: {
+      axialLoadKn: 360, factoredAxialLoadKn: 720, allowableBearingKpa: 200, bearingCapacityBasis: 'gross', removedOverburdenKpa: 0,
+      concreteUnitWeightKnM3: 24, soilCoverDepthM: 0, soilUnitWeightKnM3: 0, columnWidthM: 0.45, columnLengthM: 0.45,
+      footingWidthM: 2.1, footingLengthM: 2.1, footingThicknessM: 0.5, concreteCoverM: 0.075, barDiameterM: 0.016,
+      concreteStrengthMpa: 25, steelYieldStrengthMpa: 420, developmentAvailableLengthWidthM: 0.95, developmentAvailableLengthLengthM: 0.95,
+      punchingCriticalSectionOffsetM: 0.21, barsParallelToWidthMaxSpacingM: 0.15, barsParallelToLengthMaxSpacingM: 0.15,
+    },
+  },
+  {
+    name: 'Zapata rectangular amplia · caso demostrativo',
+    inputs: {
+      axialLoadKn: 600, factoredAxialLoadKn: 1200, allowableBearingKpa: 160, bearingCapacityBasis: 'gross', removedOverburdenKpa: 0,
+      concreteUnitWeightKnM3: 24, soilCoverDepthM: 0, soilUnitWeightKnM3: 0, columnWidthM: 0.5, columnLengthM: 0.7,
+      footingWidthM: 2.5, footingLengthM: 3.2, footingThicknessM: 0.6, concreteCoverM: 0.075, barDiameterM: 0.02,
+      concreteStrengthMpa: 28, steelYieldStrengthMpa: 420, developmentAvailableLengthWidthM: 1.2, developmentAvailableLengthLengthM: 1.5,
+      punchingCriticalSectionOffsetM: 0.26, barsParallelToWidthMaxSpacingM: 0.15, barsParallelToLengthMaxSpacingM: 0.15,
+    },
+  },
+]
+
 function App() {
   const [project, setProject] = useState<ProjectDocument>(createNewProject)
+  const [inputText, setInputText] = useState<Record<NumberField, string>>(() => inputTextFromProject(project.inputSnapshot))
   const [projects, setProjects] = useState<ProjectDocument[]>([])
   const [status, setStatus] = useState('Proyecto nuevo: aún no está guardado en este navegador.')
   const [serviceContactResult, setServiceContactResult] = useState<ServiceContactResult | null>(null)
@@ -92,6 +136,7 @@ function App() {
   const [oneWayShearGuideResult, setOneWayShearGuideResult] = useState<GuideOneWayShearCheckResult | null>(null)
   const [punchingShearGuideResult, setPunchingShearGuideResult] = useState<GuidePunchingShearResult | null>(null)
   const [developmentLengthResult, setDevelopmentLengthResult] = useState<GuideDevelopmentLengthResult | null>(null)
+  const [inputFormatIssue, setInputFormatIssue] = useState<string | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -113,6 +158,12 @@ function App() {
   }, [])
 
   const updateInput = (key: NumberField, value: string) => {
+    if (!decimalEntry.test(value)) {
+      setInputFormatIssue('Cada entrada admite solo números y decimales, por ejemplo: 450, 0.50 o 1,6.')
+      return
+    }
+
+    setInputFormatIssue(null)
     setServiceContactResult(null)
     setOneWayShearResult(null)
     setPunchingShearResult(null)
@@ -124,10 +175,36 @@ function App() {
     setOneWayShearGuideResult(null)
     setPunchingShearGuideResult(null)
     setDevelopmentLengthResult(null)
+    setInputText((current) => ({ ...current, [key]: value }))
+
+    const parsedValue = Number(value.replace(',', '.'))
+    const numericValue = value.trim() === '' || !Number.isFinite(parsedValue)
+      ? 0
+      : key === 'barDiameterM' ? parsedValue / 100 : parsedValue
+
     setProject((current) => ({
       ...current,
-      inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
+      inputSnapshot: { ...current.inputSnapshot, [key]: numericValue },
     }))
+  }
+
+  const fillRandomExample = () => {
+    const example = exampleCases[Math.floor(Math.random() * exampleCases.length)]
+    setServiceContactResult(null)
+    setOneWayShearResult(null)
+    setPunchingShearResult(null)
+    setFlexureResult(null)
+    setReinforcementLayout(null)
+    setMinimumReinforcementResult(null)
+    setRequiredReinforcementResult(null)
+    setReinforcementComparisonResult(null)
+    setOneWayShearGuideResult(null)
+    setPunchingShearGuideResult(null)
+    setDevelopmentLengthResult(null)
+    setInputFormatIssue(null)
+    setProject((current) => ({ ...current, name: example.name, inputSnapshot: example.inputs }))
+    setInputText(inputTextFromProject(example.inputs))
+    setStatus('Ejemplo cargado. Ejecuta las revisiones por etapas para ver la representación gráfica.')
   }
 
   const updateBearingCapacityBasis = (basis: FootingInputs['bearingCapacityBasis']) => {
@@ -160,6 +237,7 @@ function App() {
     const savedProject = await browserProjectRepository.get(projectId)
     if (!savedProject) return
     setProject(savedProject)
+    setInputText(inputTextFromProject(savedProject.inputSnapshot))
     setServiceContactResult(null)
     setOneWayShearResult(null)
     setPunchingShearResult(null)
@@ -524,6 +602,7 @@ function App() {
       }
       await browserProjectRepository.save(imported)
       setProject(imported)
+      setInputText(inputTextFromProject(imported.inputSnapshot))
       await refreshProjects()
       setStatus('Proyecto importado como una copia local. Conserva el archivo original como respaldo.')
     } catch (error) {
@@ -557,7 +636,9 @@ function App() {
           <div className="section-heading">
             <p>Biblioteca local</p>
             <button type="button" className="text-button" onClick={() => {
-      setProject(createNewProject())
+      const newProject = createNewProject()
+      setProject(newProject)
+      setInputText(inputTextFromProject(newProject.inputSnapshot))
       setServiceContactResult(null)
       setOneWayShearResult(null)
       setPunchingShearResult(null)
@@ -654,6 +735,7 @@ function App() {
           <section className="input-stage" aria-labelledby="input-stage-title">
             <div className="stage-heading">
               <div><p className="eyebrow">Paso 1</p><h2 id="input-stage-title">Describe tu zapata</h2></div>
+              <button type="button" className="secondary example-button" onClick={fillRandomExample}>Cargar ejemplo aleatorio</button>
               <p>Ingresa datos de tu plano, análisis estructural e informe geotécnico. Ningún valor se estima en silencio.</p>
             </div>
             <div className="input-guide">
@@ -661,6 +743,7 @@ function App() {
               <p><strong>Geometría y armado:</strong> provienen de tu anteproyecto, planos o detalle que estás revisando.</p>
               <p><strong>Materiales:</strong> usa los valores especificados para el hormigón y las barras del caso.</p>
             </div>
+            {inputFormatIssue && <p className="input-format-issue" role="status">{inputFormatIssue}</p>}
 
           <div className="field-grid">
             {inputFields.map(({ key, label, unit }) => (
@@ -668,10 +751,10 @@ function App() {
                 <span>{label}</span>
                 <div className="number-input">
                   <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={project.inputSnapshot[key]}
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]*[.,]?[0-9]*"
+                    value={inputText[key]}
                     onChange={(event) => updateInput(key, event.target.value)}
                   />
                   <small>{unit}</small>
@@ -713,6 +796,19 @@ function App() {
           <section className="results-stage" aria-labelledby="results-stage-title">
             <div className="stage-heading"><div><p className="eyebrow">Paso 3</p><h2 id="results-stage-title">Entiende los resultados</h2></div><p>Revisa primero el tablero; luego abre las tarjetas para ver el detalle y los límites.</p></div>
             <FootingResultDashboard contact={serviceContactResult} oneWay={oneWayShearGuideResult} punching={punchingShearGuideResult} reinforcement={reinforcementComparisonResult} />
+            {(serviceContactResult || oneWayShearResult || punchingShearGuideResult || flexureResult || reinforcementLayout) && (
+              <FootingAnalysisDiagram
+                footingWidthM={project.inputSnapshot.footingWidthM}
+                footingLengthM={project.inputSnapshot.footingLengthM}
+                columnWidthM={project.inputSnapshot.columnWidthM}
+                columnLengthM={project.inputSnapshot.columnLengthM}
+                contact={serviceContactResult}
+                oneWay={oneWayShearResult}
+                punching={punchingShearGuideResult}
+                flexure={flexureResult}
+                reinforcement={reinforcementLayout}
+              />
+            )}
           </section>
           {serviceContactResult && (
             <section className={serviceContactResult.status === 'pass' ? 'result-card pass' : 'result-card fail'} aria-live="polite">

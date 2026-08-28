@@ -28,6 +28,26 @@ export function FootingResultDashboard({ contact, oneWay, punching, reinforcemen
 
   if (metrics.length === 0) return null
 
+  const failedMetrics = metrics.filter((metric) => metric.status === 'fail')
+  const referenceMetrics = metrics.filter((metric) => metric.status === 'reference')
+  const conclusion = failedMetrics.length > 0
+    ? {
+        state: 'attention',
+        title: 'Hay verificaciones que requieren ajuste',
+        detail: `Revisa ${failedMetrics.map((metric) => metric.label).join(', ')} antes de continuar con el detalle.`,
+      }
+    : referenceMetrics.length > 0
+      ? {
+          state: 'reference',
+          title: 'Las referencias calculadas están dentro de su límite',
+          detail: 'Aún debes revisar las hipótesis, el detalle constructivo y el estado de validación de cada módulo.',
+        }
+      : {
+          state: 'pass',
+          title: 'El contacto de servicio está dentro de la capacidad declarada',
+          detail: 'Calcula las demás etapas para completar la lectura del caso.',
+        }
+
   return (
     <section className="result-dashboard" aria-label="Resumen gráfico de resultados">
       <div className="result-dashboard-heading">
@@ -52,6 +72,14 @@ export function FootingResultDashboard({ contact, oneWay, punching, reinforcemen
           )
         })}
       </div>
+      <div className={`result-conclusion ${conclusion.state}`} aria-live="polite">
+        <span aria-hidden="true">{conclusion.state === 'attention' ? '!' : '✓'}</span>
+        <div>
+          <strong>Conclusión provisional: {conclusion.title}</strong>
+          <p>{conclusion.detail}</p>
+        </div>
+      </div>
+      <p className="result-dashboard-legend"><i /> Cada barra llega a 100% en el límite de comparación. Verde: dentro de la referencia; naranja: requiere ajuste.</p>
     </section>
   )
 }
