@@ -22,6 +22,7 @@ import { validateFootingInputs, validateGuideOneWayShearInputs, validateGuidePun
 import { FootingPlanDiagram } from './components/FootingPlanDiagram'
 import { FootingElevationDiagram } from './components/FootingElevationDiagram'
 import { FootingMomentDiagram } from './components/FootingMomentDiagram'
+import { FootingResultDashboard } from './components/FootingResultDashboard'
 import { browserProjectRepository } from './persistence/browser-project-repository'
 import { moduleValidationCatalog } from './validation/benchmarks/catalog'
 import './App.css'
@@ -51,6 +52,30 @@ const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
   { key: 'barsParallelToWidthMaxSpacingM', label: 'Separación máxima: barras paralelas a B', unit: 'm' },
   { key: 'barsParallelToLengthMaxSpacingM', label: 'Separación máxima: barras paralelas a L', unit: 'm' },
 ]
+
+const inputHelp: Record<NumberField, string> = {
+  axialLoadKn: 'Carga de uso normal. Tómala del análisis estructural o de la hoja de cargas.',
+  factoredAxialLoadKn: 'Carga para revisar resistencia. Proviene de una combinación última del análisis estructural.',
+  allowableBearingKpa: 'Dato del informe geotécnico. No lo calcula esta aplicación.',
+  removedOverburdenKpa: 'Presión del suelo excavado, solo si tu informe trabaja con capacidad neta.',
+  concreteUnitWeightKnM3: 'Peso propio del hormigón. Usa el valor especificado para tu material.',
+  soilCoverDepthM: 'Altura de relleno que queda sobre la zapata después de construirla.',
+  soilUnitWeightKnM3: 'Peso del suelo de relleno. Busca el valor en el informe geotécnico.',
+  columnWidthM: 'Dimensión menor de la columna que llega a la zapata, tomada del plano estructural.',
+  columnLengthM: 'La otra dimensión de la columna, tomada del plano estructural.',
+  footingWidthM: 'Dimensión B de la zapata que estás proponiendo o verificando.',
+  footingLengthM: 'Dimensión L de la zapata que estás proponiendo o verificando.',
+  footingThicknessM: 'Espesor h que propones para la zapata.',
+  concreteCoverM: 'Distancia desde la cara inferior del hormigón hasta la barra. Sale del detalle constructivo.',
+  barDiameterM: 'Diámetro de las barras inferiores que deseas revisar.',
+  concreteStrengthMpa: 'Resistencia f′c indicada en las especificaciones del hormigón.',
+  steelYieldStrengthMpa: 'Fluencia fy indicada para las barras de acero usadas.',
+  developmentAvailableLengthWidthM: 'Largo recto disponible para anclar una barra en B, medido desde el detalle real.',
+  developmentAvailableLengthLengthM: 'Largo recto disponible para anclar una barra en L, medido desde el detalle real.',
+  punchingCriticalSectionOffsetM: 'Distancia de la sección que quieres analizar para la demanda de punzonamiento.',
+  barsParallelToWidthMaxSpacingM: 'Máxima separación deseada entre las barras que van en dirección B.',
+  barsParallelToLengthMaxSpacingM: 'Máxima separación deseada entre las barras que van en dirección L.',
+}
 
 function App() {
   const [project, setProject] = useState<ProjectDocument>(createNewProject)
@@ -626,6 +651,17 @@ function App() {
             {flexureResult && <FootingMomentDiagram result={flexureResult} />}
           </div>
 
+          <section className="input-stage" aria-labelledby="input-stage-title">
+            <div className="stage-heading">
+              <div><p className="eyebrow">Paso 1</p><h2 id="input-stage-title">Describe tu zapata</h2></div>
+              <p>Ingresa datos de tu plano, análisis estructural e informe geotécnico. Ningún valor se estima en silencio.</p>
+            </div>
+            <div className="input-guide">
+              <p><strong>Cargas y suelo:</strong> provienen del análisis estructural y del informe geotécnico.</p>
+              <p><strong>Geometría y armado:</strong> provienen de tu anteproyecto, planos o detalle que estás revisando.</p>
+              <p><strong>Materiales:</strong> usa los valores especificados para el hormigón y las barras del caso.</p>
+            </div>
+
           <div className="field-grid">
             {inputFields.map(({ key, label, unit }) => (
               <label key={key}>
@@ -640,6 +676,7 @@ function App() {
                   />
                   <small>{unit}</small>
                 </div>
+                <small className="input-help">{inputHelp[key]}</small>
               </label>
             ))}
           </div>
@@ -655,58 +692,16 @@ function App() {
             </select>
             <small>Usa exactamente la base indicada en el informe geotécnico.</small>
           </label>
+          </section>
 
-          <div className="actions">
-            <button type="button" className="primary" onClick={calculateContact}>
-              Calcular contacto de servicio
-            </button>
-            <button type="button" className="primary" onClick={calculateOneWayShear}>
-              Calcular demanda de cortante
-            </button>
-            <button type="button" className="secondary" onClick={checkGuideOneWayShearReference}>
-              Revisar cortante de guía
-            </button>
-            <button type="button" className="primary" onClick={calculatePunchingShear}>
-              Calcular demanda de punzonamiento
-            </button>
-            <button type="button" className="secondary" onClick={checkGuidePunchingShearReference}>
-              Revisar punzonamiento de guía
-            </button>
-            <button type="button" className="primary" onClick={calculateFlexure}>
-              Calcular demanda de flexión
-            </button>
-            <button type="button" className="secondary" onClick={calculateReinforcementLayout}>
-              Ver distribución de barras
-            </button>
-            <button type="button" className="secondary" onClick={calculateGuideMinimumSteel}>
-              Revisar acero mínimo de guía
-            </button>
-            <button type="button" className="secondary" onClick={calculateGuideRequiredSteel}>
-              Calcular acero requerido de guía
-            </button>
-            <button type="button" className="primary" onClick={compareGuideSteel}>
-              Comparar acero de referencia
-            </button>
-            <button type="button" className="secondary" onClick={checkGuideDevelopmentLengthReference}>
-              Revisar desarrollo de guía
-            </button>
-            <button type="button" className="secondary" onClick={reviewScope}>
-              Revisar alcance
-            </button>
-            <button type="button" className="primary" onClick={() => void saveProject()}>
-              Guardar en este equipo
-            </button>
-            <button type="button" className="secondary" onClick={exportProject}>
-              Descargar archivo
-            </button>
-            <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
-              Abrir archivo
-            </button>
-            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult || requiredReinforcementResult || reinforcementComparisonResult || oneWayShearGuideResult || punchingShearGuideResult || developmentLengthResult) && (
-              <button type="button" className="secondary" onClick={printExperimentalReport}>
-                Imprimir informe
-              </button>
-            )}
+          <section className="action-stage" aria-labelledby="action-stage-title">
+            <div className="stage-heading"><div><p className="eyebrow">Paso 2</p><h2 id="action-stage-title">Revisa por etapas</h2></div><p>Empieza por el suelo; después revisa cortantes, flexión y armado.</p></div>
+            <div className="action-groups">
+              <div className="action-group"><span>Suelo</span><button type="button" className="primary" onClick={calculateContact}>Revisar contacto de servicio</button><button type="button" className="secondary" onClick={reviewScope}>Ver alcance</button></div>
+              <div className="action-group"><span>Cortantes</span><button type="button" className="primary" onClick={calculateOneWayShear}>Demanda unidireccional</button><button type="button" className="secondary" onClick={checkGuideOneWayShearReference}>Referencia de cortante</button><button type="button" className="primary" onClick={calculatePunchingShear}>Demanda de punzonamiento</button><button type="button" className="secondary" onClick={checkGuidePunchingShearReference}>Referencia de punzonamiento</button></div>
+              <div className="action-group"><span>Flexión y barras</span><button type="button" className="primary" onClick={calculateFlexure}>Calcular flexión</button><button type="button" className="secondary" onClick={calculateReinforcementLayout}>Ver distribución</button><button type="button" className="secondary" onClick={calculateGuideMinimumSteel}>Acero mínimo</button><button type="button" className="secondary" onClick={calculateGuideRequiredSteel}>Acero requerido</button><button type="button" className="primary" onClick={compareGuideSteel}>Comparar acero</button><button type="button" className="secondary" onClick={checkGuideDevelopmentLengthReference}>Revisar desarrollo</button></div>
+              <div className="action-group"><span>Proyecto</span><button type="button" className="primary" onClick={() => void saveProject()}>Guardar en este equipo</button><button type="button" className="secondary" onClick={exportProject}>Descargar archivo</button><button type="button" className="secondary" onClick={() => importInput.current?.click()}>Abrir archivo</button>{(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult || requiredReinforcementResult || reinforcementComparisonResult || oneWayShearGuideResult || punchingShearGuideResult || developmentLengthResult) && (<button type="button" className="secondary" onClick={printExperimentalReport}>Imprimir informe</button>)}</div>
+            </div>
             <input
               ref={importInput}
               className="visually-hidden"
@@ -714,7 +709,11 @@ function App() {
               accept="application/json,.json"
               onChange={(event) => void importProject(event.target.files?.[0])}
             />
-          </div>
+          </section>
+          <section className="results-stage" aria-labelledby="results-stage-title">
+            <div className="stage-heading"><div><p className="eyebrow">Paso 3</p><h2 id="results-stage-title">Entiende los resultados</h2></div><p>Revisa primero el tablero; luego abre las tarjetas para ver el detalle y los límites.</p></div>
+            <FootingResultDashboard contact={serviceContactResult} oneWay={oneWayShearGuideResult} punching={punchingShearGuideResult} reinforcement={reinforcementComparisonResult} />
+          </section>
           {serviceContactResult && (
             <section className={serviceContactResult.status === 'pass' ? 'result-card pass' : 'result-card fail'} aria-live="polite">
               <p className="eyebrow">Contacto de servicio · sin diseño estructural</p>
