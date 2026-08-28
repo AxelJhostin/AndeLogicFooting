@@ -13,7 +13,7 @@ const observation = (
   sourceId,
   sourceKind,
   sourceVersion: '1.0',
-  standardProfile: 'ACI-318-14',
+  standardProfile: 'NEC-2014',
   assumptionsId: 'centered-rigid-uniform-v1',
   metricId: 'contact-pressure',
   value,
@@ -59,7 +59,7 @@ describe('compareBenchmark', () => {
     const result = compareBenchmark(observation('andelogic', 'independent-calculation', 100), [
       observation('manual-publico', 'public-reference', 100),
       observation('software-a', 'software', 100),
-      observation('software-b', 'software', 100, { standardProfile: 'ACI-318-25' }),
+      observation('software-b', 'software', 100, { standardProfile: 'NEC-PUBLIC-DRAFT' }),
     ], policy)
 
     expect(result.status).toBe('blocked')

@@ -6,12 +6,21 @@ export type StandardProfile = StandardProfileId
 
 export type FootingInputs = {
   axialLoadKn: number
+  factoredAxialLoadKn: number
   allowableBearingKpa: number
+  bearingCapacityBasis: 'gross' | 'net'
+  removedOverburdenKpa: number
+  concreteUnitWeightKnM3: number
+  soilCoverDepthM: number
+  soilUnitWeightKnM3: number
   columnWidthM: number
   columnLengthM: number
   footingWidthM: number
   footingLengthM: number
   footingThicknessM: number
+  concreteCoverM: number
+  barDiameterM: number
+  punchingCriticalSectionOffsetM: number
 }
 
 export const DEFAULT_FOOTING_THICKNESS_M = 0.45
@@ -42,32 +51,71 @@ export function createNewProject(): ProjectDocument {
     updatedAt: timestamp,
     productVersion: '0.1.0-prototype',
     engineVersion: 'not-implemented',
-    standardProfile: 'NEC-PENDING',
+    standardProfile: 'NEC-PUBLIC-2014-PENDING',
     inputSnapshot: {
       axialLoadKn: 0,
+      factoredAxialLoadKn: 0,
       allowableBearingKpa: 0,
+      bearingCapacityBasis: 'gross',
+      removedOverburdenKpa: 0,
+      concreteUnitWeightKnM3: 24,
+      soilCoverDepthM: 0,
+      soilUnitWeightKnM3: 0,
       columnWidthM: 0.3,
       columnLengthM: 0.3,
       footingWidthM: 1.5,
       footingLengthM: 1.5,
       footingThicknessM: DEFAULT_FOOTING_THICKNESS_M,
+      concreteCoverM: 0.075,
+      barDiameterM: 0.016,
+      punchingCriticalSectionOffsetM: 0,
     },
     warnings: [
-      'Prototipo de persistencia: todavía no ejecuta verificaciones ni diseño estructural.',
+      'El contacto de servicio y la demanda de cortante son módulos internos; la resistencia estructural normativa todavía no está implementada.',
     ],
   }
 }
 
-/** Mantiene legibles los proyectos locales creados antes de añadir el espesor. */
+/** Mantiene legibles los proyectos locales creados antes de añadir entradas de contacto de servicio. */
 export function normalizeProjectDocument(project: ProjectDocument): ProjectDocument {
   const legacyInputs = project.inputSnapshot as Partial<FootingInputs>
   const footingThicknessM = Number.isFinite(legacyInputs.footingThicknessM) && legacyInputs.footingThicknessM! > 0
     ? legacyInputs.footingThicknessM!
     : DEFAULT_FOOTING_THICKNESS_M
+  const concreteUnitWeightKnM3 = Number.isFinite(legacyInputs.concreteUnitWeightKnM3) && legacyInputs.concreteUnitWeightKnM3! > 0
+    ? legacyInputs.concreteUnitWeightKnM3!
+    : 24
+  const bearingCapacityBasis = legacyInputs.bearingCapacityBasis === 'net' ? 'net' : 'gross'
+  const concreteCoverM = Number.isFinite(legacyInputs.concreteCoverM) && legacyInputs.concreteCoverM! >= 0
+    ? legacyInputs.concreteCoverM!
+    : 0.075
+  const barDiameterM = Number.isFinite(legacyInputs.barDiameterM) && legacyInputs.barDiameterM! > 0
+    ? legacyInputs.barDiameterM!
+    : 0.016
+  const punchingCriticalSectionOffsetM = Number.isFinite(legacyInputs.punchingCriticalSectionOffsetM) && legacyInputs.punchingCriticalSectionOffsetM! >= 0
+    ? legacyInputs.punchingCriticalSectionOffsetM!
+    : 0
+  const legacyProfile: string = project.standardProfile
+  const standardProfile = legacyProfile === 'NEC-PUBLIC-2014-PENDING' || legacyProfile === 'NEC-PENDING'
+    ? 'NEC-PUBLIC-2014-PENDING'
+    : 'ARCHIVED-UNSUPPORTED'
 
   return {
     ...project,
-    inputSnapshot: { ...project.inputSnapshot, footingThicknessM },
+    standardProfile,
+    inputSnapshot: {
+      ...project.inputSnapshot,
+      footingThicknessM,
+      bearingCapacityBasis,
+      removedOverburdenKpa: Number.isFinite(legacyInputs.removedOverburdenKpa) && legacyInputs.removedOverburdenKpa! >= 0 ? legacyInputs.removedOverburdenKpa! : 0,
+      concreteUnitWeightKnM3,
+      soilCoverDepthM: Number.isFinite(legacyInputs.soilCoverDepthM) && legacyInputs.soilCoverDepthM! >= 0 ? legacyInputs.soilCoverDepthM! : 0,
+      soilUnitWeightKnM3: Number.isFinite(legacyInputs.soilUnitWeightKnM3) && legacyInputs.soilUnitWeightKnM3! >= 0 ? legacyInputs.soilUnitWeightKnM3! : 0,
+      factoredAxialLoadKn: Number.isFinite(legacyInputs.factoredAxialLoadKn) && legacyInputs.factoredAxialLoadKn! >= 0 ? legacyInputs.factoredAxialLoadKn! : 0,
+      concreteCoverM,
+      barDiameterM,
+      punchingCriticalSectionOffsetM,
+    },
   }
 }
 

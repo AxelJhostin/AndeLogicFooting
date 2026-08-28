@@ -30,12 +30,11 @@ Si uno de estos datos no puede confirmarse, el resultado se registra como eviden
 
 | Fuente | Uso previsto | Límite conocido |
 | --- | --- | --- |
-| SkyCiv Foundation — verificación pública | Casos reproducibles de presión, cortante unidireccional, punzonamiento, flexión, transferencia y desarrollo | La verificación pública localizada corresponde a ACI 318-14; no valida ACI 318-25 ni NEC 2014. |
-| SkyCiv — calculador gratuito | Ejecución reproducible en navegador | La interfaz localizada inicia con ACI 2019; se debe capturar la selección exacta en cada caso. |
-| ASDIP — calculador gratuito | Segundo cálculo independiente en navegador | La página declara “latest ACI 318”, pero eso no identifica una edición; cada ejecución queda bloqueada hasta confirmarla. |
-| Tekla Tedds | Tercer contraste cuando el módulo y la edición sean compatibles | Tedds 2023 documenta ACI 318-19 re-aprobada en 2022; cualquier otra versión requiere verificación y revisión de boletines. |
+| NEC — portal oficial | Fuente primaria de documentos y alcance ecuatoriano | Debe identificarse la sección exacta aplicable a cada módulo. |
+| Publicación técnica de profesional identificado | Desarrollo o caso reproducible | Solo sirve si registra autor, fecha, unidades, hipótesis y resultados intermedios. |
+| Software de terceros | Contraste numérico auxiliar | Nunca valida por sí solo una regla NEC; versión y parámetros deben quedar registrados. |
 
-La documentación pública de SkyCiv compara resultados manuales y del programa y deja visibles diferencias asociadas a supuestos como la profundidad efectiva. Los boletines de Tekla de mayo de 2026 documentan correcciones de errores potencialmente no conservadores en fuerzas cortantes y momentos de cimentaciones. Esa evidencia confirma que ningún proveedor debe ser el único oráculo.
+Las publicaciones y programas externos pueden diferir por supuestos como profundidad efectiva, peso propio o secciones críticas. Esa evidencia confirma que ninguna fuente secundaria ni proveedor debe ser el único oráculo.
 
 ## Datos obligatorios de cada observación
 
@@ -76,8 +75,4 @@ La pérdida posterior de confianza en una versión externa no altera resultados 
 
 ## Fuentes iniciales
 
-- [SkyCiv — ACI 318 Verification #1](https://skyciv.com/docs/skyciv-foundation/isolated-footings/verification-2/aci-318-verification-1/)
-- [ASDIP Foundation — User's Manual](https://www.asdipsoft.com/documentation/ASDIP%20Foundation%20Users%20Manual.pdf)
-- [ASDIP — Free Concrete Footing Calculator](https://www.asdipsoft.com/free-footing-calculator/)
-- [Tekla Tedds — actualización ACI de 2023](https://support.tekla.com/doc/tekla-tedds/2023/rel_concrete_design_calculations_aci318)
-- [Tekla Tedds — Engineering library update, May 2026](https://support.tekla.com/nl/doc/tekla-tedds/2026/rel_may_2026_engineering_library_release_notes)
+- [Portal oficial de la NEC](https://www.mit.gob.ec/norma-ecuatoriana-de-la-construccion/)

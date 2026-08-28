@@ -50,6 +50,10 @@ h1 { color: #f6f4eb; letter-spacing: -.06em; font-size: clamp(2.65rem, 6vw, 5.75
 .center-line { stroke-dasharray: 3 3; }
 .dimension-line { stroke: #9cb9c0; stroke-width: 1; }
 .load-arrow { stroke: #d5fa55; stroke-width: 2; }
+.critical-section-line { stroke: #ff9d88; stroke-width: 1.6; stroke-dasharray: 7 5; }
+.punching-perimeter { fill: none; stroke: #f6cd67; stroke-width: 1.8; stroke-dasharray: 3 4; }
+.moment-shape { fill: #365f74; stroke: #93e1d9; stroke-width: 2; }
+.moment-shape.governing { fill: #5e6a32; stroke: #d5fa55; }
 .diagram-label, .dimension-text { fill: #b7ced2; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .diagram-label { fill: #d5fa55; font-weight: 800; }
 .column-text { fill: #173138; font-size: 8px; font-weight: 900; letter-spacing: .06em; }
@@ -60,6 +64,10 @@ label > span { display: block; color: #a9bec6; font-size: .82rem; margin-bottom:
 .number-input:focus-within { border-color: #d5fa55; }
 .number-input input { min-width: 0; width: 100%; padding: 12px; color: #f6f4eb; background: transparent; border: 0; outline: 0; }
 .number-input small { min-width: 48px; display: grid; place-items: center; color: #80a4af; border-left: 1px solid #3b5863; }
+.basis-select { display: block; max-width: 430px; margin-top: 18px; }
+.basis-select select { width: 100%; color: #f6f4eb; background: #071720; border: 1px solid #3b5863; padding: 12px; outline: 0; }
+.basis-select select:focus { border-color: #d5fa55; }
+.basis-select small { display: block; margin-top: 7px; color: #78949e; font-size: .72rem; }
 .actions { justify-content: flex-start; flex-wrap: wrap; margin-top: 36px; }
 .primary, .secondary { border: 1px solid #46636c; padding: 12px 16px; font-weight: 700; }
 .primary { background: #d5fa55; color: #10242b; border-color: #d5fa55; }
@@ -69,6 +77,7 @@ label > span { display: block; color: #a9bec6; font-size: .82rem; margin-bottom:
 .result-card { margin-top: 30px; padding: 24px; border: 1px solid #3b5863; background: #0d2530; }
 .result-card.pass { border-color: #6ba954; }
 .result-card.fail { border-color: #d77a69; }
+.result-card.demand-only { border-color: #d7a568; }
 .result-card h2 { margin: 0 0 20px; color: #f1f5e7; font-size: 1.3rem; letter-spacing: -.03em; }
 .result-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .result-grid p { margin: 0; padding: 12px; background: #09202a; }

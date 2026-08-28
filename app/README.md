@@ -1,12 +1,12 @@
-# AndeLogic Footing — Aplicación
+# AndeLogic Zapatas — Aplicación
 
 Prototipo React + TypeScript + Vite para la primera herramienta independiente de AndeLogic Engineering.
 
 ## Estado actual
 
-La aplicación permite crear proyectos, guardarlos localmente con IndexedDB, reabrirlos después de recargar y exportarlos/importarlos como JSON versionado. Incluye una evaluación experimental de presión media de contacto `P / A` frente a la capacidad admisible ingresada.
+La aplicación permite crear proyectos, guardarlos localmente con IndexedDB, reabrirlos después de recargar y exportarlos/importarlos como JSON versionado. Incluye contacto de servicio y demanda de cortante unidireccional por equilibrio. El perfil activo se fundamenta en NEC 2014 y fuentes públicas trazables.
 
-No contiene diseño ni verificaciones normativas: no incluye peso propio, combinaciones de carga, excentricidad, asentamientos, cortante, punzonamiento, flexión ni armado.
+No contiene aún verificaciones de resistencia normativas: no incluye excentricidad, asentamientos, punzonamiento, flexión ni armado.
 
 ## Ejecutar localmente
 

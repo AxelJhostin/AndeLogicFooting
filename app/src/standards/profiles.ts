@@ -1,4 +1,4 @@
-export type StandardProfileId = 'NEC-PENDING' | 'ACI-318-25-PENDING'
+export type StandardProfileId = 'NEC-PUBLIC-2014-PENDING' | 'ARCHIVED-UNSUPPORTED'
 
 export type StandardProfile = {
   id: StandardProfileId
@@ -9,21 +9,21 @@ export type StandardProfile = {
 }
 
 export const standardProfiles: Record<StandardProfileId, StandardProfile> = {
-  'NEC-PENDING': {
-    id: 'NEC-PENDING',
-    label: 'Ecuador - NEC 2014 (pendiente de perfil complementario)',
+  'NEC-PUBLIC-2014-PENDING': {
+    id: 'NEC-PUBLIC-2014-PENDING',
+    label: 'Ecuador · NEC 2014 y fuentes públicas (en validación)',
     releaseStatus: 'pending-review',
     sources: ['NEC-SE-GC 2014', 'NEC-SE-HM 2014'],
     releaseBlocker:
-      'La NEC 2014 remite a referencias complementarias para el modelo completo de zapatas. Falta congelar la edición autorizada, mapear cláusulas y validar casos de referencia.',
+      'Falta completar el mapa de fuentes públicas NEC, registrar parámetros y contrastar casos de referencia antes de habilitar verificaciones de resistencia.',
   },
-  'ACI-318-25-PENDING': {
-    id: 'ACI-318-25-PENDING',
-    label: 'ACI CODE-318-25 SI (pendiente de licencia y validación)',
+  'ARCHIVED-UNSUPPORTED': {
+    id: 'ARCHIVED-UNSUPPORTED',
+    label: 'Proyecto histórico sin perfil compatible',
     releaseStatus: 'pending-review',
-    sources: ['ACI CODE-318-25'],
+    sources: [],
     releaseBlocker:
-      'Falta acceso autorizado, mapeo de cláusulas y casos de validación independientes para ACI CODE-318-25.',
+      'Este proyecto conserva una identificación normativa anterior y no se recalculará hasta migrarlo explícitamente a un perfil compatible.',
   },
 }
 

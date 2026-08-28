@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createNewProject } from '../projects'
-import { validateFootingInputs } from './footing-input'
+import { validateFootingInputs, validateOneWayShearInputs, validatePunchingShearInputs } from './footing-input'
 
 describe('validateFootingInputs', () => {
   it('acepta entradas geométricas y geotécnicas positivas dentro del alcance preliminar', () => {
@@ -28,6 +28,29 @@ describe('validateFootingInputs', () => {
 
     expect(validateFootingInputs(inputs)).toEqual(expect.arrayContaining([
       expect.objectContaining({ field: 'footingWidthM', code: 'FOOTING_NOT_LARGER_THAN_COLUMN' }),
+    ]))
+  })
+
+  it('requiere carga última y una profundidad efectiva física para cortante', () => {
+    const inputs = createNewProject().inputSnapshot
+    inputs.axialLoadKn = 450
+    inputs.allowableBearingKpa = 180
+    inputs.concreteCoverM = inputs.footingThicknessM
+
+    expect(validateOneWayShearInputs(inputs)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ field: 'factoredAxialLoadKn', code: 'FACTORED_LOAD_REQUIRED' }),
+      expect.objectContaining({ field: 'concreteCoverM', code: 'INVALID_EFFECTIVE_DEPTH' }),
+    ]))
+  })
+
+  it('requiere un perímetro crítico interior para punzonamiento', () => {
+    const inputs = createNewProject().inputSnapshot
+    inputs.axialLoadKn = 450
+    inputs.allowableBearingKpa = 180
+    inputs.factoredAxialLoadKn = 650
+
+    expect(validatePunchingShearInputs(inputs)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ field: 'punchingCriticalSectionOffsetM', code: 'PUNCHING_OFFSET_REQUIRED' }),
     ]))
   })
 })

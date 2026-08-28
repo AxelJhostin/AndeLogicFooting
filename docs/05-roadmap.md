@@ -18,13 +18,13 @@
 
 **Salida:** motor NEC puro y testeado, sin interfaz de producción.
 
-## C. Perfil ACI
+## C. Biblioteca de evidencia pública
 
-- Implementar como paquete separado, nunca como condicional disperso.
-- Registrar diferencias de parámetros, factores y referencias frente a NEC.
-- Completar banco de casos equivalente.
+- Registrar fuentes técnicas públicas compatibles con el alcance ecuatoriano: autor, fecha, URL, hipótesis y unidades.
+- Convertir cada caso confirmado en una prueba de regresión independiente.
+- Documentar discrepancias sin tratarlas como equivalencias normativas.
 
-**Salida:** dos perfiles verificables o, si ACI no está listo, un perfil NEC publicado sin fingir soporte internacional.
+**Salida:** un perfil NEC verificable con evidencia pública trazable, sin afirmar soporte internacional.
 
 ## D. Aplicación e informe
 

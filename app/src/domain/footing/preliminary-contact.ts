@@ -14,7 +14,7 @@ export type PreliminaryContactResult = {
 /**
  * Evaluación física preliminar de presión promedio: q = P / A.
  * No aplica combinaciones de carga, peso propio, excentricidad, asentamientos
- * ni verificaciones de hormigón. No es un diseño conforme a NEC o ACI.
+ * ni verificaciones de hormigón. No es una verificación normativa NEC.
  */
 export function calculatePreliminaryContact(inputs: FootingInputs): PreliminaryContactResult {
   const { axialLoadKn, allowableBearingKpa, footingWidthM, footingLengthM } = inputs

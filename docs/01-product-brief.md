@@ -6,7 +6,7 @@ Una zapata aislada para una columna suele resolverse en hojas de cálculo propia
 
 ## Propuesta
 
-AndeLogic Footing será una herramienta enfocada en una tarea concreta: ingresar las acciones, materiales y datos geotécnicos declarados; verificar una zapata aislada rectangular dentro de un alcance explícito; y producir un resultado trazable con advertencias y una memoria revisable.
+AndeLogic Zapatas será una herramienta de AndeLogic Engineering enfocada en una tarea concreta: ingresar las acciones, materiales y datos geotécnicos declarados; revisar una zapata aislada rectangular dentro de un alcance explícito; y producir un resultado trazable con advertencias y una memoria revisable.
 
 No será un sustituto de SAFE, ETABS, un estudio de suelos ni un programa de análisis global.
 

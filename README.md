@@ -1,12 +1,12 @@
-# AndeLogic Footing — Producto 01
+# AndeLogic Zapatas — Producto 01
 
-> Nombre interno provisional: `andelogic-footing`. El nombre comercial se decidirá después de validar identidad, dominio y arquitectura de productos.
+Producto de **AndeLogic Engineering** para revisar zapatas aisladas rectangulares de forma trazable. El nombre anterior `andelogic-footing` se conserva únicamente como identificador local de almacenamiento para no perder proyectos creados durante el prototipo.
 
 Herramienta especializada para el diseño y la verificación de **zapatas aisladas rectangulares de hormigón armado**. Es el primer producto oficial nuevo de AndeLogic Engineering; no reutiliza ni reemplaza PreDim NEC.
 
 ## Estado
 
-**Fase de definición y validación.** Ya existe un prototipo de interfaz para probar la biblioteca local, los archivos portables y la presión media de contacto experimental. El motor normativo de diseño todavía no está implementado; ningún resultado podrá considerarse profesional hasta completar los casos de validación y la revisión técnica definidos en este repositorio.
+**Fase de definición y validación.** Ya existe un prototipo de interfaz para probar la biblioteca local, los archivos portables, el contacto de servicio centrado y la demanda de cortante unidireccional en ambos ejes. El contacto permite comparar en base bruta o neta. El módulo de cortante muestra presión última, profundidad efectiva, áreas tributarias y acciones, pero todavía no calcula resistencia ni cumplimiento normativo. Punzonamiento, flexión y refuerzo siguen pendientes.
 
 ## Probar el prototipo
 
@@ -23,10 +23,11 @@ Abre la dirección que muestre la terminal, normalmente [http://localhost:5173](
 2. Pulsa **Guardar en este equipo**.
 3. Recarga la página y abre el proyecto desde la biblioteca local.
 4. Pulsa **Descargar archivo**, luego **Abrir archivo** para importarlo como copia en el mismo navegador u otro equipo.
-5. Pulsa **Calcular contacto preliminar** para evaluar `P / A`, el área mínima orientativa y el lado cuadrado equivalente frente a la capacidad admisible que ingresaste.
+5. Define si la capacidad del informe geotécnico es **bruta** o **neta**, ingresa el esfuerzo removido si aplica y pulsa **Calcular contacto de servicio**. El resultado separa peso propio, relleno, presión bruta y presión neta.
+6. Ingresa la carga axial última, recubrimiento y diámetro considerado; pulsa **Calcular demanda de cortante** para revisar ambos ejes y las secciones discontinuas de la planta.
 6. Pulsa **Imprimir informe** si quieres entregar el caso y sus supuestos a un revisor.
 
-La presión media es un resultado experimental con carga centrada y presión uniforme. No incorpora peso propio, combinaciones de carga, excentricidad, asentamientos, cortantes, punzonamiento, flexión ni armado; no produce un diseño de cimentación.
+El contacto y la demanda de cortante suponen columna centrada y presión uniforme. No evalúan asentamientos, excentricidad, volcamiento ni deslizamiento. La demanda de cortante no incluye aún resistencia del hormigón; tampoco están implementados punzonamiento, flexión ni armado. El prototipo no produce todavía un diseño completo de cimentación.
 
 ## Documentación
 
@@ -39,6 +40,7 @@ La presión media es un resultado experimental con carga centrada y presión uni
 - [Registro de casos de validación](docs/07-validation-case-register.md)
 - [Persistencia y archivos de proyecto](docs/08-project-persistence.md)
 - [Protocolo de contraste externo](docs/09-external-benchmark-protocol.md)
+- [Fichas de implementación de Axel Code](docs/10-axel-code-implementation-cards.md)
 - [Guía de contribución para IA y colaboradores](AGENTS.md)
 
 ## Principio rector

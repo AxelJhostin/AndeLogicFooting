@@ -3,7 +3,13 @@ import type { FootingInputs } from '../projects'
 export type ValidationIssue = {
   code:
     | 'MISSING_POSITIVE_VALUE'
+    | 'MISSING_NON_NEGATIVE_VALUE'
+    | 'SOIL_UNIT_WEIGHT_REQUIRED'
     | 'FOOTING_NOT_LARGER_THAN_COLUMN'
+    | 'FACTORED_LOAD_REQUIRED'
+    | 'INVALID_EFFECTIVE_DEPTH'
+    | 'PUNCHING_OFFSET_REQUIRED'
+    | 'PUNCHING_PERIMETER_OUTSIDE_FOOTING'
   field: keyof FootingInputs
   message: string
 }
@@ -16,29 +22,143 @@ const requiredPositiveFields: Array<keyof FootingInputs> = [
   'footingWidthM',
   'footingLengthM',
   'footingThicknessM',
+  'concreteUnitWeightKnM3',
+]
+
+const requiredNonNegativeFields: Array<keyof FootingInputs> = [
+  'removedOverburdenKpa',
+  'soilCoverDepthM',
+  'soilUnitWeightKnM3',
 ]
 
 const labels: Record<keyof FootingInputs, string> = {
   axialLoadKn: 'La carga axial centrada',
+  factoredAxialLoadKn: 'La carga axial última',
   allowableBearingKpa: 'La capacidad admisible del suelo',
+  bearingCapacityBasis: 'La base de capacidad admisible',
+  removedOverburdenKpa: 'El esfuerzo removido por excavación',
+  concreteUnitWeightKnM3: 'El peso unitario del hormigón',
+  soilCoverDepthM: 'La profundidad de relleno sobre la zapata',
+  soilUnitWeightKnM3: 'El peso unitario del relleno',
   columnWidthM: 'El ancho de columna',
   columnLengthM: 'El largo de columna',
   footingWidthM: 'El ancho preliminar de zapata',
   footingLengthM: 'El largo preliminar de zapata',
   footingThicknessM: 'El espesor preliminar de zapata',
+  concreteCoverM: 'El recubrimiento inferior',
+  barDiameterM: 'El diámetro de barra considerado',
+  punchingCriticalSectionOffsetM: 'La distancia al perímetro crítico de punzonamiento',
+}
+
+export function validateOneWayShearInputs(inputs: FootingInputs): ValidationIssue[] {
+  const issues = validateFootingInputs(inputs)
+
+  if (!Number.isFinite(inputs.factoredAxialLoadKn) || inputs.factoredAxialLoadKn <= 0) {
+    issues.push({
+      code: 'FACTORED_LOAD_REQUIRED',
+      field: 'factoredAxialLoadKn',
+      message: 'La demanda de cortante requiere una carga axial última mayor que cero.',
+    })
+  }
+
+  if (
+    !Number.isFinite(inputs.concreteCoverM) ||
+    inputs.concreteCoverM < 0 ||
+    !Number.isFinite(inputs.barDiameterM) ||
+    inputs.barDiameterM <= 0 ||
+    inputs.footingThicknessM - inputs.concreteCoverM - inputs.barDiameterM / 2 <= 0
+  ) {
+    issues.push({
+      code: 'INVALID_EFFECTIVE_DEPTH',
+      field: 'concreteCoverM',
+      message: 'El espesor, recubrimiento y diámetro deben producir una profundidad efectiva positiva.',
+    })
+  }
+
+  return issues
+}
+
+export function validatePunchingShearInputs(inputs: FootingInputs): ValidationIssue[] {
+  const issues = validateFootingInputs(inputs)
+
+  if (!Number.isFinite(inputs.factoredAxialLoadKn) || inputs.factoredAxialLoadKn <= 0) {
+    issues.push({
+      code: 'FACTORED_LOAD_REQUIRED',
+      field: 'factoredAxialLoadKn',
+      message: 'La demanda de punzonamiento requiere una carga axial última mayor que cero.',
+    })
+  }
+
+  const offset = inputs.punchingCriticalSectionOffsetM
+
+  if (!Number.isFinite(offset) || offset <= 0) {
+    issues.push({
+      code: 'PUNCHING_OFFSET_REQUIRED',
+      field: 'punchingCriticalSectionOffsetM',
+      message: 'La demanda de punzonamiento requiere una distancia positiva al perímetro crítico.',
+    })
+    return issues
+  }
+
+  if (
+    inputs.columnWidthM + 2 * offset >= inputs.footingWidthM ||
+    inputs.columnLengthM + 2 * offset >= inputs.footingLengthM
+  ) {
+    issues.push({
+      code: 'PUNCHING_PERIMETER_OUTSIDE_FOOTING',
+      field: 'punchingCriticalSectionOffsetM',
+      message: 'El perímetro crítico declarado debe quedar completamente dentro de la zapata.',
+    })
+  }
+
+  return issues
+}
+
+export function validateFlexureInputs(inputs: FootingInputs): ValidationIssue[] {
+  const issues = validateFootingInputs(inputs)
+
+  if (!Number.isFinite(inputs.factoredAxialLoadKn) || inputs.factoredAxialLoadKn <= 0) {
+    issues.push({
+      code: 'FACTORED_LOAD_REQUIRED',
+      field: 'factoredAxialLoadKn',
+      message: 'La demanda de flexión requiere una carga axial última mayor que cero.',
+    })
+  }
+
+  return issues
 }
 
 export function validateFootingInputs(inputs: FootingInputs): ValidationIssue[] {
   const issues: ValidationIssue[] = []
 
   for (const field of requiredPositiveFields) {
-    if (!Number.isFinite(inputs[field]) || inputs[field] <= 0) {
+    const value = inputs[field]
+    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
       issues.push({
         code: 'MISSING_POSITIVE_VALUE',
         field,
         message: `${labels[field]} debe ser un valor mayor que cero.`,
       })
     }
+  }
+
+  for (const field of requiredNonNegativeFields) {
+    const value = inputs[field]
+    if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+      issues.push({
+        code: 'MISSING_NON_NEGATIVE_VALUE',
+        field,
+        message: `${labels[field]} debe ser un valor mayor o igual a cero.`,
+      })
+    }
+  }
+
+  if (inputs.soilCoverDepthM > 0 && inputs.soilUnitWeightKnM3 <= 0) {
+    issues.push({
+      code: 'SOIL_UNIT_WEIGHT_REQUIRED',
+      field: 'soilUnitWeightKnM3',
+      message: 'El relleno sobre la zapata requiere un peso unitario de suelo mayor que cero.',
+    })
   }
 
   if (inputs.footingWidthM > 0 && inputs.columnWidthM > 0 && inputs.footingWidthM <= inputs.columnWidthM) {

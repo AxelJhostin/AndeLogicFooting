@@ -29,7 +29,6 @@ src/
 │   └── validation/       # Reglas de dominio y errores accionables
 ├── standards/
 │   ├── nec/              # Perfil NEC con versión y cláusulas trazables
-│   └── aci318_25/        # Perfil ACI independiente
 ├── application/          # Orquesta entrada → perfil → cálculo → informe
 ├── persistence/          # Documento portable, migraciones y adaptador IndexedDB
 ├── reports/              # Modelo de memoria, no componentes de UI
@@ -60,7 +59,7 @@ ProjectDocument (schema versionado)
 
 - `ProjectDocument` contiene identificador, nombre, fechas, perfil normativo, versiones de perfil y motor, entradas canónicas SI, decisiones explícitas y metadatos de advertencias.
 - Los resultados se pueden guardar como instantánea para auditoría, pero al abrirse se identifican como históricos y se recalculan de manera visible solo con el mismo perfil/versiones compatibles.
-- El primer formato será JSON legible y versionado, con nombre provisional `andelogic-footing-project.json`; no se define todavía una extensión propietaria.
+- El primer formato será JSON legible y versionado, con nombre `andelogic-zapatas-project.json`; no se define todavía una extensión propietaria.
 - La importación valida el esquema, el origen y las unidades; archivos corruptos, futuros o fuera de alcance se bloquean con un mensaje claro.
 - Las migraciones son funciones puras, probadas y explícitas. Nunca alteran silenciosamente el perfil normativo, las entradas técnicas ni los resultados históricos.
 - Exportar es responsabilidad del usuario y funciona como respaldo para otra computadora; IndexedDB puede borrarse si el navegador limpia sus datos.

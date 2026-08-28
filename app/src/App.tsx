@@ -7,31 +7,46 @@ import {
   type ProjectDocument,
 } from './domain/projects'
 import { checkCalculationReadiness } from './application/check-readiness'
-import { calculatePreliminaryContact, type PreliminaryContactResult } from './domain/footing/preliminary-contact'
-import { validateFootingInputs } from './domain/validation/footing-input'
+import { calculateServiceContact, type ServiceContactResult } from './domain/footing/service-contact'
+import { calculateOneWayShearDemand, type OneWayShearDemandResult } from './domain/footing/one-way-shear-demand'
+import { calculatePunchingShearDemand, type PunchingShearDemandResult } from './domain/footing/punching-shear-demand'
+import { calculateFlexureDemand, type FlexureDemandResult } from './domain/footing/flexure-demand'
+import { validateFootingInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
 import { FootingPlanDiagram } from './components/FootingPlanDiagram'
 import { FootingElevationDiagram } from './components/FootingElevationDiagram'
+import { FootingMomentDiagram } from './components/FootingMomentDiagram'
 import { browserProjectRepository } from './persistence/browser-project-repository'
 import { moduleValidationCatalog } from './validation/benchmarks/catalog'
 import './App.css'
 
-type NumberField = keyof FootingInputs
+type NumberField = Exclude<keyof FootingInputs, 'bearingCapacityBasis'>
 
 const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
-  { key: 'axialLoadKn', label: 'Carga axial centrada', unit: 'kN' },
-  { key: 'allowableBearingKpa', label: 'Capacidad admisible del suelo', unit: 'kPa' },
+  { key: 'axialLoadKn', label: 'Carga de servicio centrada', unit: 'kN' },
+  { key: 'factoredAxialLoadKn', label: 'Carga axial última declarada', unit: 'kN' },
+  { key: 'allowableBearingKpa', label: 'Capacidad admisible declarada', unit: 'kPa' },
+  { key: 'removedOverburdenKpa', label: 'Esfuerzo removido en desplante', unit: 'kPa' },
+  { key: 'concreteUnitWeightKnM3', label: 'Peso unitario del hormigón', unit: 'kN/m³' },
+  { key: 'soilCoverDepthM', label: 'Relleno sobre la zapata', unit: 'm' },
+  { key: 'soilUnitWeightKnM3', label: 'Peso unitario del relleno', unit: 'kN/m³' },
   { key: 'columnWidthM', label: 'Ancho de columna', unit: 'm' },
   { key: 'columnLengthM', label: 'Largo de columna', unit: 'm' },
   { key: 'footingWidthM', label: 'Ancho preliminar de zapata', unit: 'm' },
   { key: 'footingLengthM', label: 'Largo preliminar de zapata', unit: 'm' },
   { key: 'footingThicknessM', label: 'Espesor preliminar de zapata', unit: 'm' },
+  { key: 'concreteCoverM', label: 'Recubrimiento inferior', unit: 'm' },
+  { key: 'barDiameterM', label: 'Diámetro de barra considerado', unit: 'm' },
+  { key: 'punchingCriticalSectionOffsetM', label: 'Distancia al perímetro crítico de punzonamiento', unit: 'm' },
 ]
 
 function App() {
   const [project, setProject] = useState<ProjectDocument>(createNewProject)
   const [projects, setProjects] = useState<ProjectDocument[]>([])
   const [status, setStatus] = useState('Proyecto nuevo: aún no está guardado en este navegador.')
-  const [preliminaryResult, setPreliminaryResult] = useState<PreliminaryContactResult | null>(null)
+  const [serviceContactResult, setServiceContactResult] = useState<ServiceContactResult | null>(null)
+  const [oneWayShearResult, setOneWayShearResult] = useState<OneWayShearDemandResult | null>(null)
+  const [punchingShearResult, setPunchingShearResult] = useState<PunchingShearDemandResult | null>(null)
+  const [flexureResult, setFlexureResult] = useState<FlexureDemandResult | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -53,10 +68,24 @@ function App() {
   }, [])
 
   const updateInput = (key: NumberField, value: string) => {
-    setPreliminaryResult(null)
+    setServiceContactResult(null)
+    setOneWayShearResult(null)
+    setPunchingShearResult(null)
+    setFlexureResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
+    }))
+  }
+
+  const updateBearingCapacityBasis = (basis: FootingInputs['bearingCapacityBasis']) => {
+    setServiceContactResult(null)
+    setOneWayShearResult(null)
+    setPunchingShearResult(null)
+    setFlexureResult(null)
+    setProject((current) => ({
+      ...current,
+      inputSnapshot: { ...current.inputSnapshot, bearingCapacityBasis: basis },
     }))
   }
 
@@ -72,7 +101,10 @@ function App() {
     const savedProject = await browserProjectRepository.get(projectId)
     if (!savedProject) return
     setProject(savedProject)
-    setPreliminaryResult(null)
+    setServiceContactResult(null)
+    setOneWayShearResult(null)
+    setPunchingShearResult(null)
+    setFlexureResult(null)
     setStatus('Proyecto abierto desde la biblioteca local.')
   }
 
@@ -82,7 +114,7 @@ function App() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `${project.name.trim().replaceAll(/[^a-z0-9]+/gi, '-').toLowerCase() || 'zapata'}.andelogic-footing-project.json`
+    link.download = `${project.name.trim().replaceAll(/[^a-z0-9]+/gi, '-').toLowerCase() || 'zapata'}.andelogic-zapatas-project.json`
     link.click()
     URL.revokeObjectURL(url)
     setStatus('Archivo exportado. Guárdalo para abrirlo en otra computadora.')
@@ -101,14 +133,93 @@ function App() {
   const calculateContact = () => {
     const issues = validateFootingInputs(project.inputSnapshot)
     if (issues.length > 0) {
-      setPreliminaryResult(null)
+    setServiceContactResult(null)
       setStatus(issues.map((issue) => issue.message).join(' '))
       return
     }
 
-    const result = calculatePreliminaryContact(project.inputSnapshot)
-    setPreliminaryResult(result)
-    setStatus('Resultado preliminar calculado. Revisa sus límites antes de usarlo para cualquier decisión.')
+    const { inputSnapshot } = project
+    const result = calculateServiceContact({
+      appliedServiceLoadKn: inputSnapshot.axialLoadKn,
+      footingWidthM: inputSnapshot.footingWidthM,
+      footingLengthM: inputSnapshot.footingLengthM,
+      footingThicknessM: inputSnapshot.footingThicknessM,
+      concreteUnitWeightKnM3: inputSnapshot.concreteUnitWeightKnM3,
+      soilCoverDepthM: inputSnapshot.soilCoverDepthM,
+      soilUnitWeightKnM3: inputSnapshot.soilUnitWeightKnM3,
+      allowableBearingKpa: inputSnapshot.allowableBearingKpa,
+      bearingCapacityBasis: inputSnapshot.bearingCapacityBasis,
+      removedOverburdenKpa: inputSnapshot.removedOverburdenKpa,
+    })
+    setServiceContactResult(result)
+    setStatus('Contacto de servicio calculado. Confirma que capacidad y presión usan la misma base: bruta o neta.')
+  }
+
+  const calculateOneWayShear = () => {
+    const issues = validateOneWayShearInputs(project.inputSnapshot)
+    if (issues.length > 0) {
+      setOneWayShearResult(null)
+      setStatus(issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    const inputs = project.inputSnapshot
+    const result = calculateOneWayShearDemand({
+      factoredAxialLoadKn: inputs.factoredAxialLoadKn,
+      footingWidthM: inputs.footingWidthM,
+      footingLengthM: inputs.footingLengthM,
+      columnWidthM: inputs.columnWidthM,
+      columnLengthM: inputs.columnLengthM,
+      footingThicknessM: inputs.footingThicknessM,
+      concreteCoverM: inputs.concreteCoverM,
+      barDiameterM: inputs.barDiameterM,
+    })
+
+    setOneWayShearResult(result)
+    setStatus('Demanda de cortante calculada en ambos ejes. La resistencia normativa continúa pendiente de revisión.')
+  }
+
+  const calculatePunchingShear = () => {
+    const issues = validatePunchingShearInputs(project.inputSnapshot)
+    if (issues.length > 0) {
+      setPunchingShearResult(null)
+      setStatus(issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    const inputs = project.inputSnapshot
+    const result = calculatePunchingShearDemand({
+      factoredAxialLoadKn: inputs.factoredAxialLoadKn,
+      footingWidthM: inputs.footingWidthM,
+      footingLengthM: inputs.footingLengthM,
+      columnWidthM: inputs.columnWidthM,
+      columnLengthM: inputs.columnLengthM,
+      criticalSectionOffsetM: inputs.punchingCriticalSectionOffsetM,
+    })
+
+    setPunchingShearResult(result)
+    setStatus('Demanda de punzonamiento calculada. La distancia del perímetro es una hipótesis declarada; la resistencia NEC continúa pendiente.')
+  }
+
+  const calculateFlexure = () => {
+    const issues = validateFlexureInputs(project.inputSnapshot)
+    if (issues.length > 0) {
+      setFlexureResult(null)
+      setStatus(issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    const inputs = project.inputSnapshot
+    const result = calculateFlexureDemand({
+      factoredAxialLoadKn: inputs.factoredAxialLoadKn,
+      footingWidthM: inputs.footingWidthM,
+      footingLengthM: inputs.footingLengthM,
+      columnWidthM: inputs.columnWidthM,
+      columnLengthM: inputs.columnLengthM,
+    })
+
+    setFlexureResult(result)
+    setStatus('Demanda de flexión calculada en ambas direcciones. El diseño de acero y la resistencia NEC continúan pendientes.')
   }
 
   const printExperimentalReport = () => {
@@ -121,7 +232,7 @@ function App() {
     try {
       const candidate: unknown = JSON.parse(await file.text())
       if (!isProjectDocument(candidate)) {
-        throw new Error('El archivo no corresponde al esquema compatible de AndeLogic Footing.')
+        throw new Error('El archivo no corresponde al esquema compatible de AndeLogic Zapatas.')
       }
 
       const imported: ProjectDocument = {
@@ -145,15 +256,15 @@ function App() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <a className="brand" href="/" aria-label="AndeLogic Footing">
+        <a className="brand" href="/" aria-label="AndeLogic Engineering Zapatas">
           <span className="brand-mark">A</span>
-          <span>AndeLogic <strong>Footing</strong></span>
+          <span>AndeLogic <strong>Zapatas</strong></span>
         </a>
         <span className="prototype-badge">PROTOCOLO · PERSISTENCIA</span>
       </header>
 
       <section className="intro">
-        <p className="eyebrow">Producto 01 · Ecuador</p>
+        <p className="eyebrow">AndeLogic Engineering · Producto 01 · Ecuador</p>
         <h1>Diseño visible. Evidencia verificable.</h1>
         <p>
           Prototipo local-first para construir un calculador de zapatas auditable. Cada módulo normativo
@@ -166,8 +277,11 @@ function App() {
           <div className="section-heading">
             <p>Biblioteca local</p>
             <button type="button" className="text-button" onClick={() => {
-              setProject(createNewProject())
-              setPreliminaryResult(null)
+      setProject(createNewProject())
+      setServiceContactResult(null)
+      setOneWayShearResult(null)
+      setPunchingShearResult(null)
+      setFlexureResult(null)
               setStatus('Proyecto nuevo: guárdalo cuando quieras conservarlo.')
             }}>
               + Nuevo
@@ -209,7 +323,7 @@ function App() {
           </div>
 
           <div className="notice">
-            <strong>Alcance actual:</strong> zapata aislada rectangular, columna centrada y carga axial. El contacto P/A es experimental; NEC/ACI está pendiente de tu revisión de trazabilidad y contrastes externos.
+            <strong>Alcance actual:</strong> zapata aislada rectangular y columna centrada. Calcula contacto de servicio y demandas de cortante, punzonamiento y flexión; la resistencia normativa sigue pendiente de revisión.
           </div>
 
           <section className="validation-panel" aria-labelledby="validation-title">
@@ -242,12 +356,15 @@ function App() {
               footingLengthM={project.inputSnapshot.footingLengthM}
               columnWidthM={project.inputSnapshot.columnWidthM}
               columnLengthM={project.inputSnapshot.columnLengthM}
+              effectiveDepthM={project.inputSnapshot.footingThicknessM - project.inputSnapshot.concreteCoverM - project.inputSnapshot.barDiameterM / 2}
+              punchingCriticalSectionOffsetM={project.inputSnapshot.punchingCriticalSectionOffsetM}
             />
             <FootingElevationDiagram
               footingWidthM={project.inputSnapshot.footingWidthM}
               columnWidthM={project.inputSnapshot.columnWidthM}
               footingThicknessM={project.inputSnapshot.footingThicknessM}
             />
+            {flexureResult && <FootingMomentDiagram result={flexureResult} />}
           </div>
 
           <div className="field-grid">
@@ -268,9 +385,30 @@ function App() {
             ))}
           </div>
 
+          <label className="basis-select">
+            <span>Base de la capacidad declarada</span>
+            <select
+              value={project.inputSnapshot.bearingCapacityBasis}
+              onChange={(event) => updateBearingCapacityBasis(event.target.value as FootingInputs['bearingCapacityBasis'])}
+            >
+              <option value="gross">Bruta: comparar presión bruta</option>
+              <option value="net">Neta: descontar esfuerzo removido</option>
+            </select>
+            <small>Usa exactamente la base indicada en el informe geotécnico.</small>
+          </label>
+
           <div className="actions">
             <button type="button" className="primary" onClick={calculateContact}>
-              Calcular contacto preliminar
+              Calcular contacto de servicio
+            </button>
+            <button type="button" className="primary" onClick={calculateOneWayShear}>
+              Calcular demanda de cortante
+            </button>
+            <button type="button" className="primary" onClick={calculatePunchingShear}>
+              Calcular demanda de punzonamiento
+            </button>
+            <button type="button" className="primary" onClick={calculateFlexure}>
+              Calcular demanda de flexión
             </button>
             <button type="button" className="secondary" onClick={reviewScope}>
               Revisar alcance
@@ -284,7 +422,7 @@ function App() {
             <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
               Abrir archivo
             </button>
-            {preliminaryResult && (
+            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult) && (
               <button type="button" className="secondary" onClick={printExperimentalReport}>
                 Imprimir informe
               </button>
@@ -297,19 +435,78 @@ function App() {
               onChange={(event) => void importProject(event.target.files?.[0])}
             />
           </div>
-          {preliminaryResult && (
-            <section className={preliminaryResult.status === 'pass' ? 'result-card pass' : 'result-card fail'} aria-live="polite">
-              <p className="eyebrow">Resultado experimental · sin diseño normativo</p>
-              <h2>{preliminaryResult.status === 'pass' ? 'Presión promedio dentro de la capacidad ingresada' : 'Presión promedio supera la capacidad ingresada'}</h2>
+          {serviceContactResult && (
+            <section className={serviceContactResult.status === 'pass' ? 'result-card pass' : 'result-card fail'} aria-live="polite">
+              <p className="eyebrow">Contacto de servicio · sin diseño estructural</p>
+              <h2>{serviceContactResult.status === 'pass' ? 'Presión de servicio dentro de la capacidad declarada' : 'Presión de servicio supera la capacidad declarada'}</h2>
               <div className="result-grid">
-                <p><span>Área bruta</span><strong>{preliminaryResult.grossAreaM2.toFixed(3)} m²</strong></p>
-                <p><span>Área mínima orientativa</span><strong>{preliminaryResult.minimumRequiredAreaM2.toFixed(3)} m²</strong></p>
-                <p><span>Lado cuadrado equivalente</span><strong>{preliminaryResult.equivalentSquareSideM.toFixed(3)} m</strong></p>
-                <p><span>Presión promedio</span><strong>{preliminaryResult.contactPressureKpa.toFixed(2)} kPa</strong></p>
-                <p><span>Capacidad ingresada</span><strong>{preliminaryResult.allowableBearingKpa.toFixed(2)} kPa</strong></p>
-                <p><span>Utilización</span><strong>{(preliminaryResult.utilization * 100).toFixed(1)}%</strong></p>
+                <p><span>Área de zapata</span><strong>{serviceContactResult.grossAreaM2.toFixed(3)} m²</strong></p>
+                <p><span>Peso propio</span><strong>{serviceContactResult.footingSelfWeightKn.toFixed(2)} kN</strong></p>
+                <p><span>Peso de relleno</span><strong>{serviceContactResult.soilCoverWeightKn.toFixed(2)} kN</strong></p>
+                <p><span>Carga total de servicio</span><strong>{serviceContactResult.totalServiceLoadKn.toFixed(2)} kN</strong></p>
+                <p><span>Presión bruta</span><strong>{serviceContactResult.grossContactPressureKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Presión neta</span><strong>{serviceContactResult.netContactPressureKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Presión comparada ({serviceContactResult.bearingCapacityBasis === 'gross' ? 'bruta' : 'neta'})</span><strong>{serviceContactResult.pressureForComparisonKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Capacidad declarada</span><strong>{serviceContactResult.allowableBearingKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Área mínima orientativa</span><strong>{serviceContactResult.minimumRequiredAreaM2 === null ? 'No existe con los datos' : `${serviceContactResult.minimumRequiredAreaM2.toFixed(3)} m²`}</strong></p>
+                <p><span>Lado cuadrado equivalente</span><strong>{serviceContactResult.equivalentSquareSideM === null ? 'No aplica' : `${serviceContactResult.equivalentSquareSideM.toFixed(3)} m`}</strong></p>
+                <p><span>Utilización</span><strong>{(serviceContactResult.utilization * 100).toFixed(1)}%</strong></p>
               </div>
-              <p className="result-limit">Área mínima orientativa = carga axial / capacidad admisible; el lado es solo su equivalente cuadrado. Supone carga axial centrada y presión uniforme. No incluye peso propio, combinaciones de carga, excentricidad, asentamientos, cortantes, punzonamiento, flexión ni armado.</p>
+              <p className="result-limit">La comparación es válida solo si presión y capacidad usan la misma base. La presión neta descuenta el esfuerzo removido declarado en el desplante. Supone carga centrada y presión uniforme; no incluye asentamientos, excentricidad, volcamiento, deslizamiento, cortantes, punzonamiento, flexión ni armado.</p>
+            </section>
+          )}
+          {oneWayShearResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Cortante unidireccional · demanda por equilibrio</p>
+              <h2>Acción calculada en las dos direcciones</h2>
+              <div className="result-grid">
+                <p><span>Carga axial última</span><strong>{oneWayShearResult.factoredAxialLoadKn.toFixed(2)} kN</strong></p>
+                <p><span>Presión última uniforme</span><strong>{oneWayShearResult.factoredContactPressureKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Profundidad efectiva d</span><strong>{oneWayShearResult.effectiveDepthM.toFixed(3)} m</strong></p>
+                <p><span>Voladizo en ancho B</span><strong>{oneWayShearResult.widthDirection.cantileverProjectionM.toFixed(3)} m</strong></p>
+                <p><span>Longitud cargada exterior · B</span><strong>{oneWayShearResult.widthDirection.loadedLengthBeyondSectionM.toFixed(3)} m</strong></p>
+                <p><span>Demanda Vᵤ · dirección B</span><strong>{oneWayShearResult.widthDirection.shearDemandKn.toFixed(2)} kN</strong></p>
+                <p><span>Voladizo en largo L</span><strong>{oneWayShearResult.lengthDirection.cantileverProjectionM.toFixed(3)} m</strong></p>
+                <p><span>Longitud cargada exterior · L</span><strong>{oneWayShearResult.lengthDirection.loadedLengthBeyondSectionM.toFixed(3)} m</strong></p>
+                <p><span>Demanda Vᵤ · dirección L</span><strong>{oneWayShearResult.lengthDirection.shearDemandKn.toFixed(2)} kN</strong></p>
+                <p><span>Dirección gobernante</span><strong>{oneWayShearResult.governingDirection === 'equal' ? 'Iguales' : oneWayShearResult.governingDirection === 'width' ? 'Ancho B' : 'Largo L'}</strong></p>
+                <p><span>Demanda gobernante</span><strong>{oneWayShearResult.governingShearDemandKn.toFixed(2)} kN</strong></p>
+              </div>
+              <p className="result-limit">La presión última se obtiene de la carga axial última declarada dividida para el área de la zapata. Las líneas discontinuas del plano representan la sección evaluada a una distancia d de cada cara. Este resultado es solo demanda: todavía no calcula φVᶜ, utilización ni cumplimiento NEC.</p>
+            </section>
+          )}
+          {punchingShearResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Punzonamiento · demanda por equilibrio</p>
+              <h2>Acción en el perímetro crítico declarado</h2>
+              <div className="result-grid">
+                <p><span>Presión última uniforme</span><strong>{punchingShearResult.factoredContactPressureKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Distancia declarada a la cara</span><strong>{punchingShearResult.criticalSectionOffsetM.toFixed(3)} m</strong></p>
+                <p><span>Perímetro crítico b₀</span><strong>{punchingShearResult.criticalPerimeterM.toFixed(3)} m</strong></p>
+                <p><span>Dimensión interior · B</span><strong>{punchingShearResult.criticalSectionWidthM.toFixed(3)} m</strong></p>
+                <p><span>Dimensión interior · L</span><strong>{punchingShearResult.criticalSectionLengthM.toFixed(3)} m</strong></p>
+                <p><span>Área interior al perímetro</span><strong>{punchingShearResult.criticalSectionAreaM2.toFixed(3)} m²</strong></p>
+                <p><span>Área exterior cargada</span><strong>{punchingShearResult.exteriorTributaryAreaM2.toFixed(3)} m²</strong></p>
+                <p><span>Demanda Vᵤ de punzonamiento</span><strong>{punchingShearResult.shearDemandKn.toFixed(2)} kN</strong></p>
+              </div>
+              <p className="result-limit">El rectángulo punteado del plano representa el perímetro crítico declarado. El motor integra la presión última uniforme sobre el área exterior. Este resultado no calcula resistencia de punzonamiento, factores de reducción ni cumplimiento NEC.</p>
+            </section>
+          )}
+          {flexureResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Flexión · demanda por equilibrio</p>
+              <h2>Momentos en la cara de la columna</h2>
+              <div className="result-grid">
+                <p><span>Presión última uniforme</span><strong>{flexureResult.factoredContactPressureKpa.toFixed(2)} kPa</strong></p>
+                <p><span>Voladizo en dirección B</span><strong>{flexureResult.widthDirection.cantileverProjectionM.toFixed(3)} m</strong></p>
+                <p><span>Franja transversal B</span><strong>{flexureResult.widthDirection.stripWidthM.toFixed(3)} m</strong></p>
+                <p><span>Momento Mᵤ · dirección B</span><strong>{flexureResult.widthDirection.momentDemandKnM.toFixed(2)} kN·m</strong></p>
+                <p><span>Voladizo en dirección L</span><strong>{flexureResult.lengthDirection.cantileverProjectionM.toFixed(3)} m</strong></p>
+                <p><span>Franja transversal L</span><strong>{flexureResult.lengthDirection.stripWidthM.toFixed(3)} m</strong></p>
+                <p><span>Momento Mᵤ · dirección L</span><strong>{flexureResult.lengthDirection.momentDemandKnM.toFixed(2)} kN·m</strong></p>
+                <p><span>Dirección gobernante</span><strong>{flexureResult.governingDirection === 'equal' ? 'Iguales' : flexureResult.governingDirection === 'width' ? 'Ancho B' : 'Largo L'}</strong></p>
+              </div>
+              <p className="result-limit">Cada proyección se modela como un voladizo bajo presión última uniforme y se evalúa en la cara de la columna. El diagrama compara la demanda de momentos. No dimensiona acero ni calcula resistencia o cumplimiento NEC.</p>
             </section>
           )}
           <p className="status" role="status">{status}</p>
