@@ -48,6 +48,8 @@ const labels: Record<keyof FootingInputs, string> = {
   concreteCoverM: 'El recubrimiento inferior',
   barDiameterM: 'El diámetro de barra considerado',
   punchingCriticalSectionOffsetM: 'La distancia al perímetro crítico de punzonamiento',
+  barsParallelToWidthMaxSpacingM: 'La separación máxima de barras paralelas a B',
+  barsParallelToLengthMaxSpacingM: 'La separación máxima de barras paralelas a L',
 }
 
 export function validateOneWayShearInputs(inputs: FootingInputs): ValidationIssue[] {

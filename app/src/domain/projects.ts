@@ -21,6 +21,8 @@ export type FootingInputs = {
   concreteCoverM: number
   barDiameterM: number
   punchingCriticalSectionOffsetM: number
+  barsParallelToWidthMaxSpacingM: number
+  barsParallelToLengthMaxSpacingM: number
 }
 
 export const DEFAULT_FOOTING_THICKNESS_M = 0.45
@@ -69,6 +71,8 @@ export function createNewProject(): ProjectDocument {
       concreteCoverM: 0.075,
       barDiameterM: 0.016,
       punchingCriticalSectionOffsetM: 0,
+      barsParallelToWidthMaxSpacingM: 0,
+      barsParallelToLengthMaxSpacingM: 0,
     },
     warnings: [
       'El contacto de servicio y la demanda de cortante son módulos internos; la resistencia estructural normativa todavía no está implementada.',
@@ -115,6 +119,8 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
       concreteCoverM,
       barDiameterM,
       punchingCriticalSectionOffsetM,
+      barsParallelToWidthMaxSpacingM: Number.isFinite(legacyInputs.barsParallelToWidthMaxSpacingM) && legacyInputs.barsParallelToWidthMaxSpacingM! >= 0 ? legacyInputs.barsParallelToWidthMaxSpacingM! : 0,
+      barsParallelToLengthMaxSpacingM: Number.isFinite(legacyInputs.barsParallelToLengthMaxSpacingM) && legacyInputs.barsParallelToLengthMaxSpacingM! >= 0 ? legacyInputs.barsParallelToLengthMaxSpacingM! : 0,
     },
   }
 }

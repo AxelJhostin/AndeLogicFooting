@@ -11,6 +11,7 @@ import { calculateServiceContact, type ServiceContactResult } from './domain/foo
 import { calculateOneWayShearDemand, type OneWayShearDemandResult } from './domain/footing/one-way-shear-demand'
 import { calculatePunchingShearDemand, type PunchingShearDemandResult } from './domain/footing/punching-shear-demand'
 import { calculateFlexureDemand, type FlexureDemandResult } from './domain/footing/flexure-demand'
+import { calculateReinforcementLayout as buildReinforcementLayout, type ReinforcementLayoutResult } from './domain/footing/reinforcement-layout'
 import { validateFootingInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
 import { FootingPlanDiagram } from './components/FootingPlanDiagram'
 import { FootingElevationDiagram } from './components/FootingElevationDiagram'
@@ -37,6 +38,8 @@ const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
   { key: 'concreteCoverM', label: 'Recubrimiento inferior', unit: 'm' },
   { key: 'barDiameterM', label: 'Diámetro de barra considerado', unit: 'm' },
   { key: 'punchingCriticalSectionOffsetM', label: 'Distancia al perímetro crítico de punzonamiento', unit: 'm' },
+  { key: 'barsParallelToWidthMaxSpacingM', label: 'Separación máxima: barras paralelas a B', unit: 'm' },
+  { key: 'barsParallelToLengthMaxSpacingM', label: 'Separación máxima: barras paralelas a L', unit: 'm' },
 ]
 
 function App() {
@@ -47,6 +50,7 @@ function App() {
   const [oneWayShearResult, setOneWayShearResult] = useState<OneWayShearDemandResult | null>(null)
   const [punchingShearResult, setPunchingShearResult] = useState<PunchingShearDemandResult | null>(null)
   const [flexureResult, setFlexureResult] = useState<FlexureDemandResult | null>(null)
+  const [reinforcementLayout, setReinforcementLayout] = useState<ReinforcementLayoutResult | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -72,6 +76,7 @@ function App() {
     setOneWayShearResult(null)
     setPunchingShearResult(null)
     setFlexureResult(null)
+    setReinforcementLayout(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
@@ -83,6 +88,7 @@ function App() {
     setOneWayShearResult(null)
     setPunchingShearResult(null)
     setFlexureResult(null)
+    setReinforcementLayout(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, bearingCapacityBasis: basis },
@@ -105,6 +111,7 @@ function App() {
     setOneWayShearResult(null)
     setPunchingShearResult(null)
     setFlexureResult(null)
+    setReinforcementLayout(null)
     setStatus('Proyecto abierto desde la biblioteca local.')
   }
 
@@ -222,6 +229,25 @@ function App() {
     setStatus('Demanda de flexión calculada en ambas direcciones. El diseño de acero y la resistencia NEC continúan pendientes.')
   }
 
+  const calculateReinforcementLayout = () => {
+    const inputs = project.inputSnapshot
+    try {
+      const result = buildReinforcementLayout({
+        footingWidthM: inputs.footingWidthM,
+        footingLengthM: inputs.footingLengthM,
+        concreteCoverM: inputs.concreteCoverM,
+        barDiameterM: inputs.barDiameterM,
+        barsParallelToWidthMaxSpacingM: inputs.barsParallelToWidthMaxSpacingM,
+        barsParallelToLengthMaxSpacingM: inputs.barsParallelToLengthMaxSpacingM,
+      })
+      setReinforcementLayout(result)
+      setStatus('Plano geométrico de barras calculado. La separación es declarada y no equivale a un diseño de acero.')
+    } catch (error) {
+      setReinforcementLayout(null)
+      setStatus(error instanceof Error ? error.message : 'No fue posible calcular el plano de barras.')
+    }
+  }
+
   const printExperimentalReport = () => {
     window.print()
   }
@@ -282,6 +308,7 @@ function App() {
       setOneWayShearResult(null)
       setPunchingShearResult(null)
       setFlexureResult(null)
+      setReinforcementLayout(null)
               setStatus('Proyecto nuevo: guárdalo cuando quieras conservarlo.')
             }}>
               + Nuevo
@@ -410,6 +437,9 @@ function App() {
             <button type="button" className="primary" onClick={calculateFlexure}>
               Calcular demanda de flexión
             </button>
+            <button type="button" className="secondary" onClick={calculateReinforcementLayout}>
+              Ver distribución de barras
+            </button>
             <button type="button" className="secondary" onClick={reviewScope}>
               Revisar alcance
             </button>
@@ -422,7 +452,7 @@ function App() {
             <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
               Abrir archivo
             </button>
-            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult) && (
+            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout) && (
               <button type="button" className="secondary" onClick={printExperimentalReport}>
                 Imprimir informe
               </button>
@@ -507,6 +537,19 @@ function App() {
                 <p><span>Dirección gobernante</span><strong>{flexureResult.governingDirection === 'equal' ? 'Iguales' : flexureResult.governingDirection === 'width' ? 'Ancho B' : 'Largo L'}</strong></p>
               </div>
               <p className="result-limit">Cada proyección se modela como un voladizo bajo presión última uniforme y se evalúa en la cara de la columna. El diagrama compara la demanda de momentos. No dimensiona acero ni calcula resistencia o cumplimiento NEC.</p>
+            </section>
+          )}
+          {reinforcementLayout && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Refuerzo inferior · distribución declarada</p>
+              <h2>Plano geométrico de barras</h2>
+              <div className="result-grid">
+                <p><span>Barras paralelas a B</span><strong>{reinforcementLayout.barsParallelToWidth.count} barras</strong></p>
+                <p><span>Separación real paralelas a B</span><strong>{reinforcementLayout.barsParallelToWidth.actualSpacingM.toFixed(3)} m</strong></p>
+                <p><span>Barras paralelas a L</span><strong>{reinforcementLayout.barsParallelToLength.count} barras</strong></p>
+                <p><span>Separación real paralelas a L</span><strong>{reinforcementLayout.barsParallelToLength.actualSpacingM.toFixed(3)} m</strong></p>
+              </div>
+              <p className="result-limit">Las cantidades se distribuyen dentro del recubrimiento declarado usando la separación máxima ingresada. No verifica área de acero, cuantía, separación normativa, anclaje ni resistencia.</p>
             </section>
           )}
           <p className="status" role="status">{status}</p>
