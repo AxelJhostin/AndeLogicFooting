@@ -12,6 +12,7 @@ import { calculateOneWayShearDemand, type OneWayShearDemandResult } from './doma
 import { calculatePunchingShearDemand, type PunchingShearDemandResult } from './domain/footing/punching-shear-demand'
 import { calculateFlexureDemand, type FlexureDemandResult } from './domain/footing/flexure-demand'
 import { calculateReinforcementLayout as buildReinforcementLayout, type ReinforcementLayoutResult } from './domain/footing/reinforcement-layout'
+import { calculateGuideMinimumReinforcement, type MinimumReinforcementResult } from './domain/footing/minimum-reinforcement'
 import { validateFootingInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
 import { FootingPlanDiagram } from './components/FootingPlanDiagram'
 import { FootingElevationDiagram } from './components/FootingElevationDiagram'
@@ -51,6 +52,7 @@ function App() {
   const [punchingShearResult, setPunchingShearResult] = useState<PunchingShearDemandResult | null>(null)
   const [flexureResult, setFlexureResult] = useState<FlexureDemandResult | null>(null)
   const [reinforcementLayout, setReinforcementLayout] = useState<ReinforcementLayoutResult | null>(null)
+  const [minimumReinforcementResult, setMinimumReinforcementResult] = useState<MinimumReinforcementResult | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -77,6 +79,7 @@ function App() {
     setPunchingShearResult(null)
     setFlexureResult(null)
     setReinforcementLayout(null)
+    setMinimumReinforcementResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
@@ -89,6 +92,7 @@ function App() {
     setPunchingShearResult(null)
     setFlexureResult(null)
     setReinforcementLayout(null)
+    setMinimumReinforcementResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, bearingCapacityBasis: basis },
@@ -112,6 +116,7 @@ function App() {
     setPunchingShearResult(null)
     setFlexureResult(null)
     setReinforcementLayout(null)
+    setMinimumReinforcementResult(null)
     setStatus('Proyecto abierto desde la biblioteca local.')
   }
 
@@ -248,6 +253,23 @@ function App() {
     }
   }
 
+  const calculateGuideMinimumSteel = () => {
+    const inputs = project.inputSnapshot
+    try {
+      const result = calculateGuideMinimumReinforcement({
+        footingThicknessM: inputs.footingThicknessM,
+        barDiameterM: inputs.barDiameterM,
+        barsParallelToWidthSpacingM: inputs.barsParallelToWidthMaxSpacingM,
+        barsParallelToLengthSpacingM: inputs.barsParallelToLengthMaxSpacingM,
+      })
+      setMinimumReinforcementResult(result)
+      setStatus('Referencia de acero mínimo de la guía calculada. Aún no sustituye el diseño de acero requerido por flexión.')
+    } catch (error) {
+      setMinimumReinforcementResult(null)
+      setStatus(error instanceof Error ? error.message : 'No fue posible revisar el acero mínimo de guía.')
+    }
+  }
+
   const printExperimentalReport = () => {
     window.print()
   }
@@ -309,6 +331,7 @@ function App() {
       setPunchingShearResult(null)
       setFlexureResult(null)
       setReinforcementLayout(null)
+      setMinimumReinforcementResult(null)
               setStatus('Proyecto nuevo: guárdalo cuando quieras conservarlo.')
             }}>
               + Nuevo
@@ -440,6 +463,9 @@ function App() {
             <button type="button" className="secondary" onClick={calculateReinforcementLayout}>
               Ver distribución de barras
             </button>
+            <button type="button" className="secondary" onClick={calculateGuideMinimumSteel}>
+              Revisar acero mínimo de guía
+            </button>
             <button type="button" className="secondary" onClick={reviewScope}>
               Revisar alcance
             </button>
@@ -452,7 +478,7 @@ function App() {
             <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
               Abrir archivo
             </button>
-            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout) && (
+            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult) && (
               <button type="button" className="secondary" onClick={printExperimentalReport}>
                 Imprimir informe
               </button>
@@ -550,6 +576,20 @@ function App() {
                 <p><span>Separación real paralelas a L</span><strong>{reinforcementLayout.barsParallelToLength.actualSpacingM.toFixed(3)} m</strong></p>
               </div>
               <p className="result-limit">Las cantidades se distribuyen dentro del recubrimiento declarado usando la separación máxima ingresada. No verifica área de acero, cuantía, separación normativa, anclaje ni resistencia.</p>
+            </section>
+          )}
+          {minimumReinforcementResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Acero mínimo · referencia de guía NEC 2015</p>
+              <h2>Comparación por metro de ancho útil</h2>
+              <div className="result-grid">
+                <p><span>Acero mínimo de referencia</span><strong>{minimumReinforcementResult.minimumAreaPerMeterCm2.toFixed(2)} cm²/m</strong></p>
+                <p><span>Aportado · barras paralelas a B</span><strong>{(minimumReinforcementResult.barsParallelToWidth.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m</strong></p>
+                <p><span>Estado · paralelas a B</span><strong>{minimumReinforcementResult.barsParallelToWidth.status === 'meets-guide-minimum' ? 'Alcanza el mínimo de guía' : 'No alcanza el mínimo de guía'}</strong></p>
+                <p><span>Aportado · barras paralelas a L</span><strong>{(minimumReinforcementResult.barsParallelToLength.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m</strong></p>
+                <p><span>Estado · paralelas a L</span><strong>{minimumReinforcementResult.barsParallelToLength.status === 'meets-guide-minimum' ? 'Alcanza el mínimo de guía' : 'No alcanza el mínimo de guía'}</strong></p>
+              </div>
+              <p className="result-limit">Referencia obtenida del ejemplo de zapatas de la Guía práctica de hormigón armado conforme a NEC 2015, sección 1.10.5. Compara únicamente el acero declarado por metro con el mínimo mostrado por la guía. No calcula acero requerido por momento, resistencia, anclaje, separaciones normativas ni cumplimiento NEC completo.</p>
             </section>
           )}
           <p className="status" role="status">{status}</p>

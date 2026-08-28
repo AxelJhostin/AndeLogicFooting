@@ -14,6 +14,7 @@ No se implementará una fila marcada como pendiente. Las referencias se completa
 | NEC-FTG-002 | NEC-SE-HM + referencia complementaria | Cortante unidireccional | `NEC-SRC-003`; fuente complementaria autorizada pendiente | NEC-SE-HM, capítulo 5 como marco; cláusula aplicable a zapatas pendiente | `standards/nec` | `NEC-FTG-002` | Bloqueada por referencia complementaria |
 | NEC-FTG-003 | NEC-SE-HM + referencia complementaria | Cortante por punzonamiento | `NEC-SRC-003`; fuente complementaria autorizada pendiente | NEC-SE-HM lista punzonamiento en otros elementos; cláusula aplicable a zapatas pendiente | `standards/nec` | `NEC-FTG-003` | Bloqueada por referencia complementaria |
 | NEC-FTG-004 | NEC-SE-HM + referencia complementaria | Flexión y acero inferior | `NEC-SRC-003`; fuente complementaria autorizada pendiente | NEC-SE-HM, capítulo 4 como marco; criterio de zapatas pendiente | `standards/nec` | `NEC-FTG-004` | Bloqueada por referencia complementaria |
+| NEC-FTG-005 | Guía práctica NEC 2015 | Acero mínimo de referencia por metro | `NEC-SRC-004` | Sección 1.10.5, ejemplo de zapata | `domain/footing/minimum-reinforcement` | `NEC-FTG-008` | Implementada como referencia de guía; no es verificación NEC completa |
 
 ## Criterio para completar una fila
 
@@ -34,6 +35,7 @@ Una referencia ambigua bloquea la implementación, no se resuelve mediante una a
 | NEC-SRC-001 | Portal oficial de la Norma Ecuatoriana de la Construcción | El portal del Ministerio indica que la NEC es obligatoria y lista NEC-SE-GC y NEC-SE-HM como documentos descargables. Consulta: 2026-08-27. | Fuente de procedencia y seguimiento. | Registrada |
 | NEC-SRC-002 | NEC-SE-GC — Geotecnia y Cimentaciones | PDF oficial alojado por el Ministerio; portada editorial de diciembre de 2014. El índice identifica capítulos 6 “Cimentaciones” y 7 “Zapatas aisladas, combinadas y losas”. | Delimitar alcance geotécnico y registrar referencias exactas durante el mapeo. | Registrada; falta hash local y revisión técnica |
 | NEC-SRC-003 | NEC-SE-HM — Estructuras de Hormigón Armado | PDF oficial alojado por el Ministerio; portada editorial de diciembre de 2014. El índice incluye capítulos 4 (flexión), 5 (cortante) y 6.3 (cimentaciones). | Fijar el marco NEC y determinar las referencias públicas complementarias necesarias. | Registrada; falta la fuente exacta para la resistencia de zapatas |
+| NEC-SRC-004 | Guía práctica para el diseño de estructuras de hormigón armado de conformidad con NEC 2015 | Copia local con huella en `11-local-nec-reference-manifest.md`; sección 1.10.5 incluye un ejemplo de diseño de zapata y de acero mínimo por metro. | Referencia pública auxiliar para comparar acero mínimo declarado. | Registrada; no habilita un resultado de cumplimiento NEC completo |
 
 En la fase de implementación, cada archivo fuente se conservará con URL, fecha de descarga, edición declarada y huella criptográfica. Eso impide que un enlace actualizado silenciosamente cambie el significado de una versión ya publicada.
 

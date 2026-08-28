@@ -40,6 +40,6 @@ export const moduleValidationCatalog: ModuleValidationRecord[] = [
     state: 'internal-testing',
     completedExternalBenchmarks: 0,
     requiredExternalBenchmarks: 3,
-    note: 'Demanda de flexión implementada en ambos ejes; acero y resistencia normativa pendientes.',
+    note: 'Demanda de flexión y referencia de acero mínimo de guía implementadas; acero requerido y resistencia normativa pendientes.',
   },
 ]

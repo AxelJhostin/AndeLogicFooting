@@ -20,7 +20,7 @@ Cada ficha cerrada se convierte en:
 | AXC-FTG-002 | Cortante unidireccional | Demanda física documentada; resistencia pendiente | Demanda implementada en ambos ejes |
 | AXC-FTG-003 | Punzonamiento | Demanda física con perímetro declarado; resistencia pendiente | Demanda y gráfica implementadas |
 | AXC-FTG-004 | Flexión | Demanda física en la cara de columna; resistencia pendiente | Demanda y diagrama implementados |
-| AXC-FTG-005 | Refuerzo y desarrollo | Por redactar | No implementado |
+| AXC-FTG-005 | Refuerzo y desarrollo | Referencia pública parcial localizada; diseño completo pendiente | Acero mínimo de guía implementado; acero requerido y desarrollo pendientes |
 
 ## Plantilla obligatoria
 
@@ -128,3 +128,9 @@ Caso interno: `Pu = 900 kN`, zapata `2.00 × 3.00 m` y columna `0.40 × 0.60 m`.
 ## Regla de procedencia
 
 Las fichas pueden citar el número de una norma consultada por Axel para trazabilidad, pero el repositorio solo conserva su criterio técnico original, las ecuaciones autorizadas para el software y los casos numéricos revisados. El material protegido permanece fuera del repositorio y no se procesa automáticamente.
+
+## Quinta ficha: AXC-FTG-005 — acero mínimo de referencia
+
+La aplicación compara el acero inferior declarado por metro en cada dirección con el mínimo ilustrado en el ejemplo de zapatas de la *Guía práctica para el diseño de estructuras de hormigón armado de conformidad con NEC 2015*, sección 1.10.5. La guía muestra el valor `Amin = 0.0018 × b × h`; el motor lo aplica con una franja de un metro y expresa ambos resultados en cm²/m.
+
+La salida se denomina deliberadamente **referencia de guía**. No constituye una verificación NEC completa: no dimensiona el acero requerido por flexión, no verifica resistencia, cuantía máxima, separación normativa, longitud de desarrollo ni anclaje. Cada una de esas comprobaciones requiere su propia ficha, fuente exacta, límites de aplicación y casos independientes.
