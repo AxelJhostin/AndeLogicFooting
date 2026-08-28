@@ -4,6 +4,8 @@ import type { StandardProfileId } from '../standards/profiles'
 
 export type StandardProfile = StandardProfileId
 
+export type FootingType = 'isolated' | 'strip'
+
 export type FootingInputs = {
   axialLoadKn: number
   factoredAxialLoadKn: number
@@ -29,6 +31,27 @@ export type FootingInputs = {
   barsParallelToLengthMaxSpacingM: number
 }
 
+export type StripFootingInputs = {
+  serviceLineLoadKnM: number
+  factoredLineLoadKnM: number
+  allowableBearingKpa: number
+  bearingCapacityBasis: 'gross' | 'net'
+  removedOverburdenKpa: number
+  concreteUnitWeightKnM3: number
+  soilCoverDepthM: number
+  soilUnitWeightKnM3: number
+  wallThicknessM: number
+  footingWidthM: number
+  footingThicknessM: number
+  concreteCoverM: number
+  barDiameterM: number
+  concreteStrengthMpa: number
+  steelYieldStrengthMpa: number
+  transverseBarSpacingM: number
+  longitudinalBarSpacingM: number
+  developmentAvailableLengthM: number
+}
+
 export const DEFAULT_FOOTING_THICKNESS_M = 0.45
 
 export type ProjectDocument = {
@@ -40,8 +63,31 @@ export type ProjectDocument = {
   productVersion: string
   engineVersion: string
   standardProfile: StandardProfile
+  footingType: FootingType
   inputSnapshot: FootingInputs
+  stripInputSnapshot: StripFootingInputs
   warnings: string[]
+}
+
+export const DEFAULT_STRIP_FOOTING_INPUTS: StripFootingInputs = {
+  serviceLineLoadKnM: 180,
+  factoredLineLoadKnM: 270,
+  allowableBearingKpa: 180,
+  bearingCapacityBasis: 'gross',
+  removedOverburdenKpa: 0,
+  concreteUnitWeightKnM3: 24,
+  soilCoverDepthM: 0,
+  soilUnitWeightKnM3: 0,
+  wallThicknessM: 0.2,
+  footingWidthM: 1.2,
+  footingThicknessM: 0.35,
+  concreteCoverM: 0.075,
+  barDiameterM: 0.012,
+  concreteStrengthMpa: 23.54,
+  steelYieldStrengthMpa: 412.08,
+  transverseBarSpacingM: 0.15,
+  longitudinalBarSpacingM: 0.2,
+  developmentAvailableLengthM: 0.42,
 }
 
 const now = () => new Date().toISOString()
@@ -58,6 +104,7 @@ export function createNewProject(): ProjectDocument {
     productVersion: '0.1.0-prototype',
     engineVersion: 'not-implemented',
     standardProfile: 'NEC-2015-GUIDE-TRACEABLE',
+    footingType: 'isolated',
     inputSnapshot: {
       axialLoadKn: 0,
       factoredAxialLoadKn: 0,
@@ -82,6 +129,7 @@ export function createNewProject(): ProjectDocument {
       barsParallelToWidthMaxSpacingM: 0,
       barsParallelToLengthMaxSpacingM: 0,
     },
+    stripInputSnapshot: { ...DEFAULT_STRIP_FOOTING_INPUTS },
     warnings: [
       'El contacto de servicio y la demanda de cortante son módulos internos; la resistencia estructural normativa todavía no está implementada.',
     ],
@@ -108,6 +156,8 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
     ? legacyInputs.punchingCriticalSectionOffsetM!
     : 0
   const legacyProfile: string = project.standardProfile
+  const legacyProject = project as ProjectDocument & { footingType?: FootingType; stripInputSnapshot?: Partial<StripFootingInputs> }
+  const stripInputs = legacyProject.stripInputSnapshot ?? {}
   const standardProfile = legacyProfile === 'NEC-2015-GUIDE-TRACEABLE' || legacyProfile === 'NEC-PUBLIC-2014-PENDING' || legacyProfile === 'NEC-PENDING'
     ? 'NEC-2015-GUIDE-TRACEABLE'
     : 'ARCHIVED-UNSUPPORTED'
@@ -115,6 +165,7 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
   return {
     ...project,
     standardProfile,
+    footingType: legacyProject.footingType === 'strip' ? 'strip' : 'isolated',
     inputSnapshot: {
       ...project.inputSnapshot,
       footingThicknessM,
@@ -133,6 +184,11 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
       punchingCriticalSectionOffsetM,
       barsParallelToWidthMaxSpacingM: Number.isFinite(legacyInputs.barsParallelToWidthMaxSpacingM) && legacyInputs.barsParallelToWidthMaxSpacingM! >= 0 ? legacyInputs.barsParallelToWidthMaxSpacingM! : 0,
       barsParallelToLengthMaxSpacingM: Number.isFinite(legacyInputs.barsParallelToLengthMaxSpacingM) && legacyInputs.barsParallelToLengthMaxSpacingM! >= 0 ? legacyInputs.barsParallelToLengthMaxSpacingM! : 0,
+    },
+    stripInputSnapshot: {
+      ...DEFAULT_STRIP_FOOTING_INPUTS,
+      ...stripInputs,
+      bearingCapacityBasis: stripInputs.bearingCapacityBasis === 'net' ? 'net' : 'gross',
     },
   }
 }
