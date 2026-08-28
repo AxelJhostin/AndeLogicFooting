@@ -19,16 +19,15 @@ import { checkGuideOneWayShear, type GuideOneWayShearCheckResult } from './domai
 import { checkGuidePunchingShear, type GuidePunchingShearResult } from './domain/footing/punching-shear-guide-check'
 import { checkGuideDevelopmentLength, type GuideDevelopmentLengthResult } from './domain/footing/development-length-guide-check'
 import { validateFootingInputs, validateGuideOneWayShearInputs, validateGuidePunchingShearInputs, validateGuideRequiredReinforcementInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
-import { FootingPlanDiagram } from './components/FootingPlanDiagram'
-import { FootingElevationDiagram } from './components/FootingElevationDiagram'
-import { FootingMomentDiagram } from './components/FootingMomentDiagram'
 import { FootingResultDashboard } from './components/FootingResultDashboard'
 import { FootingAnalysisDiagram } from './components/FootingAnalysisDiagram'
+import { FootingTechnicalPlate } from './components/FootingTechnicalPlate'
 import { browserProjectRepository } from './persistence/browser-project-repository'
 import { moduleValidationCatalog } from './validation/benchmarks/catalog'
 import './App.css'
 
 type NumberField = Exclude<keyof FootingInputs, 'bearingCapacityBasis'>
+type CalculationView = 'section' | 'plan' | 'results' | 'calculation' | 'theory'
 
 const inputFields: Array<{ key: NumberField; label: string; unit: string }> = [
   { key: 'axialLoadKn', label: 'Carga de servicio centrada', unit: 'kN' },
@@ -77,6 +76,13 @@ const inputHelp: Record<NumberField, string> = {
   barsParallelToWidthMaxSpacingM: 'Máxima separación deseada entre las barras que van en dirección B.',
   barsParallelToLengthMaxSpacingM: 'Máxima separación deseada entre las barras que van en dirección L.',
 }
+
+const inputGroups: Array<{ title: string; description: string; fields: NumberField[] }> = [
+  { title: 'Cargas', description: 'Datos del análisis estructural.', fields: ['axialLoadKn', 'factoredAxialLoadKn'] },
+  { title: 'Suelo y contacto', description: 'Datos declarados por el informe geotécnico.', fields: ['allowableBearingKpa', 'removedOverburdenKpa', 'soilCoverDepthM', 'soilUnitWeightKnM3', 'concreteUnitWeightKnM3'] },
+  { title: 'Geometría', description: 'Dimensiones propuestas de columna y zapata.', fields: ['columnWidthM', 'columnLengthM', 'footingWidthM', 'footingLengthM', 'footingThicknessM', 'punchingCriticalSectionOffsetM'] },
+  { title: 'Materiales y armado', description: 'Propiedades y detalle preliminar de barras.', fields: ['concreteCoverM', 'barDiameterM', 'concreteStrengthMpa', 'steelYieldStrengthMpa', 'barsParallelToWidthMaxSpacingM', 'barsParallelToLengthMaxSpacingM', 'developmentAvailableLengthWidthM', 'developmentAvailableLengthLengthM'] },
+]
 
 function inputTextFromProject(inputs: FootingInputs): Record<NumberField, string> {
   return Object.fromEntries(inputFields.map(({ key }) => [
@@ -137,6 +143,7 @@ function App() {
   const [punchingShearGuideResult, setPunchingShearGuideResult] = useState<GuidePunchingShearResult | null>(null)
   const [developmentLengthResult, setDevelopmentLengthResult] = useState<GuideDevelopmentLengthResult | null>(null)
   const [inputFormatIssue, setInputFormatIssue] = useState<string | null>(null)
+  const [activeView, setActiveView] = useState<CalculationView>('section')
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -673,7 +680,7 @@ function App() {
           )}
         </aside>
 
-        <section className="editor">
+        <section className={`editor view-${activeView}`}>
           <div className="editor-heading">
             <div>
               <p className="eyebrow">Documento de proyecto</p>
@@ -686,6 +693,14 @@ function App() {
             </div>
             <span className="profile">{project.standardProfile}</span>
           </div>
+
+          <nav className="workspace-tabs" aria-label="Vistas de cálculo">
+            <button type="button" className={activeView === 'section' ? 'active' : ''} onClick={() => setActiveView('section')}>Sección</button>
+            <button type="button" className={activeView === 'plan' ? 'active' : ''} onClick={() => setActiveView('plan')}>Planta</button>
+            <button type="button" className={activeView === 'results' ? 'active' : ''} onClick={() => setActiveView('results')}>Resultados</button>
+            <button type="button" className={activeView === 'calculation' ? 'active' : ''} onClick={() => setActiveView('calculation')}>Cálculo completo</button>
+            <button type="button" className={activeView === 'theory' ? 'active' : ''} onClick={() => setActiveView('theory')}>Teoría</button>
+          </nav>
 
           <div className="notice">
             <strong>Alcance actual:</strong> zapata aislada rectangular y columna centrada. Calcula contacto de servicio y demandas de cortante, punzonamiento y flexión; la resistencia normativa sigue pendiente de revisión.
@@ -715,21 +730,16 @@ function App() {
             </div>
           </section>
 
-          <div className="technical-drawings">
-            <FootingPlanDiagram
-              footingWidthM={project.inputSnapshot.footingWidthM}
-              footingLengthM={project.inputSnapshot.footingLengthM}
-              columnWidthM={project.inputSnapshot.columnWidthM}
-              columnLengthM={project.inputSnapshot.columnLengthM}
-              effectiveDepthM={project.inputSnapshot.footingThicknessM - project.inputSnapshot.concreteCoverM - project.inputSnapshot.barDiameterM / 2}
-              punchingCriticalSectionOffsetM={project.inputSnapshot.punchingCriticalSectionOffsetM}
+          <div className="studio-grid">
+          <div className="technical-drawings" id="view-section">
+            <FootingTechnicalPlate
+              view={activeView === 'plan' ? 'plan' : 'section'}
+              inputs={project.inputSnapshot}
+              contact={serviceContactResult}
+              oneWay={oneWayShearResult}
+              punching={punchingShearGuideResult}
+              reinforcement={reinforcementLayout}
             />
-            <FootingElevationDiagram
-              footingWidthM={project.inputSnapshot.footingWidthM}
-              columnWidthM={project.inputSnapshot.columnWidthM}
-              footingThicknessM={project.inputSnapshot.footingThicknessM}
-            />
-            {flexureResult && <FootingMomentDiagram result={flexureResult} />}
           </div>
 
           <section className="input-stage" aria-labelledby="input-stage-title">
@@ -745,22 +755,24 @@ function App() {
             </div>
             {inputFormatIssue && <p className="input-format-issue" role="status">{inputFormatIssue}</p>}
 
-          <div className="field-grid">
-            {inputFields.map(({ key, label, unit }) => (
-              <label key={key}>
-                <span>{label}</span>
-                <div className="number-input">
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    pattern="[0-9]*[.,]?[0-9]*"
-                    value={inputText[key]}
-                    onChange={(event) => updateInput(key, event.target.value)}
-                  />
-                  <small>{unit}</small>
+          <div className="control-groups">
+            {inputGroups.map((group) => (
+              <fieldset className="control-group" key={group.title}>
+                <legend>{group.title}</legend>
+                <p>{group.description}</p>
+                <div className="field-grid">
+                  {inputFields.filter(({ key }) => group.fields.includes(key)).map(({ key, label, unit }) => (
+                    <label key={key}>
+                      <span>{label}</span>
+                      <div className="number-input">
+                        <input type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" value={inputText[key]} onChange={(event) => updateInput(key, event.target.value)} />
+                        <small>{unit}</small>
+                      </div>
+                      <small className="input-help">{inputHelp[key]}</small>
+                    </label>
+                  ))}
                 </div>
-                <small className="input-help">{inputHelp[key]}</small>
-              </label>
+              </fieldset>
             ))}
           </div>
 
@@ -793,7 +805,7 @@ function App() {
               onChange={(event) => void importProject(event.target.files?.[0])}
             />
           </section>
-          <section className="results-stage" aria-labelledby="results-stage-title">
+          <section className="results-stage" id="view-results" aria-labelledby="results-stage-title">
             <div className="stage-heading"><div><p className="eyebrow">Paso 3</p><h2 id="results-stage-title">Entiende los resultados</h2></div><p>Revisa primero el tablero; luego abre las tarjetas para ver el detalle y los límites.</p></div>
             <FootingResultDashboard contact={serviceContactResult} oneWay={oneWayShearGuideResult} punching={punchingShearGuideResult} reinforcement={reinforcementComparisonResult} />
             {(serviceContactResult || oneWayShearResult || punchingShearGuideResult || flexureResult || reinforcementLayout) && (
@@ -810,6 +822,8 @@ function App() {
               />
             )}
           </section>
+          </div>
+          <section className="calculation-report" id="view-calculation" aria-label="Detalle de cálculo">
           {serviceContactResult && (
             <section className={serviceContactResult.status === 'pass' ? 'result-card pass' : 'result-card fail'} aria-live="polite">
               <p className="eyebrow">Contacto de servicio · sin diseño estructural</p>
@@ -993,6 +1007,14 @@ function App() {
               <p className="result-limit">Referencia limitada al caso de la Guía práctica conforme a NEC 2015, sección 1.10.6: barra sin recubrimiento especial, otros casos y hormigón de peso normal. El largo disponible es un dato declarado desde el detalle; esta tarjeta no evalúa ganchos, patillas, empalmes, barras superiores ni otras condiciones de anclaje.</p>
             </section>
           )}
+          </section>
+          <section className="theory-preview" id="view-theory">
+            <p className="eyebrow">Teoría y alcance</p>
+            <h2>Cómo interpreta esta herramienta una zapata aislada</h2>
+            <p>La ruta de carga es columna → zapata → suelo. La aplicación separa el contacto de servicio de las demandas estructurales y muestra únicamente el caso de carga centrada con presión uniforme.</p>
+            <div><span>1. Contacto</span><span>2. Cortante</span><span>3. Flexión</span><span>4. Refuerzo</span></div>
+            <p className="result-limit">La página teórica completa se integrará como una ruta independiente. Hasta entonces, cada resultado conserva sus entradas, supuestos y límites visibles.</p>
+          </section>
           <p className="status" role="status">{status}</p>
         </section>
       </section>

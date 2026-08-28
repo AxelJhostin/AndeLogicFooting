@@ -36,6 +36,82 @@ En móvil, los controles se muestran primero como acordeones y las pestañas de 
 
 La geometría se actualiza al cambiar dimensiones válidas, incluso antes de presionar “Analizar”. Los resultados técnicos solo aparecen al ejecutar una revisión válida y se distinguen visualmente de la geometría preliminar.
 
+## Revisión del enfoque gráfico
+
+Las primeras iteraciones no resolvieron la jerarquía de información: mostraban controles, tarjetas, resultados y dibujos al mismo nivel. El resultado se percibe como una página de administración, no como una herramienta de ingeniería. El fondo claro por sí solo tampoco soluciona este problema; el texto verde sobre blanco reduce contraste y no tiene una función técnica clara.
+
+Las referencias aportadas por Axel establecen la dirección correcta: la visualización debe ser una **lámina técnica generada desde el modelo**, con cotas, secciones, líneas críticas, armado y llamadas de resultado. No debe ser una ilustración decorativa ni un conjunto de gráficos abstractos.
+
+### Lámina técnica requerida
+
+La vista principal de resultados debe componerse como un plano de cálculo, con fondo blanco, trazos oscuros y un código visual consistente:
+
+1. **Planta general:** zapata, columna/dado centrado, ejes, cotas B/L y líneas de corte A–A y B–B.
+2. **Detalle de punzonamiento:** columna, perímetro crítico, área interior/exterior rayada y llamadas a `b₀`, demanda y utilización.
+3. **Secciones A–A y B–B:** columna, zapata, espesor `h`, recubrimiento, peralte efectivo `d`, barras inferiores y corte a `d` desde la cara.
+4. **Armado:** planta de barras en ambas direcciones y sección transversal con diámetro, cantidad y separación real, únicamente después de calcularlo.
+5. **Isométrica opcional:** solo para orientación; no sustituye planta ni secciones y no ocupa el área principal.
+
+### Código gráfico
+
+- Negro/azul gris: geometría y cotas.
+- Azul: cargas, ejes y acciones.
+- Magenta o violeta: perímetros y secciones críticas.
+- Verde oscuro: barras calculadas; nunca texto pequeño verde sobre blanco.
+- Ámbar/rojo: advertencias y fallas, acompañadas de texto y símbolo.
+
+El plano debe poder imprimirse en blanco y negro sin perder significado: tipos de línea, tramas y etiquetas acompañan al color.
+
+### Flujo antes de implementar
+
+1. Definir la lámina y cada dato que puede aparecer en ella.
+2. Validar con ejemplos qué módulos activan cada elemento gráfico.
+3. Diseñar un único espacio de edición sencillo, separado de la lámina.
+4. Construir vistas SVG desde componentes independientes y datos del motor, con pruebas de geometría.
+
+Mientras no se complete esta definición, se evita seguir retocando CSS o agregando tarjetas. La interfaz actual es una transición funcional, no la dirección visual definitiva.
+
+## Corrección de arquitectura de información
+
+La prueba de la primera reorganización confirmó que no basta con mover los controles a una columna. Los problemas observados son:
+
+- El panel “Estado real de los módulos” aparece antes de que el usuario haya comenzado el caso; interrumpe la tarea y comunica el estado interno del producto en vez del estado del proyecto.
+- Todos los campos abiertos convierten el panel lateral en un formulario interminable y hacen que el lienzo técnico pierda protagonismo.
+- Los botones actuales representan funciones internas del motor, no pasos comprensibles para la persona que diseña. Al mostrarlos todos, parecen un tablero de administración.
+- La combinación de controles, resultados, biblioteca, validación y teoría en la misma vista obliga a recorrer información que no corresponde a la acción actual.
+
+### Flujo que reemplaza la organización actual
+
+La aplicación se organizará como una secuencia de trabajo, no como un catálogo de módulos:
+
+1. **Definir el caso**
+   - Datos básicos del proyecto y del alcance.
+   - Cargas y suelo.
+   - Geometría.
+   - Materiales y armado preliminar.
+   - Cada bloque se abre uno a la vez; el usuario ve progreso y puede volver a editar.
+2. **Analizar**
+   - Un único botón principal: `Analizar zapata`.
+   - El orquestador ejecuta las revisiones disponibles y presenta claramente las que estén bloqueadas por una entrada faltante.
+   - Las acciones técnicas individuales pasan a “Recalcular detalle” dentro de la vista correspondiente, no permanecen como doce botones visibles.
+3. **Revisar resultados**
+   - Resumen de controles por estado y lámina técnica asociada.
+   - Elegir suelo, cortante, punzonamiento, flexión o armado abre el detalle de esa revisión en vez de apilar tarjetas.
+4. **Documentar**
+   - Guardar, descargar, abrir e imprimir se agrupan en un menú de proyecto, no dentro del flujo de cálculo.
+
+### Ubicación de elementos que hoy están mal situados
+
+- **Estado de módulos:** se mueve a “Acerca de la metodología” o a una pequeña etiqueta de perfil dentro de Teoría. No se muestra como panel principal de trabajo.
+- **Biblioteca local:** se contrae a un selector de proyecto o menú lateral, visible solo al abrir/guardar.
+- **Campos:** se transforman en acordeones o pasos, con un resumen compacto de los valores completados cuando el bloque se cierra.
+- **Botones de cálculo:** desaparece la cuadrícula de botones. El resultado de cada etapa se recalcula desde `Analizar zapata` y, si hace falta, se permite recalcular el detalle desde su propia vista.
+- **Teoría y trazabilidad:** quedan fuera del lienzo de trabajo; son pestañas de consulta, no contenido permanente.
+
+### Decisión de implementación
+
+No se seguirá ajustando la cuadrícula actual. El siguiente cambio de código debe construir un flujo por estados (`Definir`, `Analizar`, `Resultados`, `Documentar`) y reutilizar los componentes del motor dentro de esa estructura. Solo después se vuelve a conectar la lámina técnica como resultado de una revisión.
+
 ### Vista de sección
 
 - Nivel de terreno, columna, zapata, espesor, recubrimiento y barras inferiores.
