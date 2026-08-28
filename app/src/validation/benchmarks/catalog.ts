@@ -24,7 +24,7 @@ export const moduleValidationCatalog: ModuleValidationRecord[] = [
     state: 'internal-testing',
     completedExternalBenchmarks: 0,
     requiredExternalBenchmarks: 3,
-    note: 'Demanda por equilibrio implementada en ambos ejes; resistencia y contraste normativo pendientes.',
+    note: 'Demanda y referencia de resistencia de guía implementadas en ambos ejes; contraste normativo pendiente.',
   },
   {
     id: 'punching-shear',

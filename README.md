@@ -41,6 +41,7 @@ El contacto y la demanda de cortante suponen columna centrada y presión uniform
 - [Persistencia y archivos de proyecto](docs/08-project-persistence.md)
 - [Protocolo de contraste externo](docs/09-external-benchmark-protocol.md)
 - [Fichas de implementación de Axel Code](docs/10-axel-code-implementation-cards.md)
+- [Mapa técnico local de zapatas NEC](docs/12-nec-footing-technical-map.md)
 - [Guía de contribución para IA y colaboradores](AGENTS.md)
 
 ## Principio rector

@@ -162,6 +162,20 @@ export function validateGuideRequiredReinforcementInputs(inputs: FootingInputs):
   return issues
 }
 
+export function validateGuideOneWayShearInputs(inputs: FootingInputs): ValidationIssue[] {
+  const issues = validateOneWayShearInputs(inputs)
+
+  if (!Number.isFinite(inputs.concreteStrengthMpa) || inputs.concreteStrengthMpa <= 0) {
+    issues.push({
+      code: 'MATERIAL_STRENGTH_REQUIRED',
+      field: 'concreteStrengthMpa',
+      message: `${labels.concreteStrengthMpa} debe ser un valor mayor que cero en MPa.`,
+    })
+  }
+
+  return issues
+}
+
 export function validateFootingInputs(inputs: FootingInputs): ValidationIssue[] {
   const issues: ValidationIssue[] = []
 

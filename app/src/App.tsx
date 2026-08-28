@@ -15,7 +15,8 @@ import { calculateReinforcementLayout as buildReinforcementLayout, type Reinforc
 import { calculateGuideMinimumReinforcement, type MinimumReinforcementResult } from './domain/footing/minimum-reinforcement'
 import { calculateGuideRequiredReinforcement, type GuideRequiredReinforcementResult } from './domain/footing/required-reinforcement'
 import { compareGuideReinforcement, type GuideReinforcementComparisonResult } from './domain/footing/reinforcement-comparison'
-import { validateFootingInputs, validateGuideRequiredReinforcementInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
+import { checkGuideOneWayShear, type GuideOneWayShearCheckResult } from './domain/footing/one-way-shear-guide-check'
+import { validateFootingInputs, validateGuideOneWayShearInputs, validateGuideRequiredReinforcementInputs, validateOneWayShearInputs, validatePunchingShearInputs, validateFlexureInputs } from './domain/validation/footing-input'
 import { FootingPlanDiagram } from './components/FootingPlanDiagram'
 import { FootingElevationDiagram } from './components/FootingElevationDiagram'
 import { FootingMomentDiagram } from './components/FootingMomentDiagram'
@@ -59,6 +60,7 @@ function App() {
   const [minimumReinforcementResult, setMinimumReinforcementResult] = useState<MinimumReinforcementResult | null>(null)
   const [requiredReinforcementResult, setRequiredReinforcementResult] = useState<GuideRequiredReinforcementResult | null>(null)
   const [reinforcementComparisonResult, setReinforcementComparisonResult] = useState<GuideReinforcementComparisonResult | null>(null)
+  const [oneWayShearGuideResult, setOneWayShearGuideResult] = useState<GuideOneWayShearCheckResult | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
 
   const refreshProjects = async () => {
@@ -88,6 +90,7 @@ function App() {
     setMinimumReinforcementResult(null)
     setRequiredReinforcementResult(null)
     setReinforcementComparisonResult(null)
+    setOneWayShearGuideResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, [key]: Number(value) || 0 },
@@ -103,6 +106,7 @@ function App() {
     setMinimumReinforcementResult(null)
     setRequiredReinforcementResult(null)
     setReinforcementComparisonResult(null)
+    setOneWayShearGuideResult(null)
     setProject((current) => ({
       ...current,
       inputSnapshot: { ...current.inputSnapshot, bearingCapacityBasis: basis },
@@ -129,6 +133,7 @@ function App() {
     setMinimumReinforcementResult(null)
     setRequiredReinforcementResult(null)
     setReinforcementComparisonResult(null)
+    setOneWayShearGuideResult(null)
     setStatus('Proyecto abierto desde la biblioteca local.')
   }
 
@@ -201,6 +206,38 @@ function App() {
 
     setOneWayShearResult(result)
     setStatus('Demanda de cortante calculada en ambos ejes. La resistencia normativa continúa pendiente de revisión.')
+  }
+
+  const checkGuideOneWayShearReference = () => {
+    const issues = validateGuideOneWayShearInputs(project.inputSnapshot)
+    if (issues.length > 0) {
+      setOneWayShearGuideResult(null)
+      setStatus(issues.map((issue) => issue.message).join(' '))
+      return
+    }
+
+    const inputs = project.inputSnapshot
+    const demand = calculateOneWayShearDemand({
+      factoredAxialLoadKn: inputs.factoredAxialLoadKn,
+      footingWidthM: inputs.footingWidthM,
+      footingLengthM: inputs.footingLengthM,
+      columnWidthM: inputs.columnWidthM,
+      columnLengthM: inputs.columnLengthM,
+      footingThicknessM: inputs.footingThicknessM,
+      concreteCoverM: inputs.concreteCoverM,
+      barDiameterM: inputs.barDiameterM,
+    })
+    const result = checkGuideOneWayShear({
+      concreteStrengthMpa: inputs.concreteStrengthMpa,
+      effectiveDepthM: demand.effectiveDepthM,
+      widthShearDemandKn: demand.widthDirection.shearDemandKn,
+      widthSectionWidthM: demand.widthDirection.tributaryWidthM,
+      lengthShearDemandKn: demand.lengthDirection.shearDemandKn,
+      lengthSectionWidthM: demand.lengthDirection.tributaryWidthM,
+    })
+    setOneWayShearResult(demand)
+    setOneWayShearGuideResult(result)
+    setStatus('Cortante unidireccional comparado con la referencia de guía. El resultado no constituye todavía una verificación NEC liberada.')
   }
 
   const calculatePunchingShear = () => {
@@ -317,6 +354,7 @@ function App() {
     const issues = validateGuideRequiredReinforcementInputs(inputs)
     if (issues.length > 0) {
       setReinforcementComparisonResult(null)
+      setOneWayShearGuideResult(null)
       setStatus(issues.map((issue) => issue.message).join(' '))
       return
     }
@@ -548,6 +586,9 @@ function App() {
             <button type="button" className="primary" onClick={calculateOneWayShear}>
               Calcular demanda de cortante
             </button>
+            <button type="button" className="secondary" onClick={checkGuideOneWayShearReference}>
+              Revisar cortante de guía
+            </button>
             <button type="button" className="primary" onClick={calculatePunchingShear}>
               Calcular demanda de punzonamiento
             </button>
@@ -578,7 +619,7 @@ function App() {
             <button type="button" className="secondary" onClick={() => importInput.current?.click()}>
               Abrir archivo
             </button>
-            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult || requiredReinforcementResult || reinforcementComparisonResult) && (
+            {(serviceContactResult || oneWayShearResult || punchingShearResult || flexureResult || reinforcementLayout || minimumReinforcementResult || requiredReinforcementResult || reinforcementComparisonResult || oneWayShearGuideResult) && (
               <button type="button" className="secondary" onClick={printExperimentalReport}>
                 Imprimir informe
               </button>
@@ -629,6 +670,25 @@ function App() {
                 <p><span>Demanda gobernante</span><strong>{oneWayShearResult.governingShearDemandKn.toFixed(2)} kN</strong></p>
               </div>
               <p className="result-limit">La presión última se obtiene de la carga axial última declarada dividida para el área de la zapata. Las líneas discontinuas del plano representan la sección evaluada a una distancia d de cada cara. Este resultado es solo demanda: todavía no calcula φVᶜ, utilización ni cumplimiento NEC.</p>
+            </section>
+          )}
+          {oneWayShearGuideResult && (
+            <section className="result-card demand-only" aria-live="polite">
+              <p className="eyebrow">Cortante unidireccional · referencia de guía NEC 2015</p>
+              <h2>Demanda frente a resistencia de referencia</h2>
+              <div className="result-grid">
+                <p><span>f′c declarado</span><strong>{oneWayShearGuideResult.concreteStrengthMpa.toFixed(2)} MPa</strong></p>
+                <p><span>Profundidad efectiva usada</span><strong>{oneWayShearGuideResult.effectiveDepthM.toFixed(3)} m</strong></p>
+                <p><span>Tensión de cortante de referencia</span><strong>{oneWayShearGuideResult.concreteShearStressMpa.toFixed(3)} MPa</strong></p>
+                <p><span>Factor de reducción de guía</span><strong>φ = {oneWayShearGuideResult.strengthReductionFactor.toFixed(2)}</strong></p>
+                <p><span>Resistencia de referencia · B</span><strong>{oneWayShearGuideResult.widthDirection.designShearStrengthKn.toFixed(2)} kN</strong></p>
+                <p><span>Utilización · B</span><strong>{(oneWayShearGuideResult.widthDirection.utilization * 100).toFixed(1)}%</strong></p>
+                <p><span>Estado · B</span><strong>{oneWayShearGuideResult.widthDirection.status === 'meets-guide-reference' ? 'Alcanza referencia de guía' : 'No alcanza referencia de guía'}</strong></p>
+                <p><span>Resistencia de referencia · L</span><strong>{oneWayShearGuideResult.lengthDirection.designShearStrengthKn.toFixed(2)} kN</strong></p>
+                <p><span>Utilización · L</span><strong>{(oneWayShearGuideResult.lengthDirection.utilization * 100).toFixed(1)}%</strong></p>
+                <p><span>Estado · L</span><strong>{oneWayShearGuideResult.lengthDirection.status === 'meets-guide-reference' ? 'Alcanza referencia de guía' : 'No alcanza referencia de guía'}</strong></p>
+              </div>
+              <p className="result-limit">Resultado limitado al procedimiento del ejemplo de la Guía práctica conforme a NEC 2015, sección 1.10.1, para hormigón de peso normal y la presión uniforme del alcance actual. No cubre presión no uniforme, excentricidad, sismo, armadura de cortante u otros requisitos del perfil NEC. Sigue siendo una referencia de guía, no una liberación normativa.</p>
             </section>
           )}
           {punchingShearResult && (

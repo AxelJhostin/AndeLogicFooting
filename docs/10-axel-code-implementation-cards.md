@@ -21,7 +21,7 @@ Cada ficha cerrada se convierte en:
 | AXC-FTG-003 | Punzonamiento | Demanda física con perímetro declarado; resistencia pendiente | Demanda y gráfica implementadas |
 | AXC-FTG-004 | Flexión | Demanda física en la cara de columna; resistencia pendiente | Demanda y diagrama implementados |
 | AXC-FTG-005 | Refuerzo y desarrollo | Referencia pública parcial localizada; diseño completo pendiente | Acero mínimo y acero requerido de guía implementados; desarrollo pendiente |
-| AXC-FTG-006 | Resistencia a cortante unidireccional | Referencia pública parcial localizada; otros casos pendientes | Motor puro de referencia implementado; interfaz pendiente |
+| AXC-FTG-006 | Resistencia a cortante unidireccional | Referencia pública parcial localizada; otros casos pendientes | Motor y resultado de referencia integrados; validación completa pendiente |
 
 ## Plantilla obligatoria
 
@@ -144,4 +144,4 @@ La comparación integrada exige, por cada dirección, el mayor valor entre el m�
 
 La guía práctica NEC 2015, sección 1.10.1, presenta una comprobación por tensión de cortante en una sección a profundidad efectiva de la cara de columna. El motor aplica esa expresión únicamente a la demanda uniforme ya calculada por AndeLogic, con hormigón de peso normal, y compara cada dirección contra la resistencia de referencia reducida que muestra el ejemplo. Las entradas visibles son `f′c`, `d`, ancho de la sección y demanda última.
 
-Este resultado no cubre presión trapezoidal, excentricidad, carga sísmica, armadura de cortante, otras condiciones de material ni todos los requisitos de la NEC. Por ahora existe como función pura y prueba reproducible; todavía no habilita ningún resultado normativo en la interfaz.
+Este resultado no cubre presión trapezoidal, excentricidad, carga sísmica, armadura de cortante, otras condiciones de material ni todos los requisitos de la NEC. Está disponible en la interfaz como referencia de guía, acompañado de sus límites; no habilita un resultado normativo.
