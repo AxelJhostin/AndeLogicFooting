@@ -188,3 +188,11 @@ La interfaz actual se mantiene solamente como referencia funcional durante la tr
 5. Construir `Cálculo completo` desde el contrato de informe existente.
 6. Crear la ruta de teoría con contenido propio, fuentes y límites.
 7. Probar escritorio, tablet y móvil con usuarios del perfil objetivo.
+
+## Implementación de interfaz — 2026-08-28
+
+La interfaz activa implementa el shell técnico descrito en este documento sin alterar el motor ni los contratos de dominio. El flujo está separado en `Definir caso`, `Sección`, `Planta`, `Resultados`, `Cálculo completo` y `Teoría`; las acciones de archivo quedan en el menú de proyecto y el estado de validación se muestra como una etiqueta breve de perfil.
+
+La lámina se divide en componentes SVG independientes para planta, secciones A–A/B–B, punzonamiento y armado preliminar. Todos consumen entradas o resultados existentes: no vuelven a calcular criterios dentro de los componentes. Las referencias de resistencia y armado siguen rotuladas como referencias de guía en validación, nunca como cumplimiento o aprobación normativa.
+
+La interfaz anterior quedó archivada en `app/src/legacy/` y excluida de la compilación. La producción utiliza exclusivamente el shell nuevo y sus componentes técnicos; el archivo legado se conserva solo como referencia recuperable durante la transición.

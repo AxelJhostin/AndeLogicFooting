@@ -38,6 +38,8 @@ src/
 
 La UI no contiene fórmulas. El motor no importa React, el navegador ni librerías de presentación. Un mismo caso de cálculo debe dar el mismo resultado en pruebas, interfaz e informe.
 
+La interfaz llama a un único orquestador de caso en `application/footing-analysis.ts`. Este adapta las entradas del documento a los módulos puros y devuelve un resultado consolidado tipado; los componentes visuales solo representan ese resultado. Así, añadir una revisión exige extender el orquestador y su prueba, no duplicar cálculos en cada vista.
+
 El contrato `reports/footing-calculation-report.ts` ya produce una memoria serializable de identidad, versiones, perfil, entradas y límites. La etapa visual solo deberá renderizar este contrato, sin volver a decidir criterios técnicos.
 
 ## Contratos de datos
