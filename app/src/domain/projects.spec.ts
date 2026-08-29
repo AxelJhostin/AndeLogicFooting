@@ -47,4 +47,16 @@ describe('normalizeProjectDocument', () => {
 
     expect(normalizeProjectDocument(legacyProject).standardProfile).toBe('NEC-2015-GUIDE-TRACEABLE')
   })
+
+  it('añade el tipo y snapshot de zapata corrida a proyectos anteriores', () => {
+    const project = createNewProject()
+    const legacyProject = { ...project } as Partial<ProjectDocument>
+    delete legacyProject.footingType
+    delete legacyProject.stripInputSnapshot
+
+    const normalized = normalizeProjectDocument(legacyProject as ProjectDocument)
+    expect(normalized.footingType).toBe('isolated')
+    expect(normalized.stripInputSnapshot.serviceLineLoadKnM).toBeGreaterThan(0)
+    expect(normalized.inputSnapshot).toEqual(project.inputSnapshot)
+  })
 })

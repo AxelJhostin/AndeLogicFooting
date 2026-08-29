@@ -86,7 +86,7 @@ export const DEFAULT_STRIP_FOOTING_INPUTS: StripFootingInputs = {
   concreteStrengthMpa: 23.54,
   steelYieldStrengthMpa: 412.08,
   transverseBarSpacingM: 0.15,
-  longitudinalBarSpacingM: 0.2,
+  longitudinalBarSpacingM: 0.15,
   developmentAvailableLengthM: 0.42,
 }
 
@@ -131,7 +131,7 @@ export function createNewProject(): ProjectDocument {
     },
     stripInputSnapshot: { ...DEFAULT_STRIP_FOOTING_INPUTS },
     warnings: [
-      'El contacto de servicio y la demanda de cortante son módulos internos; la resistencia estructural normativa todavía no está implementada.',
+      'Las demandas se calculan internamente; las resistencias disponibles se presentan como referencias de guía trazables y no como aprobación normativa.',
     ],
   }
 }

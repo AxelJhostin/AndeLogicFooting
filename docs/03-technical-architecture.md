@@ -25,6 +25,7 @@ Una aplicación de escritorio no vuelve más confiable un cálculo. La confianza
 src/
 ├── domain/
 │   ├── footing/          # Tipos, cálculos puros y resultados
+│   ├── strip-footing/    # Motor independiente por metro lineal bajo muro
 │   ├── units/            # Conversión y presentación de unidades
 │   └── validation/       # Reglas de dominio y errores accionables
 ├── standards/
@@ -39,6 +40,8 @@ src/
 La UI no contiene fórmulas. El motor no importa React, el navegador ni librerías de presentación. Un mismo caso de cálculo debe dar el mismo resultado en pruebas, interfaz e informe.
 
 La interfaz llama a un único orquestador de caso en `application/footing-analysis.ts`. Este adapta las entradas del documento a los módulos puros y devuelve un resultado consolidado tipado; los componentes visuales solo representan ese resultado. Así, añadir una revisión exige extender el orquestador y su prueba, no duplicar cálculos en cada vista.
+
+La zapata corrida dispone de una frontera paralela en `application/strip-footing-analysis.ts`. No añade condicionales geométricos al motor de zapata aislada: cada tipología conserva entradas, validación, resultados, informe y componentes propios, mientras el documento de proyecto y el shell seleccionan el flujo activo.
 
 Para la memoria de revisión, `MinimumReinforcementResult` expone además `barAreaMm2`: es un resultado geométrico ya obtenido por el módulo de dominio. La interfaz lo muestra como sustitución trazable y no vuelve a calcularlo; esta ampliación no modifica fórmulas ni criterios del motor.
 
