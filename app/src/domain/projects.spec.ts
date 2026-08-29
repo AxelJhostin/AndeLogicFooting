@@ -83,4 +83,16 @@ describe('normalizeProjectDocument', () => {
     expect(normalized.strapInputSnapshot.footingCenterSpacingM).toBeGreaterThan(0)
     expect(normalized.combinedInputSnapshot).toEqual(project.combinedInputSnapshot)
   })
+
+  it('migra el esquema 3 al snapshot de zapata trapezoidal', () => {
+    const project = createNewProject()
+    const legacyProject = { ...project, schemaVersion: 3 } as Partial<ProjectDocument>
+    delete legacyProject.trapezoidalInputSnapshot
+
+    expect(isProjectDocument(legacyProject)).toBe(true)
+    const normalized = normalizeProjectDocument(legacyProject as ProjectDocument)
+    expect(normalized.schemaVersion).toBe(PROJECT_SCHEMA_VERSION)
+    expect(normalized.trapezoidalInputSnapshot.rightFootingWidthM).toBeGreaterThan(normalized.trapezoidalInputSnapshot.leftFootingWidthM)
+    expect(normalized.strapInputSnapshot).toEqual(project.strapInputSnapshot)
+  })
 })

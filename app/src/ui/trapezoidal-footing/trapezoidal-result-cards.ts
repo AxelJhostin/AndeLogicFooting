@@ -1,0 +1,19 @@
+import type { TrapezoidalFootingAnalysis } from '../../application/trapezoidal-footing-analysis'
+import type { ResultCard } from '../results/result-cards'
+
+const reference=(value:boolean|undefined):ResultCard['state']=>value===undefined?'pending':value?'reference':'attention'
+export function buildTrapezoidalResultCards(analysis:TrapezoidalFootingAnalysis|null):ResultCard[]{
+  const punching=analysis?analysis.punching.reduce((best,item)=>item.utilization>best.utilization?item:best):null
+  return [
+    {id:'trap-contact',title:'Contacto en el trapecio',state:reference(analysis?analysis.contact.status==='pass':undefined),value:analysis?`${(analysis.contact.utilization*100).toFixed(1)}%`:'—',detail:analysis?`qmáx ${analysis.contact.maximumPressureForComparisonKpa.toFixed(1)} kPa`:'Requiere análisis',destination:'section'},
+    {id:'trap-centroid',title:'Centroide y resultante',state:analysis?'calculated':'pending',value:analysis?`${analysis.geometry.centroidFromLeftM.toFixed(2)} m`:'—',detail:analysis?`eₛ ${analysis.contact.gross.eccentricityFromCentroidM.toFixed(3)} m`:'Requiere análisis',destination:'plan'},
+    {id:'trap-beam',title:'Equilibrio longitudinal',state:analysis?'calculated':'pending',value:analysis?`${analysis.longitudinal.governingAbsoluteMomentKnM.toFixed(1)} kN·m`:'—',detail:'Momento absoluto gobernante',destination:'section'},
+    {id:'trap-shear-l',title:'Cortante longitudinal',state:reference(analysis?analysis.longitudinal.governingShearSection.reference.status==='meets-guide-reference':undefined),value:analysis?`${(analysis.longitudinal.governingShearSection.reference.utilization*100).toFixed(1)}%`:'—',detail:analysis?`${analysis.longitudinal.governingShearSection.label} · B(x) ${analysis.longitudinal.governingShearSection.localWidthM.toFixed(2)} m`:'Requiere análisis',destination:'section'},
+    {id:'trap-shear-t',title:'Cortante transversal',state:reference(analysis?analysis.transverse.shearReference.status==='meets-guide-reference':undefined),value:analysis?`${(analysis.transverse.shearReference.utilization*100).toFixed(1)}%`:'—',detail:analysis?`Columna ${analysis.transverse.governingShearColumn}`:'Requiere análisis',destination:'section'},
+    {id:'trap-punching',title:'Punzonamiento gobernante',state:reference(punching?punching.status==='meets-guide-reference':undefined),value:punching?`${(punching.utilization*100).toFixed(1)}%`:'—',detail:punching?`Columna ${punching.column}`:'Requiere análisis',destination:'plan'},
+    {id:'trap-steel-bottom',title:'Acero longitudinal inferior',state:reference(analysis?analysis.reinforcement.longitudinalBottom.status==='meets-guide-reference':undefined),value:analysis?`${(analysis.reinforcement.longitudinalBottom.providedAreaPerMeterMm2/100).toFixed(2)} cm²/m`:'—',detail:'Momento positivo',destination:'plan'},
+    {id:'trap-steel-top',title:'Acero longitudinal superior',state:reference(analysis?analysis.reinforcement.longitudinalTop.status==='meets-guide-reference':undefined),value:analysis?`${(analysis.reinforcement.longitudinalTop.providedAreaPerMeterMm2/100).toFixed(2)} cm²/m`:'—',detail:'Momento negativo',destination:'plan'},
+    {id:'trap-steel-transverse',title:'Acero transversal',state:reference(analysis?analysis.reinforcement.transverse.status==='meets-guide-reference':undefined),value:analysis?`${(analysis.reinforcement.transverse.providedAreaPerMeterMm2/100).toFixed(2)} cm²/m`:'—',detail:analysis?`Columna ${analysis.transverse.governingFlexureColumn}`:'Requiere análisis',destination:'plan'},
+    {id:'trap-development',title:'Desarrollo',state:reference(analysis?analysis.development.widthDirection.status==='meets-guide-reference'&&analysis.development.lengthDirection.status==='meets-guide-reference':undefined),value:analysis?`${analysis.development.requiredDevelopmentLengthM.toFixed(2)} m`:'—',detail:'Longitud requerida de referencia',destination:'calculation'},
+  ]
+}

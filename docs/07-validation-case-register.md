@@ -30,6 +30,10 @@ Este registro controla los casos de referencia del motor. No deben añadirse res
 | NEC-FTG-020 | Equilibrio medianero | Conservación de fuerza vertical | Identidad independiente | `Rᵤ,ₑ + Rᵤ,ᵢ = Pᵤ,ₑ + Pᵤ,ᵢ` | `1e-10` | Automatizado |
 | NEC-FTG-021 | Alcance medianero | Reacción interior nula o levantamiento | Condición física declarada | Entrada inválida; no se calcula contacto parcial | No aplica | Automatizado |
 | NEC-FTG-022 | Alcance medianero | Bases superpuestas o columna exterior fuera de su base | Geometría incompatible | Entrada inválida antes del análisis estructural | No aplica | Automatizado |
+| NEC-FTG-023 | Equilibrio + fuente pública | Caso manual trapezoidal `AXC-TRAP-001` | `19-trapezoidal-footing-scope.md` | `A=12 m²`, `x̄=3.25 m`, `Wz=144 kN`, `qserv=112 kPa`, `qu=150 kPa`, `V(L)=M(L)=0` | `1e-8` | Automatizado |
+| NEC-FTG-024 | Equilibrio trapezoidal | Resultante distinta del centroide | Sistema integral de fuerza y momento | Presión extrema mayor hacia la columna gobernante y equilibrio final nulo | `1e-8` | Automatizado |
+| NEC-FTG-025 | Alcance trapezoidal | Pérdida de contacto completo | Presión extrema negativa | El motor devuelve entrada inválida y no recorta el área activa | No aplica | Automatizado |
+| NEC-FTG-026 | Alcance trapezoidal | Perímetro crítico fuera del borde inclinado | Geometría local del trapecio | El motor bloquea el caso antes de calcular punzonamiento | No aplica | Automatizado |
 
 ## Plantilla obligatoria por caso
 

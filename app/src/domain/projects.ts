@@ -1,10 +1,10 @@
-export const PROJECT_SCHEMA_VERSION = 3
+export const PROJECT_SCHEMA_VERSION = 4
 
 import type { StandardProfileId } from '../standards/profiles'
 
 export type StandardProfile = StandardProfileId
 
-export type FootingType = 'isolated' | 'strip' | 'combined' | 'strap'
+export type FootingType = 'isolated' | 'strip' | 'combined' | 'strap' | 'trapezoidal'
 
 export type FootingInputs = {
   axialLoadKn: number
@@ -119,6 +119,38 @@ export type StrapFootingInputs = {
   beamDevelopmentAvailableM: number
 }
 
+export type TrapezoidalFootingInputs = {
+  serviceColumn1LoadKn: number
+  serviceColumn2LoadKn: number
+  factoredColumn1LoadKn: number
+  factoredColumn2LoadKn: number
+  allowableBearingKpa: number
+  bearingCapacityBasis: 'gross' | 'net'
+  removedOverburdenKpa: number
+  concreteUnitWeightKnM3: number
+  soilCoverDepthM: number
+  soilUnitWeightKnM3: number
+  leftFootingWidthM: number
+  rightFootingWidthM: number
+  footingLengthM: number
+  footingThicknessM: number
+  column1WidthM: number
+  column1LengthM: number
+  column1CenterFromLeftM: number
+  column2WidthM: number
+  column2LengthM: number
+  column2CenterFromLeftM: number
+  concreteCoverM: number
+  barDiameterM: number
+  concreteStrengthMpa: number
+  steelYieldStrengthMpa: number
+  longitudinalBottomBarSpacingM: number
+  longitudinalTopBarSpacingM: number
+  transverseBarSpacingM: number
+  longitudinalDevelopmentAvailableM: number
+  transverseDevelopmentAvailableM: number
+}
+
 export const DEFAULT_FOOTING_THICKNESS_M = 0.45
 
 export type ProjectDocument = {
@@ -135,6 +167,7 @@ export type ProjectDocument = {
   stripInputSnapshot: StripFootingInputs
   combinedInputSnapshot: CombinedFootingInputs
   strapInputSnapshot: StrapFootingInputs
+  trapezoidalInputSnapshot: TrapezoidalFootingInputs
   warnings: string[]
 }
 
@@ -226,6 +259,38 @@ export const DEFAULT_STRAP_FOOTING_INPUTS: StrapFootingInputs = {
   beamDevelopmentAvailableM: 1.2,
 }
 
+export const DEFAULT_TRAPEZOIDAL_FOOTING_INPUTS: TrapezoidalFootingInputs = {
+  serviceColumn1LoadKn: 500,
+  serviceColumn2LoadKn: 700,
+  factoredColumn1LoadKn: 750,
+  factoredColumn2LoadKn: 1050,
+  allowableBearingKpa: 180,
+  bearingCapacityBasis: 'gross',
+  removedOverburdenKpa: 0,
+  concreteUnitWeightKnM3: 24,
+  soilCoverDepthM: 0,
+  soilUnitWeightKnM3: 0,
+  leftFootingWidthM: 1.5,
+  rightFootingWidthM: 2.5,
+  footingLengthM: 6,
+  footingThicknessM: 0.5,
+  column1WidthM: 0.4,
+  column1LengthM: 0.4,
+  column1CenterFromLeftM: 0.75,
+  column2WidthM: 0.4,
+  column2LengthM: 0.4,
+  column2CenterFromLeftM: 5.035714285714286,
+  concreteCoverM: 0.075,
+  barDiameterM: 0.016,
+  concreteStrengthMpa: 23.54,
+  steelYieldStrengthMpa: 412.08,
+  longitudinalBottomBarSpacingM: 0.15,
+  longitudinalTopBarSpacingM: 0.15,
+  transverseBarSpacingM: 0.15,
+  longitudinalDevelopmentAvailableM: 0.8,
+  transverseDevelopmentAvailableM: 0.8,
+}
+
 const now = () => new Date().toISOString()
 
 export function createNewProject(): ProjectDocument {
@@ -268,6 +333,7 @@ export function createNewProject(): ProjectDocument {
     stripInputSnapshot: { ...DEFAULT_STRIP_FOOTING_INPUTS },
     combinedInputSnapshot: { ...DEFAULT_COMBINED_FOOTING_INPUTS },
     strapInputSnapshot: { ...DEFAULT_STRAP_FOOTING_INPUTS },
+    trapezoidalInputSnapshot: { ...DEFAULT_TRAPEZOIDAL_FOOTING_INPUTS },
     warnings: [
       'Las demandas se calculan internamente; las resistencias disponibles se presentan como referencias de guía trazables y no como aprobación normativa.',
     ],
@@ -299,10 +365,12 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
     stripInputSnapshot?: Partial<StripFootingInputs>
     combinedInputSnapshot?: Partial<CombinedFootingInputs>
     strapInputSnapshot?: Partial<StrapFootingInputs>
+    trapezoidalInputSnapshot?: Partial<TrapezoidalFootingInputs>
   }
   const stripInputs = legacyProject.stripInputSnapshot ?? {}
   const combinedInputs = legacyProject.combinedInputSnapshot ?? {}
   const strapInputs = legacyProject.strapInputSnapshot ?? {}
+  const trapezoidalInputs = legacyProject.trapezoidalInputSnapshot ?? {}
   const standardProfile = legacyProfile === 'NEC-2015-GUIDE-TRACEABLE' || legacyProfile === 'NEC-PUBLIC-2014-PENDING' || legacyProfile === 'NEC-PENDING'
     ? 'NEC-2015-GUIDE-TRACEABLE'
     : 'ARCHIVED-UNSUPPORTED'
@@ -311,7 +379,7 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
     ...project,
     schemaVersion: PROJECT_SCHEMA_VERSION,
     standardProfile,
-    footingType: legacyProject.footingType === 'strip' || legacyProject.footingType === 'combined' || legacyProject.footingType === 'strap' ? legacyProject.footingType : 'isolated',
+    footingType: legacyProject.footingType === 'strip' || legacyProject.footingType === 'combined' || legacyProject.footingType === 'strap' || legacyProject.footingType === 'trapezoidal' ? legacyProject.footingType : 'isolated',
     inputSnapshot: {
       ...project.inputSnapshot,
       footingThicknessM,
@@ -345,6 +413,11 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
       ...DEFAULT_STRAP_FOOTING_INPUTS,
       ...strapInputs,
       bearingCapacityBasis: strapInputs.bearingCapacityBasis === 'net' ? 'net' : 'gross',
+    },
+    trapezoidalInputSnapshot: {
+      ...DEFAULT_TRAPEZOIDAL_FOOTING_INPUTS,
+      ...trapezoidalInputs,
+      bearingCapacityBasis: trapezoidalInputs.bearingCapacityBasis === 'net' ? 'net' : 'gross',
     },
   }
 }

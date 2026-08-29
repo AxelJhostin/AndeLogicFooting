@@ -10,15 +10,15 @@ No existe una lista universal cerrada: las tipologías pueden clasificarse por g
 2. **Zapata corrida centrada**: muro y carga lineal, resuelta por franja de un metro.
 3. **Zapata combinada rectangular**: dos columnas interiores, presión longitudinal lineal y contacto completo.
 4. **Zapata medianera con viga centradora**: dos bases separadas y viga rígida sin apoyo en el suelo.
+5. **Zapata combinada trapezoidal**: dos columnas interiores, ancho variable y presión longitudinal lineal.
 
 Cada familia tiene motor, entradas, validación, informe, memoria y componentes visuales independientes. Compartir módulos de resistencia no mezcla sus ecuaciones de demanda.
 
 ## Familias principales pendientes, en orden recomendado
 
-1. **Zapata combinada trapezoidal**: siguiente prioridad. Permite ajustar el centroide geométrico cuando las cargas o el lindero hacen inconveniente una planta rectangular.
-2. **Zapata aislada excéntrica de borde, sin viga centradora**: excentricidad uniaxial, presión trapezoidal con contacto completo y límites del núcleo central.
-3. **Zapata de esquina o excéntrica biaxial**: presión variable en dos ejes, posibles casos de borde y geometría de contacto más exigente.
-4. **Losa de cimentación**: módulo mayor, con múltiples columnas, rigidez de placa, distribución de presiones, punzonamiento y asentamientos diferenciales/interacción suelo-estructura.
+1. **Zapata aislada excéntrica de borde, sin viga centradora**: siguiente prioridad; excentricidad uniaxial, presión trapezoidal con contacto completo y límites del núcleo central.
+2. **Zapata de esquina o excéntrica biaxial**: presión variable en dos ejes, posibles casos de borde y geometría de contacto más exigente.
+3. **Losa de cimentación**: módulo mayor, con múltiples columnas, rigidez de placa, distribución de presiones, punzonamiento y asentamientos diferenciales/interacción suelo-estructura.
 
 ## Extensiones, no familias separadas al inicio
 
@@ -34,4 +34,4 @@ Cada familia tiene motor, entradas, validación, informe, memoria y componentes 
 
 ## Próximo modelo
 
-La siguiente implementación recomendada es la **zapata combinada trapezoidal**, manteniendo el principio actual: primero alcance y caso manual, luego pruebas del motor, y finalmente interfaz y memoria completa.
+La siguiente implementación recomendada es la **zapata aislada excéntrica de borde sin viga centradora**, manteniendo el principio actual: primero alcance y caso manual, luego pruebas del motor, y finalmente interfaz y memoria completa.

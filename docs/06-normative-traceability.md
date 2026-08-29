@@ -22,6 +22,8 @@ No se implementará una fila marcada como pendiente. Las referencias se completa
 | NEC-FTG-010 | Guía práctica NEC 2015 | Cortante, punzonamiento, flexión, acero y desarrollo de combinada | `NEC-SRC-004` | Secciones 1.10.1 a 1.10.6 adaptadas a demandas de equilibrio | `domain/combined-footing` | `NEC-FTG-015` a `018` | Referencia de guía; contraste independiente pendiente |
 | NEC-FTG-011 | USACE + NEC-SE-GC + equilibrio | Definición y contacto de zapata con viga centradora | `PUB-SRC-007` + `NEC-SRC-002` + `AXC-STRAP-001` | USACE EM 1110-1-1905, 2-5.d.(2); NEC-SE-GC 2014, 6.4, 7.1 y 7.2.1 | `domain/strap-footing` | `NEC-FTG-019` a `022` | Equilibrio implementado; USACE se usa como fuente técnica pública, no como normativa ecuatoriana |
 | NEC-FTG-012 | Guía práctica NEC 2015 | Cortante, flexión, acero y desarrollo de bases y viga centradora | `NEC-SRC-004` | Secciones 1.10.1, 1.10.5 y 1.10.6 aplicadas a demandas independientes | `domain/strap-footing` | `NEC-FTG-019` a `022` | Referencia de guía; punzonamiento en encuentros no evaluado |
+| NEC-FTG-013 | USACE + NEC-SE-GC + equilibrio | Geometría y contacto de zapata combinada trapezoidal | `PUB-SRC-007` + `NEC-SRC-002` + `AXC-TRAP-001` | USACE EM 1110-1-1905, 2-5.d.(1); NEC-SE-GC 2014, 6.4, 7.1 y 7.2.1 | `domain/trapezoidal-footing` | `NEC-FTG-023` a `026` | Geometría, presión lineal y equilibrio implementados; contacto parcial excluido |
+| NEC-FTG-014 | Guía práctica NEC 2015 | Cortante, punzonamiento, flexión, acero y desarrollo trapezoidales | `NEC-SRC-004` | Secciones 1.10.1 a 1.10.6 aplicadas con ancho local | `domain/trapezoidal-footing` | `NEC-FTG-023` a `026` | Referencia de guía; contraste independiente pendiente |
 
 ## Criterio para completar una fila
 

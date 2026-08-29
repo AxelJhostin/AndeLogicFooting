@@ -10,7 +10,7 @@ export type PublicSource = {
 
 export type CalculationTrace = {
   id: string
-  appliesTo: Array<'isolated' | 'strip' | 'combined' | 'strap'>
+  appliesTo: Array<'isolated' | 'strip' | 'combined' | 'strap' | 'trapezoidal'>
   module: string
   basis: 'Equilibrio y geometría' | 'Guía pública NEC 2015' | 'Dato externo obligatorio'
   sourceId?: string
@@ -99,6 +99,13 @@ export const standardProfiles: Record<StandardProfileId, StandardProfile> = {
       { id: 'strap-beam', appliesTo: ['strap'], module: 'Viga centradora', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Demandas por equilibrio M y V; resistencias seccionales de 1.10.1 y 1.10.5 usadas como referencia pública.', applicability: 'Sección rectangular; estribos, confinamiento, nudos y detallado definitivo requieren revisión especializada.' },
       { id: 'strap-punching', appliesTo: ['strap'], module: 'Punzonamiento en los encuentros', basis: 'Dato externo obligatorio', reference: 'No evaluado: la viga cruza la región crítica y el perímetro interior aislado no es aplicable sin una regla específica.', applicability: 'Resultado explícitamente fuera de alcance; exige revisión estructural especializada.' },
       { id: 'strap-development', appliesTo: ['strap'], module: 'Desarrollo en bases y anclaje de viga', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barra a tracción, hormigón normal y factores unitarios declarados.' },
+      { id: 'trapezoidal-model', appliesTo: ['trapezoidal'], module: 'Geometría trapezoidal', basis: 'Equilibrio y geometría', sourceId: 'usace-em-1110-1-1905-2025', reference: 'USACE EM 1110-1-1905, 2-5.d.(1): zapatas combinadas rectangulares, trapezoidales o en T; coincidencia de centroides para presión uniforme.', applicability: 'Trapecio simétrico respecto del eje longitudinal, dos columnas interiores y espesor constante.' },
+      { id: 'trapezoidal-contact', appliesTo: ['trapezoidal'], module: 'Contacto lineal sobre ancho variable', basis: 'Equilibrio y geometría', sourceId: 'nec-se-gc-2015', reference: 'NEC-SE-GC 2014, secciones 6.4, 7.1 y 7.2.1; solución de fuerza y momento con q(x)=a+bx y B(x) lineal.', applicability: 'Contacto completo; se bloquea cualquier presión extrema negativa.' },
+      { id: 'trapezoidal-beam', appliesTo: ['trapezoidal'], module: 'Viga longitudinal de ancho variable', basis: 'Equilibrio y geometría', reference: 'w(x)=q(x)B(x); integración analítica de la reacción cuadrática y cargas puntuales.', applicability: 'Dos cargas verticales, sin momentos transferidos ni interacción suelo-estructura.' },
+      { id: 'trapezoidal-shear', appliesTo: ['trapezoidal'], module: 'Cortante longitudinal y transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Resistencia de la sección 1.10.1 usando la demanda y el ancho local de cada sección.', applicability: 'Hormigón normal; adaptación a geometría variable pendiente de contraste independiente.' },
+      { id: 'trapezoidal-punching', appliesTo: ['trapezoidal'], module: 'Punzonamiento por columna', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Secciones 1.10.2 a 1.10.4 con integración de q(x) dentro del perímetro.', applicability: 'Columnas interiores y perímetros completos contenidos por los bordes inclinados.' },
+      { id: 'trapezoidal-reinforcement', appliesTo: ['trapezoidal'], module: 'Flexión y armado', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Sección 1.10.5 aplicada al ancho local en momentos longitudinales y a franja transversal de un metro.', applicability: 'Distribución preliminar; detallado integral pendiente.' },
+      { id: 'trapezoidal-development', appliesTo: ['trapezoidal'], module: 'Desarrollo longitudinal y transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barras a tracción, hormigón normal y factores unitarios declarados.' },
     ],
     releaseBlocker: 'El perfil identifica fuentes y condiciones de cada módulo, pero aún requiere contraste independiente de casos y revisión profesional antes de declarar cumplimiento normativo.',
   },
