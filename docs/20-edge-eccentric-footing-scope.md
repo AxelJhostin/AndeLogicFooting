@@ -79,3 +79,11 @@ El caso derecho debe producir las mismas magnitudes con las presiones extremas i
 ## Exclusiones
 
 Quedan fuera: contacto parcial, resultante fuera del tercio central, momento adicional transmitido por la columna, excentricidad biaxial, columna de esquina, columna separada del borde, fuerza horizontal, deslizamiento, volcamiento independiente, punzonamiento de borde, asentamientos, interacción suelo-estructura, espesor variable y detalle constructivo definitivo.
+
+## Ejemplos rápidos disponibles
+
+- `edge-reference-left`: reproducción de `AXC-ECC-001` junto al lindero izquierdo.
+- `edge-mirrored-right`: caso espejo con presiones extremas intercambiadas.
+- `edge-outside-middle-third`: bloqueo por resultante fuera del tercio central.
+
+El caso espejo prueba la simetría geométrica; el caso bloqueado conserva explícito que el contacto parcial no está implementado.

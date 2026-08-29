@@ -6,6 +6,8 @@ Cada verificación implementada debe enlazarse a una fuente autorizada, una edic
 
 No se implementará una fila marcada como pendiente. Las referencias se completan únicamente a partir de documentos oficiales o acceso autorizado.
 
+Los ejemplos rápidos no crean filas normativas ni sirven como evidencia externa por sí solos. Cuando reutilizan un caso manual (`AXC-*`), mantienen su estado técnico original; cuando exploran una alerta o bloqueo, se consideran pruebas funcionales del alcance.
+
 ## Registro inicial
 
 | ID | Perfil | Verificación | Fuente / edición | Cláusula o tabla | Módulo previsto | Casos | Estado |

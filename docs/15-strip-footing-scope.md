@@ -52,3 +52,11 @@ El documento de proyecto conserva snapshots independientes para zapata aislada y
 ## Criterio de liberación futuro
 
 Antes de presentar las referencias adaptadas como verificación normativa debe existir al menos un caso manual independiente de zapata corrida y un segundo contraste numérico compatible con el mismo perfil, hipótesis, unidades y secciones de fuente. Hasta entonces la interfaz distingue `Calculado`, `Dentro de referencia` y `Requiere ajuste`.
+
+## Ejemplos rápidos disponibles
+
+- `strip-reference-wall`: muro centrado y revisión base por metro.
+- `strip-net-capacity-with-fill`: mayor ancho, relleno y comparación neta.
+- `strip-bearing-attention`: cálculo válido con capacidad declarada superada.
+
+Los tres usan el mismo orquestador del modelo y no elevan su estado normativo.

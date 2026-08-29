@@ -39,3 +39,7 @@ El archivo no incluirá datos de otros usuarios, secretos, credenciales ni tabla
 - Pruebas de documento y migración independientes de la UI; pruebas del repositorio con una base temporal.
 
 Una futura versión de escritorio con Tauri puede usar SQLite mediante otro adaptador. Los documentos portables y el contrato del repositorio se mantienen, por lo que los proyectos siguen moviéndose entre web y escritorio.
+
+## Relación con los ejemplos rápidos
+
+Elegir un ejemplo en el selector no modifica el proyecto. Al pulsar **Cargar**, se reemplaza únicamente el snapshot de la tipología activa, se actualiza el nombre didáctico y se invalidan resultados previos. Los otros snapshots se conservan. El caso no entra en IndexedDB ni sobrescribe un archivo hasta que el usuario ejecuta de forma explícita **Guardar** o **Descargar archivo**.

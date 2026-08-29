@@ -15,6 +15,8 @@ No existe una lista universal cerrada: las tipologías pueden clasificarse por g
 
 Cada familia tiene motor, entradas, validación, informe, memoria y componentes visuales independientes. Compartir módulos de resistencia no mezcla sus ecuaciones de demanda.
 
+Cada familia dispone además de tres ejemplos rápidos probados: referencia, variación y borde. El catálogo completo y su contrato de mantenimiento están en `21-quick-example-library.md`.
+
 ## Familias principales pendientes, en orden recomendado
 
 1. **Zapata de esquina o excéntrica biaxial**: siguiente prioridad; presión variable en dos ejes, control del núcleo central y posibles perímetros truncados.

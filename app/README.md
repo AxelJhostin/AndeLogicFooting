@@ -1,35 +1,42 @@
-# AndeLogic Zapatas — Aplicación
+# Aplicación AndeLogic Zapatas
 
-Prototipo React + TypeScript + Vite para la primera herramienta independiente de AndeLogic Engineering.
+Frontend React + TypeScript + Vite y motores puros para seis modelos de cimentación superficial. La aplicación funciona localmente, guarda proyectos en IndexedDB y permite importar o exportar documentos JSON versionados.
 
-## Estado actual
-
-La aplicación permite crear proyectos, guardarlos localmente con IndexedDB, reabrirlos después de recargar y exportarlos/importarlos como JSON versionado. Incluye contacto de servicio y demanda de cortante unidireccional por equilibrio. El perfil activo se fundamenta en NEC 2014 y fuentes públicas trazables.
-
-No contiene aún verificaciones de resistencia normativas: no incluye excentricidad, asentamientos, punzonamiento, flexión ni armado.
-
-## Ejecutar localmente
+## Desarrollo
 
 ```bash
 npm install
 npm run dev
 ```
 
-Vite mostrará una URL local, normalmente `http://localhost:5173`.
-
-## Verificar antes de cambiar código
+## Verificación
 
 ```bash
+npm run lint
+npm test
 npm run build
 ```
 
-## Estructura
+## Organización
 
 ```text
 src/
-├── domain/projects.ts                    # Documento portable y validación de esquema
-├── persistence/browser-project-repository.ts # IndexedDB mediante Dexie
-└── App.tsx                               # Interfaz del prototipo
+├── domain/
+│   ├── examples/              # 18 casos rápidos tipados y probados
+│   ├── footing/               # Zapata aislada centrada
+│   ├── strip-footing/         # Zapata corrida
+│   ├── combined-footing/      # Combinada rectangular
+│   ├── strap-footing/         # Medianera con viga centradora
+│   ├── trapezoidal-footing/   # Combinada trapezoidal
+│   └── edge-footing/          # Aislada excéntrica de borde
+├── application/               # Orquestador independiente por modelo
+├── standards/                 # Perfil técnico y fuentes
+├── reports/                   # Memorias serializables
+├── persistence/               # IndexedDB, importación y migraciones
+├── ui/                        # Formularios y presentación de resultados
+└── components/                # Láminas SVG
 ```
 
-La siguiente fase es implementar el motor NEC como código puro y pruebas de referencia, únicamente después de cerrar la trazabilidad normativa en `../docs`.
+La biblioteca de ejemplos vive fuera de React. Cada caso tiene un identificador estable, una observación esperada y una prueba que confirma si debe calcular, advertir o bloquear. Cargarlo reemplaza solo el snapshot del modelo activo y nunca ejecuta ni guarda el proyecto automáticamente.
+
+Consulta la [documentación principal](../README.md) y el [catálogo de ejemplos](../docs/21-quick-example-library.md).

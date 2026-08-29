@@ -75,3 +75,11 @@ El motor incluye además casos no coincidentes, para los cuales obtiene una pres
 ## Exclusiones
 
 Quedan fuera: contacto parcial, columnas de borde o esquina, momentos transferidos, fuerzas horizontales, trapecios asimétricos respecto del eje longitudinal, espesor variable, más de dos columnas, losas, asentamientos e interacción suelo-estructura.
+
+## Ejemplos rápidos disponibles
+
+- `trapezoidal-reference-centroid`: reproducción uniforme de `AXC-TRAP-001`.
+- `trapezoidal-linear-pressure`: segunda columna gobernante y presión creciente.
+- `trapezoidal-contact-loss`: bloqueo por presión extrema negativa.
+
+La variación demuestra que el motor resuelve `q(x)` por equilibrio y no presupone presión uniforme.

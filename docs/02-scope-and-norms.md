@@ -1,6 +1,6 @@
 # Alcance y normativa
 
-## Alcance de la primera versión
+## Alcance base original de la primera versión
 
 La primera versión pública resolverá únicamente:
 
@@ -14,7 +14,7 @@ La primera versión pública resolverá únicamente:
 - Biblioteca local de proyectos y archivo portable versionado para exportar e importar el caso en otro equipo.
 - Unidades SI, con conversiones explícitas y sin conversiones implícitas ocultas.
 
-## Fuera de alcance en la primera versión
+## Fuera del alcance base original
 
 - Cargas excéntricas, momentos, volcamiento o presión no uniforme.
 - Zapatas combinadas, corridas, con vigas de amarre o losas de cimentación.
@@ -23,6 +23,12 @@ La primera versión pública resolverá únicamente:
 - Generación de planos constructivos o detalle final de obra.
 
 Una entrada fuera de alcance debe bloquear el cálculo o emitir una advertencia inequívoca; nunca debe forzar una simplificación silenciosa.
+
+## Ampliación modular vigente
+
+El prototipo actual añadió, mediante motores y snapshots independientes, zapata corrida, combinada rectangular, medianera con viga centradora, combinada trapezoidal y aislada excéntrica de borde. Sus alcances y exclusiones se definen en los documentos `15`, `16`, `17`, `19` y `20`; el inventario consolidado está en `18-footing-types-roadmap.md`.
+
+Cada una de las seis tipologías dispone de tres ejemplos rápidos: referencia, variación y borde. Cargar un ejemplo solo declara entradas en el modelo activo; no amplía el alcance, no cambia el perfil técnico y no convierte referencias de guía en cumplimiento normativo. El inventario se mantiene en `21-quick-example-library.md`.
 
 ## Base técnica inicial
 

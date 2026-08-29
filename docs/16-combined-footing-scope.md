@@ -79,3 +79,10 @@ Para `B = 2.00 m`, `L = 6.00 m`, columnas cuadradas de `0.40 m` en `x1 = 1.00 m`
 
 Estas cifras son un desarrollo independiente de estática y se usan como regresión interna. Aún se requieren contrastes externos compatibles antes de elevar el estado técnico de la tipología.
 
+## Ejemplos rápidos disponibles
+
+- `combined-reference-unbalanced`: cargas distintas y presión lineal.
+- `combined-balanced-manual`: caso simétrico `AXC-COMB-001`.
+- `combined-contact-loss`: bloqueo intencional por contacto parcial.
+
+El caso bloqueado confirma el límite del motor; no intenta recortar el área comprimida.

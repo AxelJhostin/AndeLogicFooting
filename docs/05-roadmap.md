@@ -33,8 +33,9 @@
 - Generar memoria imprimible con identidad de versión.
 - Incorporar biblioteca local IndexedDB y exportación/importación de `ProjectDocument` JSON versionado.
 - Revisar accesibilidad, móvil y rendimiento.
+- Mantener una biblioteca probada de ejemplos rápidos para todas las tipologías activas.
 
-**Avance:** existe el modelo serializable de memoria; falta conectarlo a una salida imprimible estructurada y a las instantáneas de resultados.
+**Avance:** existen memoria completa por tipología, láminas técnicas, persistencia local y una biblioteca de 18 ejemplos rápidos probados. La impresión sigue basada en HTML/CSS y las referencias técnicas continúan en validación.
 
 ## E. Prelanzamiento
 
@@ -62,5 +63,7 @@
 Estas ampliaciones conservan estado de referencia en validación. No liberan asentamientos, interacción suelo-estructura, contacto parcial ni casos de borde.
 
 El inventario actualizado y el orden de las tipologías restantes se mantiene en `18-footing-types-roadmap.md`.
+
+La biblioteca rápida de referencia, variación y borde para las seis familias está implementada y documentada en `21-quick-example-library.md`.
 
 Estas ideas permanecen fuera hasta que el flujo axial centrado sea correcto, claro y validado.

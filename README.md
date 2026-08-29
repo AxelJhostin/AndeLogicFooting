@@ -1,33 +1,77 @@
-# AndeLogic Zapatas — Producto 01
+# AndeLogic Zapatas
 
-Producto de **AndeLogic Engineering** para revisar zapatas aisladas rectangulares de forma trazable. El nombre anterior `andelogic-footing` se conserva únicamente como identificador local de almacenamiento para no perder proyectos creados durante el prototipo.
+Aplicación local-first de **AndeLogic Engineering** para estudiar y documentar cimentaciones superficiales de hormigón armado mediante cálculos deterministas, memoria de punta a punta y límites técnicos visibles.
 
-Herramienta especializada para el diseño y la verificación de **zapatas aisladas rectangulares de hormigón armado**. Es el primer producto oficial nuevo de AndeLogic Engineering; no reutiliza ni reemplaza PreDim NEC.
+## Estado actual
 
-## Estado
+La aplicación dispone de seis modelos independientes:
 
-**Fase de definición y validación.** Ya existe un prototipo de interfaz para probar la biblioteca local, los archivos portables, el contacto de servicio centrado y la demanda de cortante unidireccional en ambos ejes. El contacto permite comparar en base bruta o neta. El módulo de cortante muestra presión última, profundidad efectiva, áreas tributarias y acciones, pero todavía no calcula resistencia ni cumplimiento normativo. Punzonamiento, flexión y refuerzo siguen pendientes.
+1. zapata aislada rectangular centrada;
+2. zapata corrida bajo muro centrado, por franja de `1.00 m`;
+3. zapata combinada rectangular para dos columnas interiores;
+4. zapata medianera con viga centradora;
+5. zapata combinada trapezoidal;
+6. zapata aislada excéntrica de borde sin viga centradora.
 
-## Probar el prototipo
+Cada modelo tiene sus propias entradas, validación, motor, resultados, memoria y representación técnica. Las demandas se obtienen por equilibrio; las resistencias disponibles se identifican como **referencias de guía en validación**, no como aprobación normativa integral.
 
-Requiere Node.js 20 o superior. En una terminal:
+El proyecto también incluye:
+
+- biblioteca local de proyectos con IndexedDB;
+- importación y exportación de archivos JSON versionados;
+- memoria de cálculo con datos, hipótesis, fórmulas, sustituciones y resultados;
+- láminas técnicas de sección, planta y armado preliminar;
+- catálogo de **18 ejemplos rápidos**, tres por tipología: referencia, variación y alerta o bloqueo esperado;
+- pruebas automáticas del motor, migraciones, informes y ejemplos.
+
+## Ejecutar la aplicación
+
+Requiere Node.js 20 o superior.
 
 ```bash
 cd /Users/hernandezaxel/Documents/ChatGPT/AndeLogicFooting/app
+npm install
 npm run dev
 ```
 
-Abre la dirección que muestre la terminal, normalmente [http://localhost:5173](http://localhost:5173). Para comprobar la persistencia:
+La terminal mostrará la dirección local, normalmente [http://localhost:5173](http://localhost:5173).
 
-1. Escribe un nombre y algunos valores de prueba.
-2. Pulsa **Guardar en este equipo**.
-3. Recarga la página y abre el proyecto desde la biblioteca local.
-4. Pulsa **Descargar archivo**, luego **Abrir archivo** para importarlo como copia en el mismo navegador u otro equipo.
-5. Define si la capacidad del informe geotécnico es **bruta** o **neta**, ingresa el esfuerzo removido si aplica y pulsa **Calcular contacto de servicio**. El resultado separa peso propio, relleno, presión bruta y presión neta.
-6. Ingresa la carga axial última, recubrimiento y diámetro considerado; pulsa **Calcular demanda de cortante** para revisar ambos ejes y las secciones discontinuas de la planta.
-6. Pulsa **Imprimir informe** si quieres entregar el caso y sus supuestos a un revisor.
+## Comprobaciones de calidad
 
-El contacto y la demanda de cortante suponen columna centrada y presión uniforme. No evalúan asentamientos, excentricidad, volcamiento ni deslizamiento. La demanda de cortante no incluye aún resistencia del hormigón; tampoco están implementados punzonamiento, flexión ni armado. El prototipo no produce todavía un diseño completo de cimentación.
+```bash
+cd /Users/hernandezaxel/Documents/ChatGPT/AndeLogicFooting/app
+npm run lint
+npm test
+npm run build
+```
+
+## Ejemplos rápidos
+
+En la franja superior:
+
+1. elige una tipología;
+2. selecciona un caso en **Prueba rápida**;
+3. revisa el resultado esperado que aparece bajo el selector;
+4. pulsa **Cargar** y luego **Analizar**.
+
+Los ejemplos reemplazan únicamente las entradas del tipo activo, invalidan resultados anteriores y no se guardan automáticamente. Incluyen casos que deben calcular, casos que deben mostrar una alerta y casos que deben bloquearse para demostrar los límites del modelo. Son datos didácticos y de regresión, no proyectos reales ni diseños aprobados.
+
+El inventario completo está en [Biblioteca de ejemplos rápidos](docs/21-quick-example-library.md).
+
+## Arquitectura resumida
+
+```text
+app/src/
+├── domain/          # Modelos, validaciones, cálculos puros y catálogo de ejemplos
+├── application/     # Orquestadores por tipología
+├── standards/       # Perfil técnico y trazabilidad
+├── reports/         # Contratos de memoria
+├── persistence/     # Biblioteca local y documento portable
+├── ui/              # Formularios, resultados y memorias
+└── components/      # Láminas técnicas
+```
+
+La interfaz no contiene fórmulas. Cargar un ejemplo tampoco ejecuta cálculos ni cambia criterios: solo aplica un snapshot SI explícito; el botón **Analizar** utiliza el mismo orquestador probado que cualquier proyecto manual.
 
 ## Documentación
 
@@ -38,22 +82,28 @@ El contacto y la demanda de cortante suponen columna centrada y presión uniform
 - [Roadmap](docs/05-roadmap.md)
 - [Trazabilidad normativa](docs/06-normative-traceability.md)
 - [Registro de casos de validación](docs/07-validation-case-register.md)
-- [Persistencia y archivos de proyecto](docs/08-project-persistence.md)
+- [Persistencia y archivos](docs/08-project-persistence.md)
 - [Protocolo de contraste externo](docs/09-external-benchmark-protocol.md)
-- [Fichas de implementación de Axel Code](docs/10-axel-code-implementation-cards.md)
-- [Mapa técnico local de zapatas NEC](docs/12-nec-footing-technical-map.md)
-- [Guía de contribución para IA y colaboradores](AGENTS.md)
+- [Fichas de Axel Code](docs/10-axel-code-implementation-cards.md)
+- [Manifiesto local NEC](docs/11-local-nec-reference-manifest.md)
+- [Mapa técnico NEC](docs/12-nec-footing-technical-map.md)
+- [Dirección de interfaz](docs/13-ui-redesign-direction.md)
+- [Comparación con manual externo](docs/14-manual-tecnico-comparison.md)
+- [Alcance de zapata corrida](docs/15-strip-footing-scope.md)
+- [Alcance de zapata combinada](docs/16-combined-footing-scope.md)
+- [Alcance de zapata medianera](docs/17-strap-footing-scope.md)
+- [Inventario de tipologías](docs/18-footing-types-roadmap.md)
+- [Alcance de zapata trapezoidal](docs/19-trapezoidal-footing-scope.md)
+- [Alcance de zapata excéntrica de borde](docs/20-edge-eccentric-footing-scope.md)
+- [Biblioteca de ejemplos rápidos](docs/21-quick-example-library.md)
+- [Guía para IA y colaboradores](AGENTS.md)
 
-## Principio rector
+## Límites y responsabilidad
+
+La aplicación no calcula la capacidad portante ni los asentamientos del suelo: la capacidad admisible debe provenir del informe geotécnico y declararse con su base bruta o neta correcta. Tampoco sustituye el análisis estructural global, el detallado constructivo ni la revisión de un profesional competente.
 
 ```text
-Entradas declaradas → motor normativo determinista → verificaciones → resultados trazables → informe revisable
-                                      ↑
-                         IA opcional para explicar, nunca para decidir
+Entradas declaradas → motor determinista → verificaciones → resultados trazables → memoria revisable
 ```
 
-La herramienta no inventará ecuaciones, no cambiará datos silenciosamente y no sustituirá el estudio geotécnico, el análisis global ni el criterio del profesional responsable.
-
-## Propiedad de los datos
-
-El producto será **local-first**: el usuario podrá guardar varios proyectos en su propio equipo y exportarlos para respaldo, envío o apertura en otra computadora. La primera versión no requerirá cuenta, servidor ni sincronización en la nube. El archivo exportado será el mecanismo de respaldo portable; una base de datos local no sustituye una copia que el usuario decida conservar.
+AndeLogic no cambia datos, normas o hipótesis de manera silenciosa. Un caso fuera del alcance se bloquea o se marca expresamente como no evaluado.

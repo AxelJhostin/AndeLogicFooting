@@ -75,3 +75,10 @@ Para `Pu,ext = 900 kN` y `Pu,int = 1350 kN`:
 
 Este caso es una regresión de equilibrio interno. El modelo continúa como referencia en validación hasta completar contrastes externos compatibles.
 
+## Ejemplos rápidos disponibles
+
+- `strap-reference-transfer`: reproducción de `AXC-STRAP-001`.
+- `strap-longer-spacing`: mayor separación, cargas y geometría alternativas.
+- `strap-interior-reaction-loss`: bloqueo por reacción interior no positiva.
+
+Los ejemplos mantienen expresamente el tramo libre de la viga sin apoyo en el suelo.

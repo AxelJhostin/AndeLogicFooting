@@ -18,6 +18,20 @@ Cada fixture debe conservar: fuente, edición, cláusulas aplicadas, entradas, r
 
 La base actual conserva el caso interno de cadena completa `NEC-FTG-REF-001`, una falla de contacto `NEC-FTG-REF-002`, una falla de acero `NEC-FTG-REF-003` y conversiones SI explícitas. Estos fixtures son regresiones internas: aún no sustituyen los contrastes externos requeridos para liberar un módulo.
 
+## Biblioteca de ejemplos de interfaz
+
+Los ejemplos rápidos tienen una puerta de calidad separada del banco normativo:
+
+1. todas las tipologías activas ofrecen referencia, variación y borde;
+2. cada ID es único y estable;
+3. todo caso que anuncia cálculo o alerta termina en estado `calculated`;
+4. todo caso que anuncia bloqueo termina en `invalid-input`;
+5. una alerta de contacto comprueba además el estado `fail` correspondiente;
+6. cargar un ejemplo preserva los snapshots inactivos;
+7. ningún ejemplo guarda, analiza o altera el perfil automáticamente.
+
+Estas pruebas protegen el flujo didáctico, pero no validan una ecuación ni reemplazan contrastes externos.
+
 ## Persistencia y archivos de proyecto
 
 Antes de publicar se prueban, como mínimo:

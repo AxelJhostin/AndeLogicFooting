@@ -170,7 +170,7 @@ Las fórmulas propias aprobadas para el motor pueden mostrarse acompañadas de v
 - Entradas numéricas con unidad unida al campo, validación inmediata y sin forzar un `0` visible mientras el usuario edita.
 - Cambiar un dato invalida de forma visible los resultados afectados: “Necesita recalcular”, no resultados antiguos aparentando vigencia.
 - Un solo botón principal: `Analizar caso`. Las acciones avanzadas quedan en pestañas o secciones secundarias.
-- El ejemplo carga un caso didáctico identificable, no un proyecto real ni un diseño aprobado.
+- La biblioteca ofrece referencia, variación y borde para el tipo activo. Antes de cargar muestra el resultado esperado; después invalida resultados anteriores y nunca se presenta como proyecto real o diseño aprobado.
 - Guardar, exportar e imprimir siguen disponibles, pero no compiten visualmente con el análisis.
 
 ## Límites de esta fase
@@ -196,3 +196,7 @@ La interfaz activa implementa el shell técnico descrito en este documento sin a
 La lámina se divide en componentes SVG independientes para planta, secciones A–A/B–B, punzonamiento y armado preliminar. Todos consumen entradas o resultados existentes: no vuelven a calcular criterios dentro de los componentes. Las referencias de resistencia y armado siguen rotuladas como referencias de guía en validación, nunca como cumplimiento o aprobación normativa.
 
 La interfaz anterior quedó archivada en `app/src/legacy/` y excluida de la compilación. La producción utiliza exclusivamente el shell nuevo y sus componentes técnicos; el archivo legado se conserva solo como referencia recuperable durante la transición.
+
+## Biblioteca rápida — 2026-08-29
+
+La franja del proyecto integra un selector de ejemplos junto al botón **Cargar**. El catálogo es dependiente de la tipología y muestra tres opciones estables. Una leyenda anticipa si se espera cálculo, alerta o bloqueo y describe la observación concreta, de modo que los casos límite también puedan probarse deliberadamente.

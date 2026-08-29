@@ -39,6 +39,17 @@ Este registro controla los casos de referencia del motor. No deben añadirse res
 | NEC-FTG-029 | Alcance excéntrico | Resultante fuera del tercio central | Condición `|e|>L/6` | Entrada inválida; no se calcula contacto parcial | No aplica | Preparado para automatizar |
 | NEC-FTG-030 | Punzonamiento de borde | Perímetro truncado por el lindero | Alcance de `20-edge-eccentric-footing-scope.md` | Resultado explícito `not-evaluated`; no reutiliza columna interior | No aplica | Preparado para automatizar |
 
+## Casos funcionales de la biblioteca rápida
+
+| ID | Objetivo | Resultado esperado | Estado |
+| --- | --- | --- | --- |
+| UX-EX-001 | Cobertura de las seis tipologías | Tres casos por tipo: referencia, variación y borde | Automatizado |
+| UX-EX-002 | Identidad y explicación | 18 IDs únicos con descripción y observación esperada | Automatizado |
+| UX-EX-003 | Coherencia de estados | Casos calculados/alerta terminan en `calculated`; bloqueos en `invalid-input` | Automatizado |
+| UX-EX-004 | Aislamiento de snapshots | Cargar un ejemplo cambia solo las entradas del tipo activo | Automatizado |
+
+Estos IDs `UX-EX-*` no pertenecen a la matriz normativa `NEC-FTG-*`; prueban navegación, datos y límites visibles.
+
 ## Plantilla obligatoria por caso
 
 Cada caso se conserva en un fixture legible y contiene:
