@@ -1,10 +1,10 @@
-export const PROJECT_SCHEMA_VERSION = 1
+export const PROJECT_SCHEMA_VERSION = 2
 
 import type { StandardProfileId } from '../standards/profiles'
 
 export type StandardProfile = StandardProfileId
 
-export type FootingType = 'isolated' | 'strip'
+export type FootingType = 'isolated' | 'strip' | 'combined'
 
 export type FootingInputs = {
   axialLoadKn: number
@@ -52,6 +52,37 @@ export type StripFootingInputs = {
   developmentAvailableLengthM: number
 }
 
+export type CombinedFootingInputs = {
+  serviceColumn1LoadKn: number
+  serviceColumn2LoadKn: number
+  factoredColumn1LoadKn: number
+  factoredColumn2LoadKn: number
+  allowableBearingKpa: number
+  bearingCapacityBasis: 'gross' | 'net'
+  removedOverburdenKpa: number
+  concreteUnitWeightKnM3: number
+  soilCoverDepthM: number
+  soilUnitWeightKnM3: number
+  footingWidthM: number
+  footingLengthM: number
+  footingThicknessM: number
+  column1WidthM: number
+  column1LengthM: number
+  column1CenterFromLeftM: number
+  column2WidthM: number
+  column2LengthM: number
+  column2CenterFromLeftM: number
+  concreteCoverM: number
+  barDiameterM: number
+  concreteStrengthMpa: number
+  steelYieldStrengthMpa: number
+  longitudinalBottomBarSpacingM: number
+  longitudinalTopBarSpacingM: number
+  transverseBarSpacingM: number
+  longitudinalDevelopmentAvailableM: number
+  transverseDevelopmentAvailableM: number
+}
+
 export const DEFAULT_FOOTING_THICKNESS_M = 0.45
 
 export type ProjectDocument = {
@@ -66,6 +97,7 @@ export type ProjectDocument = {
   footingType: FootingType
   inputSnapshot: FootingInputs
   stripInputSnapshot: StripFootingInputs
+  combinedInputSnapshot: CombinedFootingInputs
   warnings: string[]
 }
 
@@ -88,6 +120,37 @@ export const DEFAULT_STRIP_FOOTING_INPUTS: StripFootingInputs = {
   transverseBarSpacingM: 0.15,
   longitudinalBarSpacingM: 0.15,
   developmentAvailableLengthM: 0.42,
+}
+
+export const DEFAULT_COMBINED_FOOTING_INPUTS: CombinedFootingInputs = {
+  serviceColumn1LoadKn: 700,
+  serviceColumn2LoadKn: 900,
+  factoredColumn1LoadKn: 980,
+  factoredColumn2LoadKn: 1260,
+  allowableBearingKpa: 200,
+  bearingCapacityBasis: 'gross',
+  removedOverburdenKpa: 0,
+  concreteUnitWeightKnM3: 24,
+  soilCoverDepthM: 0,
+  soilUnitWeightKnM3: 0,
+  footingWidthM: 2.2,
+  footingLengthM: 5.4,
+  footingThicknessM: 0.55,
+  column1WidthM: 0.45,
+  column1LengthM: 0.45,
+  column1CenterFromLeftM: 0.8,
+  column2WidthM: 0.5,
+  column2LengthM: 0.5,
+  column2CenterFromLeftM: 4.2,
+  concreteCoverM: 0.075,
+  barDiameterM: 0.016,
+  concreteStrengthMpa: 23.54,
+  steelYieldStrengthMpa: 412.08,
+  longitudinalBottomBarSpacingM: 0.15,
+  longitudinalTopBarSpacingM: 0.15,
+  transverseBarSpacingM: 0.15,
+  longitudinalDevelopmentAvailableM: 1.1,
+  transverseDevelopmentAvailableM: 1.1,
 }
 
 const now = () => new Date().toISOString()
@@ -130,6 +193,7 @@ export function createNewProject(): ProjectDocument {
       barsParallelToLengthMaxSpacingM: 0,
     },
     stripInputSnapshot: { ...DEFAULT_STRIP_FOOTING_INPUTS },
+    combinedInputSnapshot: { ...DEFAULT_COMBINED_FOOTING_INPUTS },
     warnings: [
       'Las demandas se calculan internamente; las resistencias disponibles se presentan como referencias de guía trazables y no como aprobación normativa.',
     ],
@@ -156,16 +220,22 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
     ? legacyInputs.punchingCriticalSectionOffsetM!
     : 0
   const legacyProfile: string = project.standardProfile
-  const legacyProject = project as ProjectDocument & { footingType?: FootingType; stripInputSnapshot?: Partial<StripFootingInputs> }
+  const legacyProject = project as ProjectDocument & {
+    footingType?: FootingType
+    stripInputSnapshot?: Partial<StripFootingInputs>
+    combinedInputSnapshot?: Partial<CombinedFootingInputs>
+  }
   const stripInputs = legacyProject.stripInputSnapshot ?? {}
+  const combinedInputs = legacyProject.combinedInputSnapshot ?? {}
   const standardProfile = legacyProfile === 'NEC-2015-GUIDE-TRACEABLE' || legacyProfile === 'NEC-PUBLIC-2014-PENDING' || legacyProfile === 'NEC-PENDING'
     ? 'NEC-2015-GUIDE-TRACEABLE'
     : 'ARCHIVED-UNSUPPORTED'
 
   return {
     ...project,
+    schemaVersion: PROJECT_SCHEMA_VERSION,
     standardProfile,
-    footingType: legacyProject.footingType === 'strip' ? 'strip' : 'isolated',
+    footingType: legacyProject.footingType === 'strip' || legacyProject.footingType === 'combined' ? legacyProject.footingType : 'isolated',
     inputSnapshot: {
       ...project.inputSnapshot,
       footingThicknessM,
@@ -190,6 +260,11 @@ export function normalizeProjectDocument(project: ProjectDocument): ProjectDocum
       ...stripInputs,
       bearingCapacityBasis: stripInputs.bearingCapacityBasis === 'net' ? 'net' : 'gross',
     },
+    combinedInputSnapshot: {
+      ...DEFAULT_COMBINED_FOOTING_INPUTS,
+      ...combinedInputs,
+      bearingCapacityBasis: combinedInputs.bearingCapacityBasis === 'net' ? 'net' : 'gross',
+    },
   }
 }
 
@@ -198,7 +273,9 @@ export function isProjectDocument(value: unknown): value is ProjectDocument {
 
   const document = value as Partial<ProjectDocument>
   return (
-    document.schemaVersion === PROJECT_SCHEMA_VERSION &&
+    typeof document.schemaVersion === 'number' &&
+    document.schemaVersion >= 1 &&
+    document.schemaVersion <= PROJECT_SCHEMA_VERSION &&
     typeof document.projectId === 'string' &&
     typeof document.name === 'string' &&
     typeof document.createdAt === 'string' &&

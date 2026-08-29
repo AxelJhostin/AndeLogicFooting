@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createNewProject, DEFAULT_FOOTING_THICKNESS_M, normalizeProjectDocument, type FootingInputs, type ProjectDocument } from './projects'
+import { createNewProject, DEFAULT_FOOTING_THICKNESS_M, isProjectDocument, normalizeProjectDocument, PROJECT_SCHEMA_VERSION, type FootingInputs, type ProjectDocument } from './projects'
 
 describe('normalizeProjectDocument', () => {
   it('asigna un espesor seguro a proyectos creados antes de la vista de elevación', () => {
@@ -58,5 +58,17 @@ describe('normalizeProjectDocument', () => {
     expect(normalized.footingType).toBe('isolated')
     expect(normalized.stripInputSnapshot.serviceLineLoadKnM).toBeGreaterThan(0)
     expect(normalized.inputSnapshot).toEqual(project.inputSnapshot)
+  })
+
+  it('migra archivos anteriores al snapshot independiente de zapata combinada', () => {
+    const project = createNewProject()
+    const legacyProject = { ...project, schemaVersion: 1 } as Partial<ProjectDocument>
+    delete legacyProject.combinedInputSnapshot
+
+    expect(isProjectDocument(legacyProject)).toBe(true)
+    const normalized = normalizeProjectDocument(legacyProject as ProjectDocument)
+    expect(normalized.schemaVersion).toBe(PROJECT_SCHEMA_VERSION)
+    expect(normalized.combinedInputSnapshot.serviceColumn1LoadKn).toBeGreaterThan(0)
+    expect(normalized.combinedInputSnapshot.column2CenterFromLeftM).toBeGreaterThan(normalized.combinedInputSnapshot.column1CenterFromLeftM)
   })
 })

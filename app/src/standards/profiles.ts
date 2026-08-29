@@ -10,7 +10,7 @@ export type PublicSource = {
 
 export type CalculationTrace = {
   id: string
-  appliesTo: Array<'isolated' | 'strip'>
+  appliesTo: Array<'isolated' | 'strip' | 'combined'>
   module: string
   basis: 'Equilibrio y geometría' | 'Guía pública NEC 2015' | 'Dato externo obligatorio'
   sourceId?: string
@@ -32,21 +32,21 @@ const publicSources: PublicSource[] = [
   {
     id: 'nec-se-hm-2015',
     label: 'NEC-SE-HM · Estructuras de Hormigón Armado',
-    version: 'NEC 2015',
+    version: 'NEC-SE-HM 2014',
     url: 'https://www.habitatyvivienda.gob.ec/wp-content/uploads/2023/03/8.-NEC-SE-HM-Hormigon-Armado.pdf',
     scope: 'Marco ecuatoriano de hormigón armado; incorpora referencias externas para materias no desarrolladas íntegramente.',
   },
   {
     id: 'nec-se-gc-2015',
     label: 'NEC-SE-GC · Geotecnia y Cimentaciones',
-    version: 'NEC 2015',
-    url: 'https://www.habitatyvivienda.gob.ec/wp-content/uploads/2020/07/2015-01-10_Registro-Oficial-No.-413_AM-No.-0047_Actualizaci%C3%B3n-NEC-SE_AC_MD_VIVIENDA-y-NEC-HS-VIDRIO.pdf',
+    version: 'NEC-SE-GC 2014',
+    url: 'https://www.habitatyvivienda.gob.ec/wp-content/uploads/2023/03/7.-NEC-SE-GC-Geotecnia-y-Cimentaciones.pdf',
     scope: 'Marco para geotecnia y cimentaciones; la capacidad admisible y asentamientos requieren el estudio geotécnico del proyecto.',
   },
   {
     id: 'nec-se-cg-2015',
     label: 'NEC-SE-CG · Cargas no sísmicas',
-    version: 'NEC 2015',
+    version: 'NEC-SE-CG 2014',
     url: 'https://www.habitatyvivienda.gob.ec/wp-content/uploads/2020/07/2015-01-10_Registro-Oficial-No.-413_AM-No.-0047_Actualizaci%C3%B3n-NEC-SE_AC_MD_VIVIENDA-y-NEC-HS-VIDRIO.pdf',
     scope: 'Marco de cargas y combinaciones; la aplicación usa la carga última declarada por el responsable del caso.',
   },
@@ -78,6 +78,12 @@ export const standardProfiles: Record<StandardProfileId, StandardProfile> = {
       { id: 'strip-flexure', appliesTo: ['strip'], module: 'Flexión transversal por metro', basis: 'Equilibrio y geometría', reference: 'Mᵤ = qᵤa²/2 en cada voladizo desde la cara del muro.', applicability: 'Muro centrado, presión última uniforme y franja longitudinal de 1.00 m.' },
       { id: 'strip-reinforcement', appliesTo: ['strip'], module: 'Armado transversal y longitudinal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Expresiones de acero de la sección 1.10.5 adaptadas a una franja de 1.00 m.', applicability: 'Acero transversal por flexión y mínimo; acero longitudinal como mínimo de distribución. Detallado integral pendiente.' },
       { id: 'strip-development', appliesTo: ['strip'], module: 'Desarrollo transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barra a tracción, hormigón normal y factores unitarios declarados.' },
+      { id: 'combined-contact', appliesTo: ['combined'], module: 'Contacto lineal de servicio', basis: 'Equilibrio y geometría', sourceId: 'nec-se-gc-2015', reference: 'NEC-SE-GC 2014, secciones 6.4, 7.1 y 7.2.1; equilibrio de fuerza y momento con presión lineal.', applicability: 'Zapata rectangular rígida, dos columnas alineadas y contacto completo.' },
+      { id: 'combined-beam', appliesTo: ['combined'], module: 'Viga longitudinal', basis: 'Equilibrio y geometría', reference: 'Integración de la reacción lineal y cargas puntuales declaradas; V(x) y M(x) satisfacen equilibrio en ambos extremos.', applicability: 'Dos cargas verticales, sin momentos transferidos ni interacción suelo-estructura.' },
+      { id: 'combined-shear', appliesTo: ['combined'], module: 'Cortante longitudinal y transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Resistencia de la sección 1.10.1 aplicada a demandas obtenidas por equilibrio.', applicability: 'Hormigón normal y secciones completas a distancia d; adaptación pendiente de contraste independiente.' },
+      { id: 'combined-punching', appliesTo: ['combined'], module: 'Punzonamiento por columna', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Secciones 1.10.2 a 1.10.4 con reacción lineal integrada dentro del perímetro.', applicability: 'Dos columnas interiores con perímetros completos; borde, esquina y presión no lineal excluidos.' },
+      { id: 'combined-reinforcement', appliesTo: ['combined'], module: 'Flexión y armado combinado', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Sección 1.10.5 para secciones rectangulares: momento positivo inferior, negativo superior y flexión transversal.', applicability: 'Distribución preliminar; no sustituye detallado, ductilidad ni revisión integral.' },
+      { id: 'combined-development', appliesTo: ['combined'], module: 'Desarrollo longitudinal y transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barras a tracción, hormigón normal y factores unitarios declarados.' },
     ],
     releaseBlocker: 'El perfil identifica fuentes y condiciones de cada módulo, pero aún requiere contraste independiente de casos y revisión profesional antes de declarar cumplimiento normativo.',
   },

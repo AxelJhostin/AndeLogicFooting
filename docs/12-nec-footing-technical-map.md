@@ -29,7 +29,7 @@ Las huellas SHA-256 y las rutas locales de estos archivos constan en [el manifie
 | Tema | Fuentes y ubicación local | Uso dentro de AndeLogic | Estado |
 | --- | --- | --- | --- |
 | Alcance de cimentación y datos del subsuelo | NEC-SE-GC, PDF 43-50, capítulo 6; guía geotécnica, PDF 62-77, capítulo 3 | Mantener capacidad admisible como entrada del informe geotécnico; separar capacidad y asentamientos. | Contacto centrado implementado; asentamientos fuera de alcance. |
-| Zapatas aisladas y geometría superficial | NEC-SE-GC, PDF 51-52, capítulo 7 | Delimitar zapata aislada, profundidad de desplante, ancho y longitud. | Alcance activo; combinadas y losas excluidas. |
+| Zapatas aisladas, combinadas y geometría superficial | NEC-SE-GC, PDF 48-52, secciones 6.4 y 7 | Delimitar geometría, excentricidad, equilibrio de presiones y capacidad externa. | Aislada, corrida y combinada rectangular activas dentro de sus alcances documentados; losas excluidas. |
 | Capacidad admisible, base bruta/neta y excavación | NEC-SE-GC, PDF 46-49; guía geotécnica, PDF 67-72 | Explicar la base de presión comparada y exigir que coincida con el informe del suelo. | Contacto de servicio implementado con base declarada. |
 | Asentamientos y servicio geotécnico | NEC-SE-GC, PDF 48-49; guía geotécnica, PDF 72-77 | Registrar como revisión indispensable del estudio geotécnico, sin estimarla en la aplicación inicial. | Fuera de alcance. |
 | Cargas de servicio y últimas | NEC-SE-CG, PDF 14-24, capítulos 2 y 3 | Documentar cargas declaradas y combinaciones externas; no inventar combinaciones en la interfaz. | Entradas de servicio y última separadas; combinador pendiente. |
@@ -61,6 +61,6 @@ Las huellas SHA-256 y las rutas locales de estos archivos constan en [el manifie
 ## Límites que el mapa no cambia
 
 - No calcula capacidad portante ni asentamientos: provienen del estudio geotécnico.
-- No habilita excentricidad, presión trapezoidal, zapatas combinadas, corridas o losas.
+- La presión lineal se habilita únicamente para la zapata combinada rectangular documentada en `16-combined-footing-scope.md`; no habilita contacto parcial, momentos transferidos, geometría trapezoidal ni losas.
 - No convierte referencias de guía en una certificación NEC.
 - No incorpora texto, tablas, figuras ni ecuaciones de las fuentes locales al repositorio.

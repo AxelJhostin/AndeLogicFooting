@@ -22,6 +22,10 @@ Este registro controla los casos de referencia del motor. No deben añadirse res
 | NEC-FTG-012 | Guía NEC 2015 | Longitud de desarrollo a tracción | Guía práctica NEC 2015, sección 1.10.6 | Ejemplo local reproducido con una barra de 20 mm | `0.001 m` | Fixture interno automatizado; contraste externo pendiente |
 | NEC-FTG-013 | Guía NEC 2015 | Cadena completa de zapata centrada | Fixture `NEC-FTG-REF-001` y referencias por módulo | Contacto, cortantes, flexión, acero y desarrollo alcanzan sus referencias internas | Tolerancias por módulo | Automatizado; evidencia externa pendiente |
 | NEC-FTG-014 | Guía NEC 2015 | Fallas controladas | Fixtures `NEC-FTG-REF-002` y `NEC-FTG-REF-003` | Capacidad de suelo superada y acero insuficiente se identifican sin ambigüedad | No aplica | Automatizado |
+| NEC-FTG-015 | Equilibrio + NEC-SE-GC | Zapata combinada simétrica | Caso manual `AXC-COMB-001` en `16-combined-footing-scope.md` | `qserv = 112 kPa`, `qu = 150 kPa`, `M+ = 150 kN·m`, `M− = -450 kN·m` | `1e-9` | Automatizado; contraste externo pendiente |
+| NEC-FTG-016 | Equilibrio + NEC-SE-GC | Zapata combinada con cargas distintas | Equilibrio de fuerza y momento | `V(L)=0`, `M(L)=0` y presión extrema mayor junto a la carga gobernante | `1e-9` | Automatizado |
+| NEC-FTG-017 | Alcance combinado | Pérdida de contacto completo | Resultante fuera del núcleo central | El motor devuelve entrada inválida y no analiza contacto parcial | No aplica | Automatizado |
+| NEC-FTG-018 | Alcance combinado | Columnas superpuestas o fuera de la base | Geometría incompatible | El motor bloquea el caso | No aplica | Automatizado |
 
 ## Plantilla obligatoria por caso
 

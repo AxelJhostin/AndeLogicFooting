@@ -26,6 +26,7 @@ src/
 ├── domain/
 │   ├── footing/          # Tipos, cálculos puros y resultados
 │   ├── strip-footing/    # Motor independiente por metro lineal bajo muro
+│   ├── combined-footing/ # Motor para dos columnas y presión longitudinal lineal
 │   ├── units/            # Conversión y presentación de unidades
 │   └── validation/       # Reglas de dominio y errores accionables
 ├── standards/
@@ -42,6 +43,8 @@ La UI no contiene fórmulas. El motor no importa React, el navegador ni librerí
 La interfaz llama a un único orquestador de caso en `application/footing-analysis.ts`. Este adapta las entradas del documento a los módulos puros y devuelve un resultado consolidado tipado; los componentes visuales solo representan ese resultado. Así, añadir una revisión exige extender el orquestador y su prueba, no duplicar cálculos en cada vista.
 
 La zapata corrida dispone de una frontera paralela en `application/strip-footing-analysis.ts`. No añade condicionales geométricos al motor de zapata aislada: cada tipología conserva entradas, validación, resultados, informe y componentes propios, mientras el documento de proyecto y el shell seleccionan el flujo activo.
+
+La zapata combinada repite este patrón en `domain/combined-footing/` y `application/combined-footing-analysis.ts`. Su snapshot, análisis e informe son independientes. El shell solo selecciona el flujo activo; las ecuaciones de presión lineal, viga longitudinal y demandas no viven en React ni modifican los motores aislado y corrido.
 
 Para la memoria de revisión, `MinimumReinforcementResult` expone además `barAreaMm2`: es un resultado geométrico ya obtenido por el módulo de dominio. La interfaz lo muestra como sustitución trazable y no vuelve a calcularlo; esta ampliación no modifica fórmulas ni criterios del motor.
 
@@ -66,6 +69,8 @@ La memoria muestra además la condición de aplicabilidad de cada módulo y enla
 - El perfil normativo es un dato obligatorio de la entrada y del informe.
 - Los redondeos se aplican solo al presentar resultados; el motor conserva precisión interna.
 - Las fórmulas y parámetros reciben una versión de motor.
+
+El esquema de proyecto `2` incorpora `combinedInputSnapshot`. La normalización acepta archivos de esquema `1`, agrega el snapshot nuevo y conserva sin cambios las entradas aisladas y corridas.
 
 ## Persistencia local y portabilidad
 

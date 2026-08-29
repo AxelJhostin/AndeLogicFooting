@@ -49,6 +49,13 @@
 - Escritorio con Tauri.
 - Cuentas, sincronización, colaboración y licencias.
 - IA asistente.
-- Cargas excéntricas, zapatas combinadas y análisis geotécnico avanzado.
+- Cargas generales con momentos transferidos, zapatas trapezoidales, vigas de equilibrio y análisis geotécnico avanzado.
+
+## Ampliaciones modulares implementadas — 2026-08-28
+
+- Zapata corrida bajo muro centrado mediante franja de `1.00 m`.
+- Zapata combinada rectangular para dos columnas interiores alineadas, con presión longitudinal lineal y contacto completo.
+
+Estas ampliaciones conservan estado de referencia en validación. No liberan asentamientos, interacción suelo-estructura, contacto parcial ni casos de borde.
 
 Estas ideas permanecen fuera hasta que el flujo axial centrado sea correcto, claro y validado.

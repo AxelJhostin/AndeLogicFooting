@@ -1,0 +1,19 @@
+import type { CombinedFootingAnalysis } from '../../application/combined-footing-analysis'
+import type { ResultCard } from '../results/result-cards'
+
+const reference = (value: boolean | undefined): ResultCard['state'] => value === undefined ? 'pending' : value ? 'reference' : 'attention'
+
+export function buildCombinedResultCards(analysis: CombinedFootingAnalysis | null): ResultCard[] {
+  const punching = analysis ? analysis.punching.reduce((governing, item) => item.utilization > governing.utilization ? item : governing) : null
+  return [
+    { id: 'combined-contact', title: 'Contacto lineal', state: reference(analysis ? analysis.contact.status === 'pass' : undefined), value: analysis ? `${(analysis.contact.utilization * 100).toFixed(1)}%` : '—', detail: analysis ? `qmáx ${analysis.contact.maximumPressureForComparisonKpa.toFixed(1)} kPa` : 'Requiere análisis', destination: 'section' },
+    { id: 'combined-beam', title: 'Equilibrio longitudinal', state: analysis ? 'calculated' : 'pending', value: analysis ? `${analysis.longitudinal.governingAbsoluteMomentKnM.toFixed(1)} kN·m` : '—', detail: 'Momento absoluto gobernante', destination: 'section' },
+    { id: 'combined-shear-l', title: 'Cortante longitudinal', state: reference(analysis ? analysis.shearReference.longitudinal.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.shearReference.longitudinal.utilization * 100).toFixed(1)}%` : '—', detail: analysis ? `Vᵤ ${analysis.longitudinal.governingShearDemandKn.toFixed(1)} kN` : 'Requiere análisis', destination: 'section' },
+    { id: 'combined-shear-t', title: 'Cortante transversal', state: reference(analysis ? analysis.shearReference.transverse.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.shearReference.transverse.utilization * 100).toFixed(1)}%` : '—', detail: analysis ? `Columna ${analysis.transverse.governingShearColumn}` : 'Requiere análisis', destination: 'section' },
+    { id: 'combined-punching', title: 'Punzonamiento gobernante', state: reference(punching ? punching.status === 'meets-guide-reference' : undefined), value: punching ? `${(punching.utilization * 100).toFixed(1)}%` : '—', detail: punching ? `Columna ${punching.column}` : 'Requiere análisis', destination: 'plan' },
+    { id: 'combined-steel-bottom', title: 'Acero longitudinal inferior', state: reference(analysis ? analysis.reinforcement.longitudinalBottom.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.reinforcement.longitudinalBottom.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m` : '—', detail: 'Momento positivo', destination: 'plan' },
+    { id: 'combined-steel-top', title: 'Acero longitudinal superior', state: reference(analysis ? analysis.reinforcement.longitudinalTop.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.reinforcement.longitudinalTop.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m` : '—', detail: 'Momento negativo', destination: 'plan' },
+    { id: 'combined-steel-transverse', title: 'Acero transversal', state: reference(analysis ? analysis.reinforcement.transverse.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.reinforcement.transverse.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m` : '—', detail: `Voladizo transversal${analysis ? ` · C${analysis.transverse.governingFlexureColumn}` : ''}`, destination: 'plan' },
+    { id: 'combined-development', title: 'Desarrollo', state: reference(analysis ? analysis.development.widthDirection.status === 'meets-guide-reference' && analysis.development.lengthDirection.status === 'meets-guide-reference' : undefined), value: analysis ? `${analysis.development.requiredDevelopmentLengthM.toFixed(2)} m` : '—', detail: 'Longitud requerida de referencia', destination: 'calculation' },
+  ]
+}

@@ -12,6 +12,8 @@ El manual describe una secuencia de cálculo amplia y útil como mapa de funcion
 
 > Actualización 2026-08-28: el alcance vigente incorpora además zapata corrida bajo muro centrado mediante una franja de `1.00 m`. Su definición, fuentes y exclusiones se registran en `docs/15-strip-footing-scope.md`; esta tabla se conserva como fotografía de la comparación original del módulo aislado.
 
+> Segunda actualización 2026-08-28: se incorpora zapata combinada rectangular para dos columnas interiores alineadas, con presión longitudinal lineal y contacto completo. Su alcance y derivación se registran en `docs/16-combined-footing-scope.md`; no se adopta del manual externo ninguna ecuación sin fuente y prueba propias.
+
 Hay coincidencias en contacto centrado, demanda de cortante unidireccional, punzonamiento, flexión, acero mínimo/requerido y desarrollo. Existen tres diferencias que deben revisarse antes de usar el manual como contraste: definición de peralte efectivo, coeficiente de columna interior en punzonamiento y expresión de longitud de desarrollo.
 
 ## Comparación por tema
