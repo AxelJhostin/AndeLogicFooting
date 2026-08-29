@@ -49,7 +49,7 @@
 - Escritorio con Tauri.
 - Cuentas, sincronización, colaboración y licencias.
 - IA asistente.
-- Cargas generales con momentos transferidos, zapatas trapezoidales, vigas de equilibrio y análisis geotécnico avanzado.
+- Cargas generales con momentos transferidos, contacto parcial, excentricidad biaxial y análisis geotécnico avanzado.
 
 ## Ampliaciones modulares implementadas — 2026-08-28
 
@@ -57,6 +57,7 @@
 - Zapata combinada rectangular para dos columnas interiores alineadas, con presión longitudinal lineal y contacto completo.
 - Zapata medianera con dos bases rectangulares y viga centradora rígida sin contacto con el suelo.
 - Zapata combinada trapezoidal para dos columnas interiores, con ancho variable y presión longitudinal lineal.
+- Zapata aislada excéntrica de borde sin viga centradora, con presión lineal, control del tercio central y contacto completo.
 
 Estas ampliaciones conservan estado de referencia en validación. No liberan asentamientos, interacción suelo-estructura, contacto parcial ni casos de borde.
 

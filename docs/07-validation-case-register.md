@@ -34,6 +34,10 @@ Este registro controla los casos de referencia del motor. No deben añadirse res
 | NEC-FTG-024 | Equilibrio trapezoidal | Resultante distinta del centroide | Sistema integral de fuerza y momento | Presión extrema mayor hacia la columna gobernante y equilibrio final nulo | `1e-8` | Automatizado |
 | NEC-FTG-025 | Alcance trapezoidal | Pérdida de contacto completo | Presión extrema negativa | El motor devuelve entrada inválida y no recorta el área activa | No aplica | Automatizado |
 | NEC-FTG-026 | Alcance trapezoidal | Perímetro crítico fuera del borde inclinado | Geometría local del trapecio | El motor bloquea el caso antes de calcular punzonamiento | No aplica | Automatizado |
+| NEC-FTG-027 | Equilibrio + fuente pública | Caso manual excéntrico `AXC-ECC-001` | `20-edge-eccentric-footing-scope.md` | `qserv=206.444444 → 39.777778 kPa`, `qu=291.666667 → 41.666667 kPa`, `V(L)=M(L)=0` | `1e-8` | Preparado para automatizar |
+| NEC-FTG-028 | Simetría excéntrica | Borde izquierdo frente a borde derecho | Identidad geométrica independiente | Iguales magnitudes y presiones extremas intercambiadas | `1e-8` | Preparado para automatizar |
+| NEC-FTG-029 | Alcance excéntrico | Resultante fuera del tercio central | Condición `|e|>L/6` | Entrada inválida; no se calcula contacto parcial | No aplica | Preparado para automatizar |
+| NEC-FTG-030 | Punzonamiento de borde | Perímetro truncado por el lindero | Alcance de `20-edge-eccentric-footing-scope.md` | Resultado explícito `not-evaluated`; no reutiliza columna interior | No aplica | Preparado para automatizar |
 
 ## Plantilla obligatoria por caso
 

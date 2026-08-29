@@ -1,0 +1,17 @@
+import type { EdgeFootingAnalysis } from '../../application/edge-footing-analysis'
+import type { ResultCard } from '../results/result-cards'
+
+const reference = (value: boolean | undefined): ResultCard['state'] => value === undefined ? 'pending' : value ? 'reference' : 'attention'
+export function buildEdgeResultCards(analysis: EdgeFootingAnalysis | null): ResultCard[] {
+  return [
+    { id: 'edge-contact', title: 'Contacto y capacidad', state: reference(analysis ? analysis.contact.status === 'pass' : undefined), value: analysis ? `${(analysis.contact.utilization * 100).toFixed(1)}%` : '—', detail: analysis ? `qmáx ${analysis.contact.maximumPressureForComparisonKpa.toFixed(1)} kPa` : 'Requiere análisis', destination: 'section' },
+    { id: 'edge-kern', title: 'Tercio central', state: reference(analysis ? analysis.contact.gross.middleThirdMarginM >= 0 : undefined), value: analysis ? `${Math.abs(analysis.contact.gross.eccentricityM).toFixed(3)} m` : '—', detail: analysis ? `L/6 = ${analysis.contact.gross.middleThirdLimitM.toFixed(3)} m` : 'Requiere análisis', destination: 'plan' },
+    { id: 'edge-equilibrium', title: 'Equilibrio longitudinal', state: analysis ? 'calculated' : 'pending', value: analysis ? `${analysis.longitudinal.governingFlexureDemandKnM.toFixed(1)} kN·m` : '—', detail: 'Momento en cara gobernante', destination: 'section' },
+    { id: 'edge-shear-long', title: 'Cortante longitudinal', state: reference(analysis ? analysis.shearReference.longitudinal.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.shearReference.longitudinal.utilization * 100).toFixed(1)}%` : '—', detail: analysis ? `${analysis.longitudinal.governingShearDemandKn.toFixed(1)} kN` : 'Requiere análisis', destination: 'section' },
+    { id: 'edge-shear-transverse', title: 'Cortante transversal', state: reference(analysis ? analysis.shearReference.transverse.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.shearReference.transverse.utilization * 100).toFixed(1)}%` : '—', detail: analysis ? `${analysis.transverse.oneWayShearDemandKn.toFixed(1)} kN` : 'Requiere análisis', destination: 'section' },
+    { id: 'edge-punching', title: 'Punzonamiento de borde', state: 'out-of-scope', value: 'No evaluado', detail: 'Perímetro truncado; requiere referencia específica', destination: 'plan' },
+    { id: 'edge-steel-long', title: 'Acero longitudinal', state: reference(analysis ? analysis.reinforcement.longitudinal.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.reinforcement.longitudinal.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m` : '—', detail: 'Dirección excéntrica', destination: 'plan' },
+    { id: 'edge-steel-transverse', title: 'Acero transversal', state: reference(analysis ? analysis.reinforcement.transverse.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.reinforcement.transverse.providedAreaPerMeterMm2 / 100).toFixed(2)} cm²/m` : '—', detail: 'Paralelo al lindero', destination: 'plan' },
+    { id: 'edge-development', title: 'Desarrollo', state: reference(analysis ? analysis.development.longitudinal.status === 'meets-guide-reference' && analysis.development.transverse.status === 'meets-guide-reference' : undefined), value: analysis ? `${analysis.development.requiredDevelopmentLengthM.toFixed(2)} m` : '—', detail: 'Longitud requerida de referencia', destination: 'calculation' },
+  ]
+}

@@ -16,6 +16,8 @@ El manual describe una secuencia de cálculo amplia y útil como mapa de funcion
 
 > Tercera actualización 2026-08-28: se incorpora zapata medianera con viga centradora. Su equilibrio, fuente técnica pública, caso manual y límites se registran en `docs/17-strap-footing-scope.md`. El punzonamiento en los encuentros se mantiene expresamente no evaluado.
 
+> Cuarta actualización 2026-08-29: se incorpora zapata combinada trapezoidal en `docs/19-trapezoidal-footing-scope.md` y zapata aislada excéntrica de borde en `docs/20-edge-eccentric-footing-scope.md`. La presión lineal y el tercio central se derivan y prueban dentro de AndeLogic; no se adopta del manual externo una resistencia de punzonamiento de borde.
+
 Hay coincidencias en contacto centrado, demanda de cortante unidireccional, punzonamiento, flexión, acero mínimo/requerido y desarrollo. Existen tres diferencias que deben revisarse antes de usar el manual como contraste: definición de peralte efectivo, coeficiente de columna interior en punzonamiento y expresión de longitud de desarrollo.
 
 ## Comparación por tema
@@ -56,7 +58,7 @@ Hay coincidencias en contacto centrado, demanda de cortante unidireccional, punz
 
 ### Fuera del alcance del Producto 01
 
-- Excentricidad, momentos uniaxiales/biaxiales, presión trapezoidal/triangular y despegue.
+- Momentos adicionales transferidos, excentricidad biaxial, contacto parcial y despegue. La excentricidad uniaxial producida por una columna alineada al borde solo está disponible dentro del alcance estricto de `docs/20-edge-eccentric-footing-scope.md`.
 - Deslizamiento y volcamiento.
 - Capacidad portante interna, estratigrafía, agua y asentamientos.
 

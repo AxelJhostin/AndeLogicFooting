@@ -12,6 +12,8 @@ describe('standard profiles', () => {
     expect(nec.sources.map((source) => source.id)).toContain('usace-em-1110-1-1905-2025')
     expect(nec.traceability.filter((item) => item.appliesTo.includes('strap')).length).toBeGreaterThan(5)
     expect(nec.traceability.filter((item) => item.appliesTo.includes('trapezoidal')).length).toBeGreaterThan(5)
+    expect(nec.traceability.filter((item) => item.appliesTo.includes('edge')).length).toBeGreaterThan(5)
+    expect(nec.traceability.find((item) => item.id === 'edge-punching')?.basis).toBe('Dato externo obligatorio')
     expect(nec.label).toContain('NEC 2015')
     expect(archived.sources).toEqual([])
   })

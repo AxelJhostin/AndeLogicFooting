@@ -29,6 +29,7 @@ src/
 │   ├── combined-footing/ # Motor para dos columnas y presión longitudinal lineal
 │   ├── strap-footing/    # Dos bases y viga centradora sin apoyo en el suelo
 │   ├── trapezoidal-footing/ # Dos columnas y ancho longitudinal variable
+│   ├── edge-footing/     # Una columna al borde y excentricidad uniaxial
 │   ├── units/            # Conversión y presentación de unidades
 │   └── validation/       # Reglas de dominio y errores accionables
 ├── standards/
@@ -51,6 +52,8 @@ La zapata combinada repite este patrón en `domain/combined-footing/` y `applica
 La zapata medianera sigue la misma frontera en `domain/strap-footing/` y `application/strap-footing-analysis.ts`. El equilibrio de las dos reacciones, las demandas de cada base y la viga centradora viven en el dominio. El punzonamiento atravesado por la viga se conserva como resultado explícito `not-evaluated`, sin reutilizar el caso de columna interior ni ocultarlo en la interfaz.
 
 La zapata trapezoidal mantiene otro motor independiente. Sus propiedades geométricas, el sistema de equilibrio para `q(x)=a+bx` y la integración de `w(x)=q(x)B(x)` permanecen fuera de React. Los componentes reciben resultados ya calculados y no aproximan el ancho local.
+
+La zapata excéntrica de borde se aísla en `domain/edge-footing/`. El motor obtiene la excentricidad de la cara de columna alineada al lindero, exige la resultante dentro del tercio central e integra la presión lineal para las demandas. El punzonamiento truncado se devuelve como `not-evaluated`; no hereda la comprobación de columna interior.
 
 Para la memoria de revisión, `MinimumReinforcementResult` expone además `barAreaMm2`: es un resultado geométrico ya obtenido por el módulo de dominio. La interfaz lo muestra como sustitución trazable y no vuelve a calcularlo; esta ampliación no modifica fórmulas ni criterios del motor.
 
@@ -76,7 +79,7 @@ La memoria muestra además la condición de aplicabilidad de cada módulo y enla
 - Los redondeos se aplican solo al presentar resultados; el motor conserva precisión interna.
 - Las fórmulas y parámetros reciben una versión de motor.
 
-El esquema de proyecto `4` incorpora `trapezoidalInputSnapshot`. La normalización acepta archivos de esquemas anteriores, agrega los snapshots faltantes y conserva sus entradas existentes sin convertir silenciosamente una tipología en otra.
+El esquema de proyecto `5` incorpora `edgeInputSnapshot`. La normalización acepta archivos de esquemas anteriores, agrega los snapshots faltantes y conserva sus entradas existentes sin convertir silenciosamente una tipología en otra.
 
 ## Persistencia local y portabilidad
 

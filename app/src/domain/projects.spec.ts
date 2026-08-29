@@ -95,4 +95,17 @@ describe('normalizeProjectDocument', () => {
     expect(normalized.trapezoidalInputSnapshot.rightFootingWidthM).toBeGreaterThan(normalized.trapezoidalInputSnapshot.leftFootingWidthM)
     expect(normalized.strapInputSnapshot).toEqual(project.strapInputSnapshot)
   })
+
+  it('migra el esquema 4 al snapshot de zapata excéntrica de borde', () => {
+    const project = createNewProject()
+    const legacyProject = { ...project, schemaVersion: 4 } as Partial<ProjectDocument>
+    delete legacyProject.edgeInputSnapshot
+
+    expect(isProjectDocument(legacyProject)).toBe(true)
+    const normalized = normalizeProjectDocument(legacyProject as ProjectDocument)
+    expect(normalized.schemaVersion).toBe(PROJECT_SCHEMA_VERSION)
+    expect(normalized.edgeInputSnapshot.edgeSide).toBe('left')
+    expect(normalized.edgeInputSnapshot.columnLengthM).toBeLessThan(normalized.edgeInputSnapshot.footingLengthM)
+    expect(normalized.trapezoidalInputSnapshot).toEqual(project.trapezoidalInputSnapshot)
+  })
 })

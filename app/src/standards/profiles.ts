@@ -10,7 +10,7 @@ export type PublicSource = {
 
 export type CalculationTrace = {
   id: string
-  appliesTo: Array<'isolated' | 'strip' | 'combined' | 'strap' | 'trapezoidal'>
+  appliesTo: Array<'isolated' | 'strip' | 'combined' | 'strap' | 'trapezoidal' | 'edge'>
   module: string
   basis: 'Equilibrio y geometría' | 'Guía pública NEC 2015' | 'Dato externo obligatorio'
   sourceId?: string
@@ -62,7 +62,7 @@ const publicSources: PublicSource[] = [
     label: 'USACE EM 1110-1-1905 · Shallow Foundations on Soils',
     version: '31 julio 2025',
     url: 'https://publibrary.sec.usace.army.mil/api/download?filename=EM+1110-1-1905_Geotechincal+Design+of+Shallow+Foundations+on+Soils_2025+07+22+-+Final.pdf&id=54658636-77d2-48df-f26b-5295a01899a7&preview=true',
-    scope: 'Fuente técnica pública para definir el comportamiento de la zapata con viga centradora; no reemplaza la NEC ni constituye normativa ecuatoriana.',
+    scope: 'Fuente técnica pública para tipologías superficiales, vigas centradoras y tratamiento explícito de cargas excéntricas; no reemplaza la NEC ni constituye normativa ecuatoriana.',
   },
 ]
 
@@ -106,6 +106,12 @@ export const standardProfiles: Record<StandardProfileId, StandardProfile> = {
       { id: 'trapezoidal-punching', appliesTo: ['trapezoidal'], module: 'Punzonamiento por columna', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Secciones 1.10.2 a 1.10.4 con integración de q(x) dentro del perímetro.', applicability: 'Columnas interiores y perímetros completos contenidos por los bordes inclinados.' },
       { id: 'trapezoidal-reinforcement', appliesTo: ['trapezoidal'], module: 'Flexión y armado', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Sección 1.10.5 aplicada al ancho local en momentos longitudinales y a franja transversal de un metro.', applicability: 'Distribución preliminar; detallado integral pendiente.' },
       { id: 'trapezoidal-development', appliesTo: ['trapezoidal'], module: 'Desarrollo longitudinal y transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barras a tracción, hormigón normal y factores unitarios declarados.' },
+      { id: 'edge-model', appliesTo: ['edge'], module: 'Modelo excéntrico de borde', basis: 'Equilibrio y geometría', sourceId: 'usace-em-1110-1-1905-2025', reference: 'USACE EM 1110-1-1905, 5-2 y 5-4: cargas verticales, peso de cimentación y tratamiento explícito de la excentricidad.', applicability: 'Una columna alineada a un borde, excentricidad uniaxial y contacto completo.' },
+      { id: 'edge-contact', appliesTo: ['edge'], module: 'Contacto lineal y tercio central', basis: 'Equilibrio y geometría', sourceId: 'nec-se-gc-2015', reference: 'NEC-SE-GC 2014, secciones 6.4, 7.1 y 7.2.1; fuerza y momento con presión longitudinal lineal.', applicability: 'Resultante dentro del tercio central; contacto parcial bloqueado.' },
+      { id: 'edge-shear', appliesTo: ['edge'], module: 'Cortante unidireccional', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Resistencia de la sección 1.10.1 aplicada a demandas integradas de presión lineal.', applicability: 'Hormigón normal; adaptación excéntrica pendiente de contraste independiente.' },
+      { id: 'edge-punching', appliesTo: ['edge'], module: 'Punzonamiento de borde', basis: 'Dato externo obligatorio', reference: 'No evaluado: el perímetro crítico queda truncado por el borde y no se reutiliza la referencia de columna interior.', applicability: 'Resultado explícitamente fuera de alcance hasta registrar una referencia específica.' },
+      { id: 'edge-reinforcement', appliesTo: ['edge'], module: 'Flexión y armado', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Demandas integradas en las caras y expresiones de acero de la sección 1.10.5.', applicability: 'Armado preliminar longitudinal y transversal; detallado integral pendiente.' },
+      { id: 'edge-development', appliesTo: ['edge'], module: 'Desarrollo longitudinal y transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barras a tracción, hormigón normal y factores unitarios declarados.' },
     ],
     releaseBlocker: 'El perfil identifica fuentes y condiciones de cada módulo, pero aún requiere contraste independiente de casos y revisión profesional antes de declarar cumplimiento normativo.',
   },
