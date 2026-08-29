@@ -1,0 +1,21 @@
+import type { StrapFootingAnalysis } from '../../application/strap-footing-analysis'
+import type { ResultCard } from '../results/result-cards'
+
+const reference = (value: boolean | undefined): ResultCard['state'] => value === undefined ? 'pending' : value ? 'reference' : 'attention'
+const padPassesShear = (pad: StrapFootingAnalysis['pads']['exterior']) => pad.longitudinal.shearReference.status === 'meets-guide-reference' && pad.transverse.shearReference.status === 'meets-guide-reference'
+const padPassesSteel = (pad: StrapFootingAnalysis['pads']['exterior']) => pad.longitudinal.reinforcement.status === 'meets-guide-reference' && pad.transverse.reinforcement.status === 'meets-guide-reference'
+
+export function buildStrapResultCards(analysis: StrapFootingAnalysis | null): ResultCard[] {
+  return [
+    { id: 'strap-contact', title: 'Contacto de ambas bases', state: reference(analysis ? analysis.service.status === 'pass' : undefined), value: analysis ? `${(analysis.service.utilization*100).toFixed(1)}%` : '—', detail: analysis ? `q gobernante ${analysis.service.governingPressureKpa.toFixed(1)} kPa` : 'Requiere análisis', destination: 'section' },
+    { id: 'strap-equilibrium', title: 'Equilibrio de la viga', state: analysis ? 'calculated' : 'pending', value: analysis ? `${analysis.factored.eccentricMomentKnM.toFixed(1)} kN·m` : '—', detail: analysis ? `V transferida ${analysis.factored.strapShearKn.toFixed(1)} kN` : 'Requiere análisis', destination: 'section' },
+    { id: 'strap-ext-shear', title: 'Cortante · base medianera', state: reference(analysis ? padPassesShear(analysis.pads.exterior) : undefined), value: analysis ? `${(Math.max(analysis.pads.exterior.longitudinal.shearReference.utilization, analysis.pads.exterior.transverse.shearReference.utilization)*100).toFixed(1)}%` : '—', detail: 'Gobierna la mayor dirección', destination: 'plan' },
+    { id: 'strap-int-shear', title: 'Cortante · base interior', state: reference(analysis ? padPassesShear(analysis.pads.interior) : undefined), value: analysis ? `${(Math.max(analysis.pads.interior.longitudinal.shearReference.utilization, analysis.pads.interior.transverse.shearReference.utilization)*100).toFixed(1)}%` : '—', detail: 'Gobierna la mayor dirección', destination: 'plan' },
+    { id: 'strap-ext-steel', title: 'Armado · base medianera', state: reference(analysis ? padPassesSteel(analysis.pads.exterior) : undefined), value: analysis ? `${(analysis.pads.exterior.longitudinal.reinforcement.providedAreaPerMeterMm2/100).toFixed(2)} cm²/m` : '—', detail: 'Longitudinal y transversal', destination: 'plan' },
+    { id: 'strap-int-steel', title: 'Armado · base interior', state: reference(analysis ? padPassesSteel(analysis.pads.interior) : undefined), value: analysis ? `${(analysis.pads.interior.longitudinal.reinforcement.providedAreaPerMeterMm2/100).toFixed(2)} cm²/m` : '—', detail: 'Longitudinal y transversal', destination: 'plan' },
+    { id: 'strap-beam-shear', title: 'Cortante · viga centradora', state: reference(analysis ? analysis.beam.shearReference.status === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.beam.shearReference.utilization*100).toFixed(1)}%` : '—', detail: analysis ? `Vᵤ ${analysis.beam.shearDemandKn.toFixed(1)} kN` : 'Requiere análisis', destination: 'section' },
+    { id: 'strap-beam-steel', title: 'Flexión y acero · viga', state: reference(analysis ? analysis.beam.reinforcementStatus === 'meets-guide-reference' : undefined), value: analysis ? `${(analysis.beam.providedLongitudinalAreaMm2/100).toFixed(2)} cm²` : '—', detail: analysis ? `Mᵤ ${analysis.beam.momentDemandKnM.toFixed(1)} kN·m` : 'Requiere análisis', destination: 'plan' },
+    { id: 'strap-punching', title: 'Punzonamiento en encuentros', state: analysis ? 'out-of-scope' : 'pending', value: analysis ? 'No evaluado' : '—', detail: 'La viga cruza la región crítica', destination: 'calculation' },
+    { id: 'strap-development', title: 'Desarrollo y anclaje', state: reference(analysis ? analysis.development.widthDirection.status === 'meets-guide-reference' && analysis.development.lengthDirection.status === 'meets-guide-reference' : undefined), value: analysis ? `${analysis.development.requiredDevelopmentLengthM.toFixed(2)} m` : '—', detail: 'Bases y anclaje de viga', destination: 'calculation' },
+  ]
+}

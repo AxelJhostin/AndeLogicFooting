@@ -71,4 +71,16 @@ describe('normalizeProjectDocument', () => {
     expect(normalized.combinedInputSnapshot.serviceColumn1LoadKn).toBeGreaterThan(0)
     expect(normalized.combinedInputSnapshot.column2CenterFromLeftM).toBeGreaterThan(normalized.combinedInputSnapshot.column1CenterFromLeftM)
   })
+
+  it('migra el esquema 2 al snapshot de zapata medianera sin alterar los existentes', () => {
+    const project = createNewProject()
+    const legacyProject = { ...project, schemaVersion: 2 } as Partial<ProjectDocument>
+    delete legacyProject.strapInputSnapshot
+
+    expect(isProjectDocument(legacyProject)).toBe(true)
+    const normalized = normalizeProjectDocument(legacyProject as ProjectDocument)
+    expect(normalized.schemaVersion).toBe(PROJECT_SCHEMA_VERSION)
+    expect(normalized.strapInputSnapshot.footingCenterSpacingM).toBeGreaterThan(0)
+    expect(normalized.combinedInputSnapshot).toEqual(project.combinedInputSnapshot)
+  })
 })

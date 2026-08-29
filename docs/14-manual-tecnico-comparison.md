@@ -14,6 +14,8 @@ El manual describe una secuencia de cálculo amplia y útil como mapa de funcion
 
 > Segunda actualización 2026-08-28: se incorpora zapata combinada rectangular para dos columnas interiores alineadas, con presión longitudinal lineal y contacto completo. Su alcance y derivación se registran en `docs/16-combined-footing-scope.md`; no se adopta del manual externo ninguna ecuación sin fuente y prueba propias.
 
+> Tercera actualización 2026-08-28: se incorpora zapata medianera con viga centradora. Su equilibrio, fuente técnica pública, caso manual y límites se registran en `docs/17-strap-footing-scope.md`. El punzonamiento en los encuentros se mantiene expresamente no evaluado.
+
 Hay coincidencias en contacto centrado, demanda de cortante unidireccional, punzonamiento, flexión, acero mínimo/requerido y desarrollo. Existen tres diferencias que deben revisarse antes de usar el manual como contraste: definición de peralte efectivo, coeficiente de columna interior en punzonamiento y expresión de longitud de desarrollo.
 
 ## Comparación por tema

@@ -55,7 +55,10 @@
 
 - Zapata corrida bajo muro centrado mediante franja de `1.00 m`.
 - Zapata combinada rectangular para dos columnas interiores alineadas, con presión longitudinal lineal y contacto completo.
+- Zapata medianera con dos bases rectangulares y viga centradora rígida sin contacto con el suelo.
 
 Estas ampliaciones conservan estado de referencia en validación. No liberan asentamientos, interacción suelo-estructura, contacto parcial ni casos de borde.
+
+El inventario actualizado y el orden de las tipologías restantes se mantiene en `18-footing-types-roadmap.md`.
 
 Estas ideas permanecen fuera hasta que el flujo axial centrado sea correcto, claro y validado.

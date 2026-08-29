@@ -26,6 +26,10 @@ Este registro controla los casos de referencia del motor. No deben añadirse res
 | NEC-FTG-016 | Equilibrio + NEC-SE-GC | Zapata combinada con cargas distintas | Equilibrio de fuerza y momento | `V(L)=0`, `M(L)=0` y presión extrema mayor junto a la carga gobernante | `1e-9` | Automatizado |
 | NEC-FTG-017 | Alcance combinado | Pérdida de contacto completo | Resultante fuera del núcleo central | El motor devuelve entrada inválida y no analiza contacto parcial | No aplica | Automatizado |
 | NEC-FTG-018 | Alcance combinado | Columnas superpuestas o fuera de la base | Geometría incompatible | El motor bloquea el caso | No aplica | Automatizado |
+| NEC-FTG-019 | Equilibrio + fuente pública | Caso manual de zapata medianera `AXC-STRAP-001` | `17-strap-footing-scope.md` | Servicio: `M=180 kN·m`, `V=36 kN`, `Rₑ=636 kN`, `Rᵢ=864 kN`; última: `Mᵤ=270 kN·m`, `Vᵤ=54 kN`, `Rᵤ,ₑ=954 kN`, `Rᵤ,ᵢ=1296 kN` | `1e-10` | Automatizado |
+| NEC-FTG-020 | Equilibrio medianero | Conservación de fuerza vertical | Identidad independiente | `Rᵤ,ₑ + Rᵤ,ᵢ = Pᵤ,ₑ + Pᵤ,ᵢ` | `1e-10` | Automatizado |
+| NEC-FTG-021 | Alcance medianero | Reacción interior nula o levantamiento | Condición física declarada | Entrada inválida; no se calcula contacto parcial | No aplica | Automatizado |
+| NEC-FTG-022 | Alcance medianero | Bases superpuestas o columna exterior fuera de su base | Geometría incompatible | Entrada inválida antes del análisis estructural | No aplica | Automatizado |
 
 ## Plantilla obligatoria por caso
 

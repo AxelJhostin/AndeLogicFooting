@@ -1,13 +1,13 @@
 import type { FootingAnalysis } from '../../application/footing-analysis'
 import type { WorkspaceView } from '../navigation'
 
-export type ResultCardState = 'pending' | 'calculated' | 'reference' | 'attention'
+export type ResultCardState = 'pending' | 'calculated' | 'reference' | 'attention' | 'out-of-scope'
 export type ResultCard = { id: string; title: string; state: ResultCardState; value: string; detail: string; destination: WorkspaceView }
 
 const state = (value: boolean | undefined): ResultCardState => value === undefined ? 'pending' : value ? 'reference' : 'attention'
 
 export function resultCardLabel(value: ResultCardState): string {
-  return value === 'pending' ? 'Pendiente' : value === 'calculated' ? 'Calculado' : value === 'reference' ? 'Dentro de referencia' : 'Requiere ajuste'
+  return value === 'pending' ? 'Pendiente' : value === 'calculated' ? 'Calculado' : value === 'reference' ? 'Dentro de referencia' : value === 'out-of-scope' ? 'Fuera de alcance' : 'Requiere ajuste'
 }
 
 /** Convierte resultados ya calculados en información de presentación; no calcula resistencias ni demandas. */

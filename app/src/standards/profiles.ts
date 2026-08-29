@@ -10,7 +10,7 @@ export type PublicSource = {
 
 export type CalculationTrace = {
   id: string
-  appliesTo: Array<'isolated' | 'strip' | 'combined'>
+  appliesTo: Array<'isolated' | 'strip' | 'combined' | 'strap'>
   module: string
   basis: 'Equilibrio y geometría' | 'Guía pública NEC 2015' | 'Dato externo obligatorio'
   sourceId?: string
@@ -57,6 +57,13 @@ const publicSources: PublicSource[] = [
     url: 'https://www.habitatyvivienda.gob.ec/wp-content/uploads/2023/03/GUIA-2-HORMIGON-ARMADO-.pdf',
     scope: 'Procedimiento público usado como referencia para las revisiones de zapata implementadas.',
   },
+  {
+    id: 'usace-em-1110-1-1905-2025',
+    label: 'USACE EM 1110-1-1905 · Shallow Foundations on Soils',
+    version: '31 julio 2025',
+    url: 'https://publibrary.sec.usace.army.mil/api/download?filename=EM+1110-1-1905_Geotechincal+Design+of+Shallow+Foundations+on+Soils_2025+07+22+-+Final.pdf&id=54658636-77d2-48df-f26b-5295a01899a7&preview=true',
+    scope: 'Fuente técnica pública para definir el comportamiento de la zapata con viga centradora; no reemplaza la NEC ni constituye normativa ecuatoriana.',
+  },
 ]
 
 export const standardProfiles: Record<StandardProfileId, StandardProfile> = {
@@ -84,6 +91,14 @@ export const standardProfiles: Record<StandardProfileId, StandardProfile> = {
       { id: 'combined-punching', appliesTo: ['combined'], module: 'Punzonamiento por columna', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Secciones 1.10.2 a 1.10.4 con reacción lineal integrada dentro del perímetro.', applicability: 'Dos columnas interiores con perímetros completos; borde, esquina y presión no lineal excluidos.' },
       { id: 'combined-reinforcement', appliesTo: ['combined'], module: 'Flexión y armado combinado', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Sección 1.10.5 para secciones rectangulares: momento positivo inferior, negativo superior y flexión transversal.', applicability: 'Distribución preliminar; no sustituye detallado, ductilidad ni revisión integral.' },
       { id: 'combined-development', appliesTo: ['combined'], module: 'Desarrollo longitudinal y transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barras a tracción, hormigón normal y factores unitarios declarados.' },
+      { id: 'strap-model', appliesTo: ['strap'], module: 'Modelo de viga centradora', basis: 'Equilibrio y geometría', sourceId: 'usace-em-1110-1-1905-2025', reference: 'USACE EM 1110-1-1905, 2-5.d.(2): dos bases enlazadas por una viga rígida que no transmite carga directamente al suelo.', applicability: 'Dos zapatas separadas, viga sin contacto con el suelo, cargas verticales y transferencia rígida del momento excéntrico.' },
+      { id: 'strap-contact', appliesTo: ['strap'], module: 'Contacto independiente de cada base', basis: 'Equilibrio y geometría', sourceId: 'nec-se-gc-2015', reference: 'NEC-SE-GC 2014, secciones 6.4, 7.1 y 7.2.1; equilibrio y comparación con capacidad admisible declarada.', applicability: 'Reacción positiva y presión uniforme bajo cada base; contacto parcial excluido.' },
+      { id: 'strap-equilibrium', appliesTo: ['strap'], module: 'Transferencia por la viga', basis: 'Equilibrio y geometría', reference: 'M = Pₑe; V = M/S; Rₑ = Pₑ + V; Rᵢ = Pᵢ − V.', applicability: 'Viga idealmente rígida, excentricidad en un eje y separación S entre centros.' },
+      { id: 'strap-pad-shear', appliesTo: ['strap'], module: 'Cortante de las bases', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Resistencia de la sección 1.10.1 aplicada a demandas de voladizo por base.', applicability: 'Presión última uniforme por base y hormigón normal; adaptación pendiente de contraste independiente.' },
+      { id: 'strap-pad-flexure', appliesTo: ['strap'], module: 'Flexión y armado de las bases', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Demanda de voladizo y expresiones de acero de la sección 1.10.5.', applicability: 'Armado preliminar en ambas direcciones; no sustituye el detallado integral.' },
+      { id: 'strap-beam', appliesTo: ['strap'], module: 'Viga centradora', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Demandas por equilibrio M y V; resistencias seccionales de 1.10.1 y 1.10.5 usadas como referencia pública.', applicability: 'Sección rectangular; estribos, confinamiento, nudos y detallado definitivo requieren revisión especializada.' },
+      { id: 'strap-punching', appliesTo: ['strap'], module: 'Punzonamiento en los encuentros', basis: 'Dato externo obligatorio', reference: 'No evaluado: la viga cruza la región crítica y el perímetro interior aislado no es aplicable sin una regla específica.', applicability: 'Resultado explícitamente fuera de alcance; exige revisión estructural especializada.' },
+      { id: 'strap-development', appliesTo: ['strap'], module: 'Desarrollo en bases y anclaje de viga', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barra a tracción, hormigón normal y factores unitarios declarados.' },
     ],
     releaseBlocker: 'El perfil identifica fuentes y condiciones de cada módulo, pero aún requiere contraste independiente de casos y revisión profesional antes de declarar cumplimiento normativo.',
   },

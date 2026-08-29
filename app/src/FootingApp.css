@@ -26,3 +26,4 @@
 @media (max-width: 760px) { .calculation-memo, .memo-empty { padding: 19px 13px; }.calculation-table div, .calculation-equation, .memo-traceability article { grid-template-columns: 1fr; gap: 4px; }.calculation-equation p, .calculation-equation b, .memo-traceability p, .memo-traceability small { grid-column: auto; }.calculation-equation code { overflow-wrap: anywhere; } }
 @media print { .calculation-memo { max-width: none; padding: 0; border: 0; box-shadow: none; }.calculation-section { break-inside: avoid; }.calculation-equation { background: #fff; }.memo-reference-note { background: #fff; } }
 .new-result.calculated { border-top-color: #2674a8; }.new-result.calculated > span i { background: #2674a8; }
+.new-result.out-of-scope { border-top-color: #697984; background: #f8fafb; }.new-result.out-of-scope > span i { background: #697984; }
