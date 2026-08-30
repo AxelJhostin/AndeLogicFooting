@@ -44,7 +44,7 @@ src/
 
 La UI no contiene fórmulas. El motor no importa React, el navegador ni librerías de presentación. Un mismo caso de cálculo debe dar el mismo resultado en pruebas, interfaz e informe.
 
-La biblioteca rápida tampoco vive en React. `domain/examples/footing-examples.ts` conserva entradas SI completas, identidad, categoría y observación esperada. `applyFootingExample` reemplaza únicamente el snapshot activo; después, el botón general de análisis usa el orquestador normal. Esta separación evita rutas especiales, datos aleatorios y resultados precalculados dentro de la interfaz.
+La biblioteca rápida tampoco vive en React. `domain/examples/footing-examples.ts` conserva entradas SI completas, identidad, categoría y observación esperada. Se carga como un recurso independiente para que el catálogo pueda crecer sin aumentar el paquete inicial. `applyFootingExample` reemplaza únicamente el snapshot activo; después, el botón general de análisis usa el orquestador normal. Esta separación evita rutas especiales, datos aleatorios y resultados precalculados dentro de la interfaz.
 
 La interfaz llama a un único orquestador de caso en `application/footing-analysis.ts`. Este adapta las entradas del documento a los módulos puros y devuelve un resultado consolidado tipado; los componentes visuales solo representan ese resultado. Así, añadir una revisión exige extender el orquestador y su prueba, no duplicar cálculos en cada vista.
 
