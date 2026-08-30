@@ -4,14 +4,16 @@ Aplicación local-first de **AndeLogic Engineering** para estudiar y documentar 
 
 ## Estado actual
 
-La aplicación dispone de seis modelos independientes:
+La aplicación dispone de ocho modelos independientes:
 
 1. zapata aislada rectangular centrada;
 2. zapata corrida bajo muro centrado, por franja de `1.00 m`;
 3. zapata combinada rectangular para dos columnas interiores;
 4. zapata medianera con viga centradora;
 5. zapata combinada trapezoidal;
-6. zapata aislada excéntrica de borde sin viga centradora.
+6. zapata aislada excéntrica de borde sin viga centradora;
+7. zapata de esquina con excentricidad biaxial y contacto completo.
+8. losa de cimentación rectangular multicolumna con contacto biaxial y evaluación rígida–Winkler preliminar.
 
 Cada modelo tiene sus propias entradas, validación, motor, resultados, memoria y representación técnica. Las demandas se obtienen por equilibrio; las resistencias disponibles se identifican como **referencias de guía en validación**, no como aprobación normativa integral.
 
@@ -21,7 +23,7 @@ El proyecto también incluye:
 - importación y exportación de archivos JSON versionados;
 - memoria de cálculo con datos, hipótesis, fórmulas, sustituciones y resultados;
 - láminas técnicas de sección, planta y armado preliminar;
-- catálogo de **18 ejemplos rápidos**, tres por tipología: referencia, variación y alerta o bloqueo esperado;
+- catálogo de **24 ejemplos rápidos**, tres por tipología: referencia, variación y alerta o bloqueo esperado;
 - pruebas automáticas del motor, migraciones, informes y ejemplos.
 
 ## Ejecutar la aplicación
@@ -96,11 +98,13 @@ La interfaz no contiene fórmulas. Cargar un ejemplo tampoco ejecuta cálculos n
 - [Alcance de zapata trapezoidal](docs/19-trapezoidal-footing-scope.md)
 - [Alcance de zapata excéntrica de borde](docs/20-edge-eccentric-footing-scope.md)
 - [Biblioteca de ejemplos rápidos](docs/21-quick-example-library.md)
+- [Alcance de zapata de esquina biaxial](docs/22-corner-biaxial-footing-scope.md)
+- [Alcance de losa de cimentación](docs/23-mat-foundation-scope.md)
 - [Guía para IA y colaboradores](AGENTS.md)
 
 ## Límites y responsabilidad
 
-La aplicación no calcula la capacidad portante ni los asentamientos del suelo: la capacidad admisible debe provenir del informe geotécnico y declararse con su base bruta o neta correcta. Tampoco sustituye el análisis estructural global, el detallado constructivo ni la revisión de un profesional competente.
+La aplicación no calcula la capacidad portante ni un asentamiento geotécnico estratificado: la capacidad admisible, el módulo de balasto y los límites aplicables deben provenir del estudio geotécnico. Para la losa solo ofrece la pantalla preliminar `s=q/k` bajo hipótesis rígida. Tampoco sustituye el análisis estructural de placa, el detallado constructivo ni la revisión de un profesional competente.
 
 ```text
 Entradas declaradas → motor determinista → verificaciones → resultados trazables → memoria revisable

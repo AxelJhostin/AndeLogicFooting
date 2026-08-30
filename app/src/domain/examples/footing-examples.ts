@@ -1,13 +1,17 @@
 import {
   DEFAULT_COMBINED_FOOTING_INPUTS,
+  DEFAULT_CORNER_FOOTING_INPUTS,
   DEFAULT_EDGE_FOOTING_INPUTS,
+  DEFAULT_MAT_FOOTING_INPUTS,
   DEFAULT_STRAP_FOOTING_INPUTS,
   DEFAULT_STRIP_FOOTING_INPUTS,
   DEFAULT_TRAPEZOIDAL_FOOTING_INPUTS,
   type CombinedFootingInputs,
+  type CornerFootingInputs,
   type EdgeFootingInputs,
   type FootingInputs,
   type FootingType,
+  type MatFootingInputs,
   type ProjectDocument,
   type StrapFootingInputs,
   type StripFootingInputs,
@@ -35,6 +39,8 @@ export type CombinedFootingExample = FootingExampleBase<'combined', CombinedFoot
 export type StrapFootingExample = FootingExampleBase<'strap', StrapFootingInputs>
 export type TrapezoidalFootingExample = FootingExampleBase<'trapezoidal', TrapezoidalFootingInputs>
 export type EdgeFootingExample = FootingExampleBase<'edge', EdgeFootingInputs>
+export type CornerFootingExample = FootingExampleBase<'corner', CornerFootingInputs>
+export type MatFootingExample = FootingExampleBase<'mat', MatFootingInputs>
 
 export type FootingExample =
   | IsolatedFootingExample
@@ -43,6 +49,8 @@ export type FootingExample =
   | StrapFootingExample
   | TrapezoidalFootingExample
   | EdgeFootingExample
+  | CornerFootingExample
+  | MatFootingExample
 
 export const FOOTING_TYPES: readonly FootingType[] = [
   'isolated',
@@ -51,6 +59,8 @@ export const FOOTING_TYPES: readonly FootingType[] = [
   'strap',
   'trapezoidal',
   'edge',
+  'corner',
+  'mat',
 ]
 
 const isolatedReference: FootingInputs = {
@@ -365,6 +375,83 @@ export const FOOTING_EXAMPLES: readonly FootingExample[] = [
     expectedObservation: 'El análisis se bloquea porque requeriría modelar contacto parcial.',
     inputs: { ...DEFAULT_EDGE_FOOTING_INPUTS, footingLengthM: 1.2 },
   },
+  {
+    id: 'corner-reference-bottom-left',
+    footingType: 'corner',
+    category: 'reference',
+    expectation: 'calculated',
+    label: 'Esquina inferior izquierda · referencia',
+    projectName: 'Esquina biaxial · referencia',
+    description: 'Columna alineada con los bordes inferior e izquierdo y contacto completo en las cuatro esquinas.',
+    expectedObservation: 'Reproduce AXC-CORNER-001, la interacción biaxial y el cierre de los dos momentos.',
+    inputs: { ...DEFAULT_CORNER_FOOTING_INPUTS },
+  },
+  {
+    id: 'corner-mirrored-top-right',
+    footingType: 'corner',
+    category: 'variation',
+    expectation: 'calculated',
+    label: 'Esquina superior derecha · espejo',
+    projectName: 'Esquina biaxial · caso espejo',
+    description: 'Refleja la geometría de referencia hacia los bordes superior y derecho.',
+    expectedObservation: 'Conserva magnitudes y utilización, intercambiando las cuatro presiones de esquina.',
+    inputs: { ...DEFAULT_CORNER_FOOTING_INPUTS, cornerPosition: 'top-right' },
+  },
+  {
+    id: 'corner-biaxial-contact-loss',
+    footingType: 'corner',
+    category: 'boundary',
+    expectation: 'blocked',
+    label: 'Bloqueo · fuera del núcleo biaxial',
+    projectName: 'Esquina biaxial · pérdida de contacto',
+    description: 'Amplía la base manteniendo la columna en esquina hasta que la interacción biaxial supera la unidad.',
+    expectedObservation: 'El motor bloquea el caso aunque cada excentricidad aislada permanezca dentro de su sexto.',
+    inputs: { ...DEFAULT_CORNER_FOOTING_INPUTS, footingWidthM: 0.6, footingLengthM: 0.6 },
+  },
+  {
+    id: 'mat-rigid-winkler-reference',
+    footingType: 'mat',
+    category: 'reference',
+    expectation: 'calculated',
+    label: 'Cuatro columnas · referencia rígida–Winkler',
+    projectName: 'Losa de cimentación · referencia',
+    description: 'Losa rectangular con cuatro columnas, plano biaxial de contacto y módulo de balasto declarado.',
+    expectedObservation: 'Reproduce AXC-MAT-001, cierra fuerza y momentos y muestra asentamientos preliminares en las cuatro esquinas.',
+    inputs: { ...DEFAULT_MAT_FOOTING_INPUTS, columns: DEFAULT_MAT_FOOTING_INPUTS.columns.map((column) => ({ ...column })) },
+  },
+  {
+    id: 'mat-symmetric-six-columns',
+    footingType: 'mat',
+    category: 'variation',
+    expectation: 'calculated',
+    label: 'Seis columnas · distribución simétrica',
+    projectName: 'Losa de cimentación · seis columnas',
+    description: 'Malla simétrica de seis columnas con cargas iguales y resultante coincidente con el centroide de la losa.',
+    expectedObservation: 'Las cuatro presiones y asentamientos coinciden; las excentricidades globales son nulas.',
+    inputs: {
+      ...DEFAULT_MAT_FOOTING_INPUTS,
+      columns: [2, 4, 6].flatMap((x, xIndex) => [1.5, 4.5].map((y, yIndex) => ({
+        id: `C${xIndex * 2 + yIndex + 1}`, label: `Columna ${xIndex * 2 + yIndex + 1}`,
+        serviceLoadKn: 500, factoredLoadKn: 750, widthM: 0.5, lengthM: 0.5, centerXM: x, centerYM: y,
+      }))),
+    },
+  },
+  {
+    id: 'mat-biaxial-contact-loss',
+    footingType: 'mat',
+    category: 'boundary',
+    expectation: 'blocked',
+    label: 'Bloqueo · carga extrema en una esquina',
+    projectName: 'Losa de cimentación · pérdida de contacto',
+    description: 'Concentra casi toda la carga en una columna para llevar la resultante fuera del núcleo central biaxial.',
+    expectedObservation: 'El motor detiene el análisis porque la hipótesis de contacto completo deja de ser válida.',
+    inputs: {
+      ...DEFAULT_MAT_FOOTING_INPUTS,
+      columns: DEFAULT_MAT_FOOTING_INPUTS.columns.map((column, index) => ({
+        ...column, serviceLoadKn: index === 0 ? 10000 : 10, factoredLoadKn: index === 0 ? 15000 : 15,
+      })),
+    },
+  },
 ]
 
 export function examplesForFootingType(footingType: FootingType): FootingExample[] {
@@ -386,5 +473,7 @@ export function applyFootingExample(project: ProjectDocument, example: FootingEx
     case 'strap': return { ...shared, strapInputSnapshot: { ...example.inputs } }
     case 'trapezoidal': return { ...shared, trapezoidalInputSnapshot: { ...example.inputs } }
     case 'edge': return { ...shared, edgeInputSnapshot: { ...example.inputs } }
+    case 'corner': return { ...shared, cornerInputSnapshot: { ...example.inputs } }
+    case 'mat': return { ...shared, matInputSnapshot: { ...example.inputs, columns: example.inputs.columns.map((column) => ({ ...column })) } }
   }
 }

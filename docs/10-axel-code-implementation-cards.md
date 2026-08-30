@@ -159,3 +159,15 @@ Se bloquean expresamente la excentricidad, los momentos transmitidos, columnas d
 La guía práctica NEC 2015, sección 1.10.6, presenta una expresión de desarrollo a tracción y ejemplifica barras sin recubrimiento especial, hormigón de peso normal y coeficientes de modificación unitarios. El módulo inicial aplicará solamente ese caso y comparará la longitud requerida con el largo disponible declarado por el usuario para cada dirección.
 
 El largo disponible no se infiere automáticamente de la zapata: debe especificarse desde la cara o sección que el detalle técnico determine hasta el extremo efectivo de la barra. Quedan fuera del módulo inicial barras con recubrimiento especial, hormigón liviano, ganchos, patillas, empalmes, barras superiores y cualquier condición de detalle no declarada.
+
+## Novena ficha: AXC-CORNER-DER-001 — contacto completo biaxial
+
+La ficha completa se conserva en `22-corner-biaxial-footing-scope.md`. Para una base rectangular rígida sometida a carga axial desplazada en X y Y, la presión se representa mediante un plano que satisface fuerza vertical y los dos momentos. Las cuatro esquinas se calculan con `q = q̄[1 + sx·6ex/L + sy·6ey/B]`.
+
+La condición autorizada para contacto completo es `6|ex|/L + 6|ey|/B ≤ 1`. No se permite sustituirla por dos comprobaciones independientes de `L/6` y `B/6`. El caso `AXC-CORNER-001`, su espejo y el bloqueo por interacción mayor que uno están automatizados. El contacto parcial, el análisis de placa y el punzonamiento de esquina permanecen fuera de alcance.
+
+## Décima ficha: AXC-MAT-DER-001 — losa rígida multicolumna
+
+La ficha completa está en `23-mat-foundation-scope.md`. Para una losa rectangular rígida, cada columna aporta carga y dos momentos respecto del centroide. El plano `q(x,y)=P/A+My(x−L/2)/Iy+Mx(y−B/2)/Ix` recupera exactamente la fuerza vertical y ambos momentos, siempre que las cuatro esquinas permanezcan comprimidas.
+
+Cuando el usuario declara un módulo de balasto compatible, la pantalla preliminar calcula `s=q/k` en las cuatro esquinas y compara límites externos opcionales. FHWA NHI-06-089, sección 8.6, advierte que `k` depende del suelo y también de la cimentación; por eso no se deriva ni se presenta como propiedad universal. El caso `AXC-MAT-001`, la simetría multicolumna, la geometría inválida y la pérdida de contacto están automatizados. Flexión, cortante, punzonamiento y armado de placa permanecen `not-evaluated`.

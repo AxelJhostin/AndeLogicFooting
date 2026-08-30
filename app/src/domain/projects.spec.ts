@@ -108,4 +108,30 @@ describe('normalizeProjectDocument', () => {
     expect(normalized.edgeInputSnapshot.columnLengthM).toBeLessThan(normalized.edgeInputSnapshot.footingLengthM)
     expect(normalized.trapezoidalInputSnapshot).toEqual(project.trapezoidalInputSnapshot)
   })
+
+  it('migra el esquema 5 al snapshot independiente de zapata de esquina', () => {
+    const project = createNewProject()
+    const legacyProject = { ...project, schemaVersion: 5 } as Partial<ProjectDocument>
+    delete legacyProject.cornerInputSnapshot
+
+    expect(isProjectDocument(legacyProject)).toBe(true)
+    const normalized = normalizeProjectDocument(legacyProject as ProjectDocument)
+    expect(normalized.schemaVersion).toBe(PROJECT_SCHEMA_VERSION)
+    expect(normalized.cornerInputSnapshot.cornerPosition).toBe('bottom-left')
+    expect(normalized.cornerInputSnapshot.columnWidthM).toBeLessThan(normalized.cornerInputSnapshot.footingWidthM)
+    expect(normalized.edgeInputSnapshot).toEqual(project.edgeInputSnapshot)
+  })
+
+  it('migra el esquema 6 al snapshot multicolumna de losa de cimentación', () => {
+    const project = createNewProject()
+    const legacyProject = { ...project, schemaVersion: 6 } as Partial<ProjectDocument>
+    delete legacyProject.matInputSnapshot
+
+    expect(isProjectDocument(legacyProject)).toBe(true)
+    const normalized = normalizeProjectDocument(legacyProject as ProjectDocument)
+    expect(normalized.schemaVersion).toBe(PROJECT_SCHEMA_VERSION)
+    expect(normalized.matInputSnapshot.columns).toHaveLength(4)
+    expect(normalized.matInputSnapshot.footingLengthM).toBeGreaterThan(normalized.matInputSnapshot.footingWidthM)
+    expect(normalized.cornerInputSnapshot).toEqual(project.cornerInputSnapshot)
+  })
 })

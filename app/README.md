@@ -1,6 +1,6 @@
 # Aplicación AndeLogic Zapatas
 
-Frontend React + TypeScript + Vite y motores puros para seis modelos de cimentación superficial. La aplicación funciona localmente, guarda proyectos en IndexedDB y permite importar o exportar documentos JSON versionados.
+Frontend React + TypeScript + Vite y motores puros para ocho modelos de cimentación superficial. La aplicación funciona localmente, guarda proyectos en IndexedDB y permite importar o exportar documentos JSON versionados.
 
 ## Desarrollo
 
@@ -22,13 +22,15 @@ npm run build
 ```text
 src/
 ├── domain/
-│   ├── examples/              # 18 casos rápidos tipados y probados
+│   ├── examples/              # 24 casos rápidos tipados y probados
 │   ├── footing/               # Zapata aislada centrada
 │   ├── strip-footing/         # Zapata corrida
 │   ├── combined-footing/      # Combinada rectangular
 │   ├── strap-footing/         # Medianera con viga centradora
 │   ├── trapezoidal-footing/   # Combinada trapezoidal
-│   └── edge-footing/          # Aislada excéntrica de borde
+│   ├── edge-footing/          # Aislada excéntrica de borde
+│   ├── corner-footing/        # Esquina biaxial
+│   └── mat-footing/           # Losa rígida multicolumna y pantalla Winkler
 ├── application/               # Orquestador independiente por modelo
 ├── standards/                 # Perfil técnico y fuentes
 ├── reports/                   # Memorias serializables

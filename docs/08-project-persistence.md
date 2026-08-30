@@ -14,13 +14,22 @@ ProjectDocument
 ├── projectId, name, createdAt, updatedAt
 ├── productVersion, engineVersion
 ├── standardProfile { id, edition, profileVersion }
-├── inputSnapshot       # valores canónicos SI + unidades de presentación
+├── inputSnapshot       # aislada centrada
+├── stripInputSnapshot  # corrida
+├── combinedInputSnapshot
+├── strapInputSnapshot
+├── trapezoidalInputSnapshot
+├── edgeInputSnapshot
+├── cornerInputSnapshot # esquina biaxial
+├── matInputSnapshot    # losa multicolumna; incluye colección de columnas
 ├── explicitDecisions   # opciones seleccionadas por el usuario
 ├── resultSnapshot?     # histórico, identificado como tal
 └── warnings
 ```
 
 El archivo no incluirá datos de otros usuarios, secretos, credenciales ni tablas o texto normativo protegido.
+
+El esquema vigente es `7`. La migración desde `6` agrega `matInputSnapshot` con una copia profunda de sus columnas predeterminadas, sin alterar ninguno de los siete snapshots anteriores ni cambiar la tipología activa. Las migraciones históricas continúan normalizando todos los snapshots faltantes.
 
 ## Comportamiento de abrir e importar
 

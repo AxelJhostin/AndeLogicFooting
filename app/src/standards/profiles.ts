@@ -10,7 +10,7 @@ export type PublicSource = {
 
 export type CalculationTrace = {
   id: string
-  appliesTo: Array<'isolated' | 'strip' | 'combined' | 'strap' | 'trapezoidal' | 'edge'>
+  appliesTo: Array<'isolated' | 'strip' | 'combined' | 'strap' | 'trapezoidal' | 'edge' | 'corner' | 'mat'>
   module: string
   basis: 'Equilibrio y geometría' | 'Guía pública NEC 2015' | 'Dato externo obligatorio'
   sourceId?: string
@@ -40,7 +40,7 @@ const publicSources: PublicSource[] = [
     id: 'nec-se-gc-2015',
     label: 'NEC-SE-GC · Geotecnia y Cimentaciones',
     version: 'NEC-SE-GC 2014',
-    url: 'https://www.habitatyvivienda.gob.ec/wp-content/uploads/2023/03/7.-NEC-SE-GC-Geotecnia-y-Cimentaciones.pdf',
+    url: 'https://www.mit.gob.ec/wp-content/uploads/downloads/2026/03/4.-NEC-SE-GC-Geotecnia-y-Cimentaciones.pdf',
     scope: 'Marco para geotecnia y cimentaciones; la capacidad admisible y asentamientos requieren el estudio geotécnico del proyecto.',
   },
   {
@@ -63,6 +63,13 @@ const publicSources: PublicSource[] = [
     version: '31 julio 2025',
     url: 'https://publibrary.sec.usace.army.mil/api/download?filename=EM+1110-1-1905_Geotechincal+Design+of+Shallow+Foundations+on+Soils_2025+07+22+-+Final.pdf&id=54658636-77d2-48df-f26b-5295a01899a7&preview=true',
     scope: 'Fuente técnica pública para tipologías superficiales, vigas centradoras y tratamiento explícito de cargas excéntricas; no reemplaza la NEC ni constituye normativa ecuatoriana.',
+  },
+  {
+    id: 'fhwa-nhi-06-089',
+    label: 'FHWA NHI-06-089 · Soils and Foundations Reference Manual, Vol. II',
+    version: '2006',
+    url: 'https://www.fhwa.dot.gov/engineering/geotech/pubs/010943.pdf',
+    scope: 'Fuente técnica pública para excentricidad biaxial, losas multicolumna, cimentación Winkler y distribución lineal bajo bases rígidas; no reemplaza la NEC.',
   },
 ]
 
@@ -112,6 +119,16 @@ export const standardProfiles: Record<StandardProfileId, StandardProfile> = {
       { id: 'edge-punching', appliesTo: ['edge'], module: 'Punzonamiento de borde', basis: 'Dato externo obligatorio', reference: 'No evaluado: el perímetro crítico queda truncado por el borde y no se reutiliza la referencia de columna interior.', applicability: 'Resultado explícitamente fuera de alcance hasta registrar una referencia específica.' },
       { id: 'edge-reinforcement', appliesTo: ['edge'], module: 'Flexión y armado', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Demandas integradas en las caras y expresiones de acero de la sección 1.10.5.', applicability: 'Armado preliminar longitudinal y transversal; detallado integral pendiente.' },
       { id: 'edge-development', appliesTo: ['edge'], module: 'Desarrollo longitudinal y transversal', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barras a tracción, hormigón normal y factores unitarios declarados.' },
+      { id: 'corner-model', appliesTo: ['corner'], module: 'Modelo de esquina biaxial', basis: 'Equilibrio y geometría', sourceId: 'fhwa-nhi-06-089', reference: 'FHWA NHI-06-089, sección 6.4.1: excentricidades en dos direcciones y dimensiones efectivas B′ y L′.', applicability: 'Una columna con dos caras alineadas a bordes adyacentes, carga axial y base rectangular rígida.' },
+      { id: 'corner-contact', appliesTo: ['corner'], module: 'Plano de contacto y núcleo biaxial', basis: 'Equilibrio y geometría', sourceId: 'nec-se-gc-2015', reference: 'NEC-SE-GC 2014, secciones 6.4, 7.1, 7.2.1 y 7.3; equilibrio de fuerza y momentos. Derivación AXC-CORNER-DER-001 registrada en docs/22.', applicability: 'Presión plana lineal y compresión en las cuatro esquinas; contacto parcial bloqueado.' },
+      { id: 'corner-shear', appliesTo: ['corner'], module: 'Cortante unidireccional en X y Y', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Resistencia de la sección 1.10.1 aplicada a demandas direccionales obtenidas al integrar la presión plana.', applicability: 'Franjas completas y hormigón normal; análisis de placa fuera de alcance.' },
+      { id: 'corner-punching', appliesTo: ['corner'], module: 'Punzonamiento de esquina', basis: 'Dato externo obligatorio', reference: 'No evaluado: el perímetro crítico queda truncado en dos direcciones y no se reutiliza una referencia interior o de borde.', applicability: 'Resultado explícitamente fuera de alcance hasta registrar una referencia específica.' },
+      { id: 'corner-reinforcement', appliesTo: ['corner'], module: 'Flexión y armado biaxial', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Demandas direccionales integradas y expresiones de acero de la sección 1.10.5.', applicability: 'Malla preliminar en X y Y; no sustituye análisis de placa ni detallado integral.' },
+      { id: 'corner-development', appliesTo: ['corner'], module: 'Desarrollo en X y Y', basis: 'Guía pública NEC 2015', sourceId: 'guide-hm-2015', reference: 'Ejemplo de desarrollo de la sección 1.10.6.', applicability: 'Barras a tracción, hormigón normal y factores unitarios declarados.' },
+      { id: 'mat-model', appliesTo: ['mat'], module: 'Losa rígida multicolumna', basis: 'Equilibrio y geometría', sourceId: 'fhwa-nhi-06-089', reference: 'FHWA NHI-06-089, secciones 2.6 y 8.6; losas para múltiples columnas, capacidad y asentamientos.', applicability: 'Losa rectangular rígida, 2 a 24 columnas y cargas axiales verticales.' },
+      { id: 'mat-contact', appliesTo: ['mat'], module: 'Plano biaxial de contacto', basis: 'Equilibrio y geometría', sourceId: 'nec-se-gc-2015', reference: 'NEC-SE-GC 2014, secciones 6.4 y 7; derivación AXC-MAT-DER-001 registrada en docs/23.', applicability: 'Contacto completo, presión plana lineal y comparación bruta o neta con dato geotécnico externo.' },
+      { id: 'mat-settlement', appliesTo: ['mat'], module: 'Pantalla rígida–Winkler', basis: 'Dato externo obligatorio', sourceId: 'fhwa-nhi-06-089', reference: 'FHWA NHI-06-089, sección 8.6: q = k·s y advertencia de que k depende del suelo y de la cimentación.', applicability: 'Módulo de balasto y límites suministrados externamente; no representa consolidación ni flexibilidad de placa.' },
+      { id: 'mat-plate', appliesTo: ['mat'], module: 'Placa, punzonamiento y armado', basis: 'Dato externo obligatorio', reference: 'No evaluado en esta etapa: requiere modelo de rigidez de placa, suelo y criterios estructurales específicos.', applicability: 'Se informa explícitamente fuera de alcance; las proyecciones globales se usan solo para auditar equilibrio.' },
     ],
     releaseBlocker: 'El perfil identifica fuentes y condiciones de cada módulo, pero aún requiere contraste independiente de casos y revisión profesional antes de declarar cumplimiento normativo.',
   },

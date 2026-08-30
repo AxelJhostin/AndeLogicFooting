@@ -35,7 +35,7 @@
 - Revisar accesibilidad, móvil y rendimiento.
 - Mantener una biblioteca probada de ejemplos rápidos para todas las tipologías activas.
 
-**Avance:** existen memoria completa por tipología, láminas técnicas, persistencia local y una biblioteca de 18 ejemplos rápidos probados. La impresión sigue basada en HTML/CSS y las referencias técnicas continúan en validación.
+**Avance:** existen memoria completa por tipología, láminas técnicas, persistencia local y una biblioteca de 24 ejemplos rápidos probados. La impresión sigue basada en HTML/CSS y las referencias técnicas continúan en validación.
 
 ## E. Prelanzamiento
 
@@ -50,7 +50,7 @@
 - Escritorio con Tauri.
 - Cuentas, sincronización, colaboración y licencias.
 - IA asistente.
-- Cargas generales con momentos transferidos, contacto parcial, excentricidad biaxial y análisis geotécnico avanzado.
+- Cargas generales con momentos transferidos, contacto parcial y análisis geotécnico avanzado. La excentricidad biaxial está disponible únicamente en el alcance axial de zapata de esquina documentado en `22-corner-biaxial-footing-scope.md`.
 
 ## Ampliaciones modulares implementadas — 2026-08-28
 
@@ -59,11 +59,13 @@
 - Zapata medianera con dos bases rectangulares y viga centradora rígida sin contacto con el suelo.
 - Zapata combinada trapezoidal para dos columnas interiores, con ancho variable y presión longitudinal lineal.
 - Zapata aislada excéntrica de borde sin viga centradora, con presión lineal, control del tercio central y contacto completo.
+- Zapata de esquina con dos caras de columna junto a linderos, plano de presión, interacción del núcleo biaxial y contacto completo.
+- Losa de cimentación rectangular con 2 a 24 columnas, plano de contacto biaxial, equilibrio global y pantalla rígida–Winkler preliminar.
 
-Estas ampliaciones conservan estado de referencia en validación. No liberan asentamientos, interacción suelo-estructura, contacto parcial ni casos de borde.
+Estas ampliaciones conservan estado de referencia en validación. La pantalla Winkler de la losa no libera un análisis geotécnico de asentamientos, interacción suelo-estructura avanzada, contacto parcial ni diseño estructural de placa.
 
 El inventario actualizado y el orden de las tipologías restantes se mantiene en `18-footing-types-roadmap.md`.
 
-La biblioteca rápida de referencia, variación y borde para las seis familias está implementada y documentada en `21-quick-example-library.md`.
+La biblioteca rápida de referencia, variación y borde para las ocho familias está implementada y documentada en `21-quick-example-library.md`.
 
 Estas ideas permanecen fuera hasta que el flujo axial centrado sea correcto, claro y validado.

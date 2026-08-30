@@ -32,13 +32,19 @@ Cada tipología ofrece exactamente tres clases de caso:
 | Excéntrica de borde | `edge-reference-left` | Lindero izquierdo | Reproduce `AXC-ECC-001`. |
 | Excéntrica de borde | `edge-mirrored-right` | Lindero derecho | Conserva magnitudes e intercambia extremos. |
 | Excéntrica de borde | `edge-outside-middle-third` | Resultante fuera del tercio central | Bloquea el contacto parcial. |
+| Esquina biaxial | `corner-reference-bottom-left` | Esquina inferior izquierda | Reproduce `AXC-CORNER-001` y cierra ambos momentos. |
+| Esquina biaxial | `corner-mirrored-top-right` | Esquina superior derecha | Conserva magnitudes e intercambia las cuatro esquinas. |
+| Esquina biaxial | `corner-biaxial-contact-loss` | Interacción mayor que uno | Bloquea el contacto parcial aunque cada sexto aislado parezca válido. |
+| Losa de cimentación | `mat-rigid-winkler-reference` | Cuatro columnas y k declarado | Reproduce `AXC-MAT-001`, equilibrio y asentamientos de esquina. |
+| Losa de cimentación | `mat-symmetric-six-columns` | Seis columnas simétricas | Produce excentricidades nulas y cuatro valores iguales. |
+| Losa de cimentación | `mat-biaxial-contact-loss` | Carga extrema en una esquina | Bloquea el contacto parcial. |
 
 ## Comportamiento en la interfaz
 
 1. Al cambiar de tipología se selecciona su caso de referencia.
 2. Elegir otro caso solo cambia la selección; no modifica todavía el proyecto.
 3. **Cargar** reemplaza únicamente el snapshot de entradas de la tipología activa.
-4. Los snapshots de los otros cinco modelos permanecen intactos.
+4. Los snapshots de los otros siete modelos permanecen intactos.
 5. Se borran los resultados anteriores y se vuelve a la definición del caso.
 6. **Analizar** ejecuta el orquestador normal; no existe una ruta de cálculo especial para ejemplos.
 7. El proyecto no se guarda en IndexedDB hasta que el usuario elige **Guardar**.

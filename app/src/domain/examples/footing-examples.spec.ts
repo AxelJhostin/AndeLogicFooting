@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { analyzeCombinedFootingCase } from '../../application/combined-footing-analysis'
+import { analyzeCornerFootingCase } from '../../application/corner-footing-analysis'
 import { analyzeEdgeFootingCase } from '../../application/edge-footing-analysis'
 import { analyzeFootingCase } from '../../application/footing-analysis'
+import { analyzeMatFootingCase } from '../../application/mat-footing-analysis'
 import { analyzeStrapFootingCase } from '../../application/strap-footing-analysis'
 import { analyzeStripFootingCase } from '../../application/strip-footing-analysis'
 import { analyzeTrapezoidalFootingCase } from '../../application/trapezoidal-footing-analysis'
@@ -17,6 +19,8 @@ function analyzeExample(example: FootingExample) {
     case 'strap': return analyzeStrapFootingCase(project)
     case 'trapezoidal': return analyzeTrapezoidalFootingCase(project)
     case 'edge': return analyzeEdgeFootingCase(project)
+    case 'corner': return analyzeCornerFootingCase(project)
+    case 'mat': return analyzeMatFootingCase(project)
   }
 }
 

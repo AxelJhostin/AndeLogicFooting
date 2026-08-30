@@ -34,17 +34,25 @@ Este registro controla los casos de referencia del motor. No deben añadirse res
 | NEC-FTG-024 | Equilibrio trapezoidal | Resultante distinta del centroide | Sistema integral de fuerza y momento | Presión extrema mayor hacia la columna gobernante y equilibrio final nulo | `1e-8` | Automatizado |
 | NEC-FTG-025 | Alcance trapezoidal | Pérdida de contacto completo | Presión extrema negativa | El motor devuelve entrada inválida y no recorta el área activa | No aplica | Automatizado |
 | NEC-FTG-026 | Alcance trapezoidal | Perímetro crítico fuera del borde inclinado | Geometría local del trapecio | El motor bloquea el caso antes de calcular punzonamiento | No aplica | Automatizado |
-| NEC-FTG-027 | Equilibrio + fuente pública | Caso manual excéntrico `AXC-ECC-001` | `20-edge-eccentric-footing-scope.md` | `qserv=206.444444 → 39.777778 kPa`, `qu=291.666667 → 41.666667 kPa`, `V(L)=M(L)=0` | `1e-8` | Preparado para automatizar |
-| NEC-FTG-028 | Simetría excéntrica | Borde izquierdo frente a borde derecho | Identidad geométrica independiente | Iguales magnitudes y presiones extremas intercambiadas | `1e-8` | Preparado para automatizar |
-| NEC-FTG-029 | Alcance excéntrico | Resultante fuera del tercio central | Condición `|e|>L/6` | Entrada inválida; no se calcula contacto parcial | No aplica | Preparado para automatizar |
-| NEC-FTG-030 | Punzonamiento de borde | Perímetro truncado por el lindero | Alcance de `20-edge-eccentric-footing-scope.md` | Resultado explícito `not-evaluated`; no reutiliza columna interior | No aplica | Preparado para automatizar |
+| NEC-FTG-027 | Equilibrio + fuente pública | Caso manual excéntrico `AXC-ECC-001` | `20-edge-eccentric-footing-scope.md` | `qserv=206.444444 → 39.777778 kPa`, `qu=291.666667 → 41.666667 kPa`, `V(L)=M(L)=0` | `1e-8` | Automatizado |
+| NEC-FTG-028 | Simetría excéntrica | Borde izquierdo frente a borde derecho | Identidad geométrica independiente | Iguales magnitudes y presiones extremas intercambiadas | `1e-8` | Automatizado |
+| NEC-FTG-029 | Alcance excéntrico | Resultante fuera del tercio central | Condición `|e|>L/6` | Entrada inválida; no se calcula contacto parcial | No aplica | Automatizado |
+| NEC-FTG-030 | Punzonamiento de borde | Perímetro truncado por el lindero | Alcance de `20-edge-eccentric-footing-scope.md` | Resultado explícito `not-evaluated`; no reutiliza columna interior | No aplica | Automatizado |
+| NEC-FTG-031 | Equilibrio + fuente pública | Caso manual biaxial `AXC-CORNER-001` | `22-corner-biaxial-footing-scope.md` | Servicio: `281.517331, 157.124717, 157.124717, 32.732102 kPa`; última: `404.275996, 217.687075, 217.687075, 31.098154 kPa` | `1e-7` | Automatizado |
+| NEC-FTG-032 | Simetría biaxial | Esquina inferior izquierda frente a superior derecha | Identidad geométrica independiente | Iguales magnitudes y presiones opuestas intercambiadas | `1e-8` | Automatizado |
+| NEC-FTG-033 | Alcance biaxial | Cada sexto aislado válido, suma biaxial mayor que uno | `6|ex|/L + 6|ey|/B > 1` | Entrada inválida; no se calcula contacto parcial | No aplica | Automatizado |
+| NEC-FTG-034 | Punzonamiento de esquina | Perímetro truncado por dos linderos | Alcance de `22-corner-biaxial-footing-scope.md` | Resultado explícito `not-evaluated`; no reutiliza columna interior o de borde | No aplica | Automatizado |
+| NEC-FTG-035 | Equilibrio + FHWA/NEC-SE-GC | Caso manual de losa `AXC-MAT-001` | `23-mat-foundation-scope.md` | Servicio: `P=3806.4 kN`, `Mx=300 kN·m`, `My=800 kN·m`, esquinas `60.55, 85.55, 73.05, 98.05 kPa`; última cierra fuerza y momentos | `1e-8` | Automatizado |
+| NEC-FTG-036 | Pantalla Winkler | Asentamiento rígido con k declarado | `s=q/k`, FHWA NHI-06-089 sección 8.6 | `smax=6.536667 mm`, `smin=4.036667 mm`, `Δs=2.5 mm` | `1e-8` | Automatizado; no equivale a análisis geotécnico estratificado |
+| NEC-FTG-037 | Alcance geométrico multicolumna | Columnas superpuestas o fuera de la losa | `23-mat-foundation-scope.md` | Entrada inválida antes del equilibrio | No aplica | Automatizado |
+| NEC-FTG-038 | Alcance biaxial de losa | Resultante fuera del núcleo central | `6|ex|/L + 6|ey|/B > 1` | Entrada inválida; contacto parcial no calculado | No aplica | Automatizado |
 
 ## Casos funcionales de la biblioteca rápida
 
 | ID | Objetivo | Resultado esperado | Estado |
 | --- | --- | --- | --- |
-| UX-EX-001 | Cobertura de las seis tipologías | Tres casos por tipo: referencia, variación y borde | Automatizado |
-| UX-EX-002 | Identidad y explicación | 18 IDs únicos con descripción y observación esperada | Automatizado |
+| UX-EX-001 | Cobertura de las ocho tipologías | Tres casos por tipo: referencia, variación y borde | Automatizado |
+| UX-EX-002 | Identidad y explicación | 24 IDs únicos con descripción y observación esperada | Automatizado |
 | UX-EX-003 | Coherencia de estados | Casos calculados/alerta terminan en `calculated`; bloqueos en `invalid-input` | Automatizado |
 | UX-EX-004 | Aislamiento de snapshots | Cargar un ejemplo cambia solo las entradas del tipo activo | Automatizado |
 

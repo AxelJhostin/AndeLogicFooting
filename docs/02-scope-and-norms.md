@@ -26,9 +26,9 @@ Una entrada fuera de alcance debe bloquear el cálculo o emitir una advertencia 
 
 ## Ampliación modular vigente
 
-El prototipo actual añadió, mediante motores y snapshots independientes, zapata corrida, combinada rectangular, medianera con viga centradora, combinada trapezoidal y aislada excéntrica de borde. Sus alcances y exclusiones se definen en los documentos `15`, `16`, `17`, `19` y `20`; el inventario consolidado está en `18-footing-types-roadmap.md`.
+El prototipo actual añadió, mediante motores y snapshots independientes, zapata corrida, combinada rectangular, medianera con viga centradora, combinada trapezoidal, aislada excéntrica de borde, zapata de esquina biaxial y losa de cimentación rígida multicolumna. Sus alcances y exclusiones se definen en los documentos `15`, `16`, `17`, `19`, `20`, `22` y `23`; el inventario consolidado está en `18-footing-types-roadmap.md`.
 
-Cada una de las seis tipologías dispone de tres ejemplos rápidos: referencia, variación y borde. Cargar un ejemplo solo declara entradas en el modelo activo; no amplía el alcance, no cambia el perfil técnico y no convierte referencias de guía en cumplimiento normativo. El inventario se mantiene en `21-quick-example-library.md`.
+Cada una de las ocho tipologías dispone de tres ejemplos rápidos: referencia, variación y borde. Cargar un ejemplo solo declara entradas en el modelo activo; no amplía el alcance, no cambia el perfil técnico y no convierte referencias de guía en cumplimiento normativo. El inventario se mantiene en `21-quick-example-library.md`.
 
 ## Base técnica inicial
 

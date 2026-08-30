@@ -18,16 +18,18 @@ El manual describe una secuencia de cálculo amplia y útil como mapa de funcion
 
 > Cuarta actualización 2026-08-29: se incorpora zapata combinada trapezoidal en `docs/19-trapezoidal-footing-scope.md` y zapata aislada excéntrica de borde en `docs/20-edge-eccentric-footing-scope.md`. La presión lineal y el tercio central se derivan y prueban dentro de AndeLogic; no se adopta del manual externo una resistencia de punzonamiento de borde.
 
+> Quinta actualización 2026-08-29: se incorpora zapata de esquina con excentricidad biaxial en `docs/22-corner-biaxial-footing-scope.md`. El plano de presión, las cuatro esquinas y la interacción del núcleo se derivan por equilibrio y se contrastan con FHWA NHI-06-089; el contacto parcial, el análisis de placa y el punzonamiento de esquina siguen fuera de alcance.
+
 Hay coincidencias en contacto centrado, demanda de cortante unidireccional, punzonamiento, flexión, acero mínimo/requerido y desarrollo. Existen tres diferencias que deben revisarse antes de usar el manual como contraste: definición de peralte efectivo, coeficiente de columna interior en punzonamiento y expresión de longitud de desarrollo.
 
 ## Comparación por tema
 
 | Tema | Manual externo | AndeLogic actual | Comparación / decisión |
 | --- | --- | --- | --- |
-| Alcance | Incluye carga concéntrica, momentos uniaxiales/biaxiales, despegue, deslizamiento y volcamiento. | Solo carga axial centrada, columna centrada y presión uniforme. | El manual es más amplio. Esas acciones quedan fuera de la primera versión. |
+| Alcance | Incluye carga concéntrica, momentos uniaxiales/biaxiales, despegue, deslizamiento y volcamiento. | Siete motores limitados: el biaxial actual solo nace de una columna axial con dos caras en linderos y exige contacto completo. | El manual sigue siendo más amplio: no se admiten momentos adicionales, despegue, deslizamiento ni volcamiento. |
 | Contacto centrado | Suma carga de columna, peso propio y relleno; compara con capacidad admisible. | Hace lo mismo, con base bruta o neta declarada y esfuerzo removido explícito. | Coincidencia conceptual para el caso centrado. |
 | Relleno y sobrecarga | Propone volumen de relleno que descuenta la columna y añade sobrecarga superficial. | Usa profundidad de relleno declarada sobre toda el área; no modela columna/pedestal ni sobrecarga. | Diferencia de modelo geométrico; requiere definición antes de ampliar el módulo. |
-| Presión con momento | Incluye excentricidad, núcleo central, distribución trapezoidal/triangular y despegue. | No acepta momentos ni presión no uniforme. | Funcionalidad ausente por decisión de alcance, no error. |
+| Presión con momento | Incluye excentricidad, núcleo central, distribución trapezoidal/triangular y despegue. | Admite presión lineal uniaxial en borde y plano biaxial en esquina, ambos con contacto completo y excentricidad obtenida de la geometría. | Coincidencia parcial; contacto parcial, momentos transferidos y despegue continúan excluidos. |
 | Peralte efectivo `d` | Declara `d = h - r - φb`. | Calcula `d = h - recubrimiento - φb/2`. | Diferencia crítica. Si el recubrimiento llega a la cara de barra, el centroide queda a medio diámetro adicional; el significado de `r` en el manual es ambiguo. |
 | Cortante unidireccional | Sección a `d` y resistencia de referencia proporcional a `√f′c·b·d`; integra presión uniforme o variable. | Demanda uniforme en ambas direcciones y referencia de guía con ese tipo de sección/resistencia. | Coincide para presión uniforme. La presión variable queda fuera de alcance. |
 | Punzonamiento: demanda | Perímetro a `d/2` y reacción exterior al perímetro. | Perímetro a `d/2` y demanda por área exterior con presión uniforme. | Coincide algebraicamente para carga centrada y presión uniforme. |
@@ -58,7 +60,7 @@ Hay coincidencias en contacto centrado, demanda de cortante unidireccional, punz
 
 ### Fuera del alcance del Producto 01
 
-- Momentos adicionales transferidos, excentricidad biaxial, contacto parcial y despegue. La excentricidad uniaxial producida por una columna alineada al borde solo está disponible dentro del alcance estricto de `docs/20-edge-eccentric-footing-scope.md`.
+- Momentos adicionales transferidos, contacto parcial y despegue. La excentricidad uniaxial de borde y la biaxial de esquina solo están disponibles dentro de los alcances estrictos de `docs/20-edge-eccentric-footing-scope.md` y `docs/22-corner-biaxial-footing-scope.md`.
 - Deslizamiento y volcamiento.
 - Capacidad portante interna, estratigrafía, agua y asentamientos.
 

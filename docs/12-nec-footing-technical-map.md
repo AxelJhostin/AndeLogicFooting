@@ -29,7 +29,7 @@ Las huellas SHA-256 y las rutas locales de estos archivos constan en [el manifie
 | Tema | Fuentes y ubicación local | Uso dentro de AndeLogic | Estado |
 | --- | --- | --- | --- |
 | Alcance de cimentación y datos del subsuelo | NEC-SE-GC, PDF 43-50, capítulo 6; guía geotécnica, PDF 62-77, capítulo 3 | Mantener capacidad admisible como entrada del informe geotécnico; separar capacidad y asentamientos. | Contacto centrado implementado; asentamientos fuera de alcance. |
-| Zapatas aisladas, combinadas y geometría superficial | NEC-SE-GC, PDF 48-52, secciones 6.4 y 7 | Delimitar geometría, excentricidad, equilibrio de presiones y capacidad externa. | Aislada centrada, corrida, combinada rectangular, medianera, combinada trapezoidal y aislada excéntrica de borde activas dentro de sus alcances documentados; losas excluidas. |
+| Zapatas aisladas, combinadas, losas y geometría superficial | NEC-SE-GC, PDF 48-52, secciones 6.4 y 7 | Delimitar geometría, excentricidad, equilibrio de presiones y capacidad externa. | Ocho familias activas dentro de sus alcances documentados; la losa usa contacto rígido y pantalla Winkler, con placa estructural no evaluada. |
 | Capacidad admisible, base bruta/neta y excavación | NEC-SE-GC, PDF 46-49; guía geotécnica, PDF 67-72 | Explicar la base de presión comparada y exigir que coincida con el informe del suelo. | Contacto de servicio implementado con base declarada. |
 | Asentamientos y servicio geotécnico | NEC-SE-GC, PDF 48-49; guía geotécnica, PDF 72-77 | Registrar como revisión indispensable del estudio geotécnico, sin estimarla en la aplicación inicial. | Fuera de alcance. |
 | Cargas de servicio y últimas | NEC-SE-CG, PDF 14-24, capítulos 2 y 3 | Documentar cargas declaradas y combinaciones externas; no inventar combinaciones en la interfaz. | Entradas de servicio y última separadas; combinador pendiente. |
@@ -55,13 +55,13 @@ Las huellas SHA-256 y las rutas locales de estos archivos constan en [el manifie
 
 1. Completar contrastes externos compatibles para las referencias de resistencia ya integradas.
 2. Cerrar una fuente y casos independientes para punzonamiento de columna de borde.
-3. Documentar el alcance y caso manual de excentricidad biaxial antes de programarlo.
+3. Mantener `AXC-CORNER-001` y `AXC-CORNER-DER-001` como caso y derivación obligatorios para cualquier cambio del modelo biaxial.
 4. Mantener asentamientos y capacidad portante como resultados del estudio geotécnico, no como estimaciones silenciosas.
 
 ## Límites que el mapa no cambia
 
 - No calcula capacidad portante ni asentamientos: provienen del estudio geotécnico.
-- La presión lineal se habilita únicamente para la zapata combinada rectangular documentada en `16-combined-footing-scope.md`; no habilita contacto parcial, momentos transferidos, geometría trapezoidal ni losas.
+- Cada presión no uniforme se habilita solo dentro de su documento de alcance. El plano biaxial de la losa está limitado por `23-mat-foundation-scope.md`; no habilita contacto parcial, momentos transferidos ni diseño estructural de placa.
 - La viga centradora se habilita únicamente para el modelo documentado en `17-strap-footing-scope.md`: dos bases separadas, viga rígida sin apoyo en el suelo y cargas verticales. El punzonamiento atravesado por la viga permanece no evaluado.
 - El ancho variable se habilita únicamente para el modelo documentado en `19-trapezoidal-footing-scope.md`: trapecio simétrico respecto del eje, dos columnas interiores y contacto completo.
 - La excentricidad de borde se habilita únicamente para el modelo documentado en `20-edge-eccentric-footing-scope.md`: una cara de columna al lindero, excentricidad uniaxial, resultante dentro del tercio central y contacto completo. El punzonamiento de borde permanece no evaluado.

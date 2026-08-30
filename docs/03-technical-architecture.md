@@ -30,6 +30,8 @@ src/
 │   ├── strap-footing/    # Dos bases y viga centradora sin apoyo en el suelo
 │   ├── trapezoidal-footing/ # Dos columnas y ancho longitudinal variable
 │   ├── edge-footing/     # Una columna al borde y excentricidad uniaxial
+│   ├── corner-footing/   # Una columna en dos bordes y excentricidad biaxial
+│   ├── mat-footing/      # Losa rectangular multicolumna, contacto y pantalla Winkler
 │   ├── examples/         # Catálogo tipado de pruebas rápidas por tipología
 │   ├── units/            # Conversión y presentación de unidades
 │   └── validation/       # Reglas de dominio y errores accionables
@@ -58,6 +60,10 @@ La zapata trapezoidal mantiene otro motor independiente. Sus propiedades geomét
 
 La zapata excéntrica de borde se aísla en `domain/edge-footing/`. El motor obtiene la excentricidad de la cara de columna alineada al lindero, exige la resultante dentro del tercio central e integra la presión lineal para las demandas. El punzonamiento truncado se devuelve como `not-evaluated`; no hereda la comprobación de columna interior.
 
+La zapata de esquina mantiene su propia frontera en `domain/corner-footing/` y `application/corner-footing-analysis.ts`. Resuelve las cuatro presiones del plano mediante equilibrio, controla la interacción `6|ex|/L + 6|ey|/B` y entrega integraciones direccionales en X y Y. La UI solo representa esos resultados. El punzonamiento truncado en dos direcciones permanece `not-evaluated`.
+
+La losa de cimentación tiene una frontera independiente en `domain/mat-footing/` y `application/mat-footing-analysis.ts`. Recibe una colección de columnas, valida contención y superposición, obtiene el plano de contacto por fuerza y dos momentos y calcula `s=q/k` solo cuando se declara un módulo compatible. Las proyecciones X/Y auditan equilibrio; placa, punzonamiento y armado se devuelven como `not-evaluated` y no se aproximan en React.
+
 Para la memoria de revisión, `MinimumReinforcementResult` expone además `barAreaMm2`: es un resultado geométrico ya obtenido por el módulo de dominio. La interfaz lo muestra como sustitución trazable y no vuelve a calcularlo; esta ampliación no modifica fórmulas ni criterios del motor.
 
 El contrato `reports/footing-calculation-report.ts` ya produce una memoria serializable de identidad, versiones, perfil, entradas y límites. La etapa visual solo deberá renderizar este contrato, sin volver a decidir criterios técnicos.
@@ -82,7 +88,7 @@ La memoria muestra además la condición de aplicabilidad de cada módulo y enla
 - Los redondeos se aplican solo al presentar resultados; el motor conserva precisión interna.
 - Las fórmulas y parámetros reciben una versión de motor.
 
-El esquema de proyecto `5` incorpora `edgeInputSnapshot`. La normalización acepta archivos de esquemas anteriores, agrega los snapshots faltantes y conserva sus entradas existentes sin convertir silenciosamente una tipología en otra.
+El esquema de proyecto `7` incorpora `matInputSnapshot` y su colección de columnas. La normalización acepta archivos de esquemas anteriores, agrega los snapshots faltantes y conserva sus entradas existentes sin convertir silenciosamente una tipología en otra.
 
 ## Persistencia local y portabilidad
 
