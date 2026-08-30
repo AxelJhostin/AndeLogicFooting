@@ -73,6 +73,8 @@ Un módulo normativo se habilita en la interfaz únicamente cuando:
 
 La pérdida posterior de confianza en una versión externa no altera resultados históricos: invalida la evidencia afectada, bloquea nuevas liberaciones y genera un caso de regresión.
 
+La puerta transversal se representa en `app/src/validation/release-gate.ts`. El catálogo exige tres evidencias externas por cada una de las ocho familias y rechaza estados incoherentes, duplicados, ausencias o tipologías inesperadas. Marcar una puerta como aprobada no sustituye el registro de evidencias.
+
 ## Fuentes iniciales
 
 - [Portal oficial de la NEC](https://www.mit.gob.ec/norma-ecuatoriana-de-la-construccion/)

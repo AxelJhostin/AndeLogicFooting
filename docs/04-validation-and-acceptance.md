@@ -32,6 +32,18 @@ Los ejemplos rápidos tienen una puerta de calidad separada del banco normativo:
 
 Estas pruebas protegen el flujo didáctico, pero no validan una ecuación ni reemplazan contrastes externos.
 
+## Invariantes del catálogo congelado
+
+Las ocho familias comparten además garantías automáticas que no dependen de la interfaz:
+
+1. analizar un caso no muta el documento ni sus snapshots;
+2. ningún resultado calculado contiene `NaN` o infinito;
+3. cada memoria conserva fuentes, trazabilidad aplicable, bloqueador de liberación y limitaciones;
+4. el catálogo de liberación contiene exactamente una fila por familia;
+5. una puerta externa no puede aprobarse si la cantidad mínima de evidencias no está registrada.
+
+La política completa está en [Plan de endurecimiento y liberación](24-validation-hardening-plan.md). Su representación ejecutable vive en `app/src/validation/release-gate.ts` y se verifica junto con el resto del motor.
+
 ## Persistencia y archivos de proyecto
 
 Antes de publicar se prueban, como mínimo:
@@ -57,7 +69,7 @@ Antes de llamar al producto “profesional”:
 ## Definición de terminado del Producto 01
 
 - El alcance y las exclusiones están visibles antes de calcular.
-- Los dos perfiles publicados tienen fuentes, versión y matriz de pruebas completas.
+- El perfil técnico publicable tiene fuentes, versión y matriz de pruebas completas; los perfiles históricos incompatibles permanecen archivados y bloqueados.
 - Todas las verificaciones muestran resultado, ecuación o procedimiento, entradas y referencia aplicable.
 - Los casos de regresión pasan automáticamente.
 - La matriz de contrastes externos cumple las fuentes mínimas y no contiene discrepancias bloqueantes.

@@ -4,6 +4,10 @@
 
 No existe una lista universal cerrada: las tipologías pueden clasificarse por geometría, posición, sistema resistente y condiciones del suelo. Para AndeLogic se adopta una lista práctica de familias principales de cimentación superficial para edificios, evitando presentar cada variante geométrica como un producto distinto.
 
+## Decisión de alcance
+
+El catálogo del Producto 01 queda congelado en las ocho familias siguientes. No se añadirán nuevas tipologías ni variantes geométricas durante la fase de validación y liberación. Cualquier propuesta futura deberá abrir una fase de producto distinta y no puede incorporarse silenciosamente al alcance actual.
+
 ## Familias principales ya implementadas
 
 1. **Zapata aislada rectangular centrada**: una columna, carga axial y presión uniforme.
@@ -35,6 +39,6 @@ No queda pendiente otra familia principal de cimentación superficial dentro del
 - Encepados y grupos de pilotes son cimentaciones profundas, no un tipo adicional de zapata superficial.
 - Muros de contención, cimentaciones de maquinaria y cimentaciones dinámicas necesitan acciones y verificaciones propias.
 
-## Próxima ampliación recomendada
+## Próxima fase recomendada
 
-Profundizar la losa de cimentación con un modelo validado de rigidez de placa–suelo, punzonamiento por columna y diseño de armado. Esa ampliación no debe reutilizar las proyecciones globales como franjas estructurales: requiere fuentes específicas, casos manuales y contraste independiente antes de programar resistencias.
+Completar la validación independiente de los ocho motores mediante el protocolo de contraste externo, resolver las discrepancias abiertas y someter una versión congelada a revisión profesional. La placa de la losa, su punzonamiento y su armado continúan explícitamente no evaluados; incorporarlos requeriría una decisión futura de alcance, fuentes específicas y casos propios.

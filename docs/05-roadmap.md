@@ -39,6 +39,8 @@
 
 ## E. Prelanzamiento
 
+- Mantener congelado el catálogo en ocho familias y rechazar tipologías inesperadas en la puerta de liberación.
+- Ejecutar las invariantes transversales de pureza, finitud, trazabilidad y límites sobre todos los ejemplos calculables.
 - Cerrar la matriz de contrastes externos y todas sus discrepancias.
 - Pruebas exploratorias con estudiantes e ingenieros jóvenes.
 - Solicitar revisión técnica humana cuando esté disponible como capa adicional de confianza.
@@ -64,8 +66,8 @@
 
 Estas ampliaciones conservan estado de referencia en validación. La pantalla Winkler de la losa no libera un análisis geotécnico de asentamientos, interacción suelo-estructura avanzada, contacto parcial ni diseño estructural de placa.
 
-El inventario actualizado y el orden de las tipologías restantes se mantiene en `18-footing-types-roadmap.md`.
+El inventario cerrado se mantiene en `18-footing-types-roadmap.md`. No quedan tipologías pendientes dentro del Producto 01.
 
 La biblioteca rápida de referencia, variación y borde para las ocho familias está implementada y documentada en `21-quick-example-library.md`.
 
-Estas ideas permanecen fuera hasta que el flujo axial centrado sea correcto, claro y validado.
+Las extensiones permanecen fuera del alcance mientras se completa el plan de endurecimiento de `24-validation-hardening-plan.md`.

@@ -12,10 +12,12 @@ La aplicación dispone de ocho modelos independientes:
 4. zapata medianera con viga centradora;
 5. zapata combinada trapezoidal;
 6. zapata aislada excéntrica de borde sin viga centradora;
-7. zapata de esquina con excentricidad biaxial y contacto completo.
+7. zapata de esquina con excentricidad biaxial y contacto completo;
 8. losa de cimentación rectangular multicolumna con contacto biaxial y evaluación rígida–Winkler preliminar.
 
 Cada modelo tiene sus propias entradas, validación, motor, resultados, memoria y representación técnica. Las demandas se obtienen por equilibrio; las resistencias disponibles se identifican como **referencias de guía en validación**, no como aprobación normativa integral.
+
+El catálogo queda cerrado en estas ocho familias. La etapa vigente no incorpora nuevas tipologías: endurece motores, trazabilidad, contrastes externos y revisión antes de cualquier liberación técnica.
 
 El proyecto también incluye:
 
@@ -67,6 +69,7 @@ app/src/
 ├── domain/          # Modelos, validaciones, cálculos puros y catálogo de ejemplos
 ├── application/     # Orquestadores por tipología
 ├── standards/       # Perfil técnico y trazabilidad
+├── validation/      # Benchmarks, invariantes y puerta de liberación
 ├── reports/         # Contratos de memoria
 ├── persistence/     # Biblioteca local y documento portable
 ├── ui/              # Formularios, resultados y memorias
@@ -100,6 +103,7 @@ La interfaz no contiene fórmulas. Cargar un ejemplo tampoco ejecuta cálculos n
 - [Biblioteca de ejemplos rápidos](docs/21-quick-example-library.md)
 - [Alcance de zapata de esquina biaxial](docs/22-corner-biaxial-footing-scope.md)
 - [Alcance de losa de cimentación](docs/23-mat-foundation-scope.md)
+- [Plan de endurecimiento y liberación](docs/24-validation-hardening-plan.md)
 - [Guía para IA y colaboradores](AGENTS.md)
 
 ## Límites y responsabilidad
