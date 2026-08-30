@@ -23,6 +23,7 @@ El proyecto también incluye:
 
 - biblioteca local de proyectos con IndexedDB;
 - importación y exportación de archivos JSON versionados;
+- exportación Excel editable del ejercicio activo, con entradas, fórmulas, resultados originales y control de modificaciones;
 - memoria de cálculo con datos, hipótesis, fórmulas, sustituciones y resultados;
 - láminas técnicas de sección, planta y armado preliminar;
 - catálogo de **24 ejemplos rápidos**, tres por tipología: referencia, variación y alerta o bloqueo esperado;
@@ -71,6 +72,7 @@ app/src/
 ├── standards/       # Perfil técnico y trazabilidad
 ├── validation/      # Benchmarks, invariantes y puerta de liberación
 ├── reports/         # Contratos de memoria
+├── exports/         # Libros XLSX auditables e infraestructura OOXML
 ├── persistence/     # Biblioteca local y documento portable
 ├── ui/              # Formularios, resultados y memorias
 └── components/      # Láminas técnicas
@@ -105,6 +107,7 @@ La interfaz no contiene fórmulas. Cargar un ejemplo tampoco ejecuta cálculos n
 - [Alcance de losa de cimentación](docs/23-mat-foundation-scope.md)
 - [Plan de endurecimiento y liberación](docs/24-validation-hardening-plan.md)
 - [Paquete de casos para contraste externo](docs/25-external-benchmark-case-pack.md)
+- [Exportación Excel de la memoria de cálculo](docs/26-excel-calculation-export.md)
 - [Libro operativo de contraste externo](outputs/01a04a13-8bed-7161-8f79-2eef8fed266d/AndeLogic-Paquete-Contraste-Externo.xlsx)
 - [Guía para IA y colaboradores](AGENTS.md)
 
