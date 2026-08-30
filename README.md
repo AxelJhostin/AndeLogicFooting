@@ -104,6 +104,8 @@ La interfaz no contiene fórmulas. Cargar un ejemplo tampoco ejecuta cálculos n
 - [Alcance de zapata de esquina biaxial](docs/22-corner-biaxial-footing-scope.md)
 - [Alcance de losa de cimentación](docs/23-mat-foundation-scope.md)
 - [Plan de endurecimiento y liberación](docs/24-validation-hardening-plan.md)
+- [Paquete de casos para contraste externo](docs/25-external-benchmark-case-pack.md)
+- [Libro operativo de contraste externo](outputs/01a04a13-8bed-7161-8f79-2eef8fed266d/AndeLogic-Paquete-Contraste-Externo.xlsx)
 - [Guía para IA y colaboradores](AGENTS.md)
 
 ## Límites y responsabilidad

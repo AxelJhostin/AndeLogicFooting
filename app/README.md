@@ -42,6 +42,6 @@ src/
 
 La biblioteca de ejemplos vive fuera de React. Cada caso tiene un identificador estable, una observación esperada y una prueba que confirma si debe calcular, advertir o bloquear. Cargarlo reemplaza solo el snapshot del modelo activo y nunca ejecuta ni guarda el proyecto automáticamente.
 
-El catálogo está congelado en ocho familias. `src/validation/release-gate.ts` concentra su estado de liberación y evita aprobar una familia sin alcance, motor, trazabilidad, evidencia externa y revisión profesional. Las pruebas transversales recorren los 24 ejemplos para comprobar pureza y finitud, y auditan que las memorias conserven fuentes y límites.
+El catálogo está congelado en ocho familias. `src/validation/release-gate.ts` concentra su estado de liberación y evita aprobar una familia sin alcance, motor, trazabilidad, evidencia externa y revisión profesional. Las pruebas transversales recorren los 24 ejemplos para comprobar pureza y finitud, y auditan que las memorias conserven fuentes y límites. `src/validation/benchmarks/family-case-catalog.ts` genera los ocho casos canónicos y sus 24 métricas para el libro de contraste externo.
 
 Consulta la [documentación principal](../README.md), el [catálogo de ejemplos](../docs/21-quick-example-library.md) y el [plan de endurecimiento](../docs/24-validation-hardening-plan.md).

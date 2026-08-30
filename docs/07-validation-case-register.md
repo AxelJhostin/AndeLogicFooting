@@ -73,8 +73,17 @@ El caso de referencia se revisa cuando cambia el perfil normativo, la implementa
 
 ## Cola de contrastes externos
 
-| ID | Perfil exacto | Módulo | Fuente | Uso | Estado |
-| --- | --- | --- | --- | --- | --- |
-| EXT-NEC-PUB-001 | NEC 2014 por confirmar en el caso | Contacto o cortante | Publicación técnica pública identificada | Contraste auxiliar con hipótesis y unidades completas | Pendiente de registrar autor y caso |
+| ID | Perfil exacto | Familia | Fuente mínima | Estado |
+| --- | --- | --- | --- | --- |
+| AXC-BMK-ISO-001 | NEC-2015-GUIDE-TRACEABLE | Aislada centrada | Referencia reproducible + 2 programas | Preparado; 0/3 paquetes |
+| AXC-BMK-STRIP-001 | NEC-2015-GUIDE-TRACEABLE | Corrida | Referencia reproducible + 2 programas | Preparado; 0/3 paquetes |
+| AXC-BMK-COMBINED-001 | NEC-2015-GUIDE-TRACEABLE | Combinada rectangular | Referencia reproducible + 2 programas | Preparado; 0/3 paquetes |
+| AXC-BMK-STRAP-001 | NEC-2015-GUIDE-TRACEABLE | Medianera con viga | Referencia reproducible + 2 programas | Preparado; 0/3 paquetes |
+| AXC-BMK-TRAPEZOIDAL-001 | NEC-2015-GUIDE-TRACEABLE | Combinada trapezoidal | Referencia reproducible + 2 programas | Preparado; 0/3 paquetes |
+| AXC-BMK-EDGE-001 | NEC-2015-GUIDE-TRACEABLE | Excéntrica de borde | Referencia reproducible + 2 programas | Preparado; 0/3 paquetes |
+| AXC-BMK-CORNER-001 | NEC-2015-GUIDE-TRACEABLE | Esquina biaxial | Referencia reproducible + 2 programas | Preparado; 0/3 paquetes |
+| AXC-BMK-MAT-001 | NEC-2015-GUIDE-TRACEABLE | Losa de cimentación | Referencia reproducible + 2 programas | Preparado; 0/3 paquetes |
+
+Los casos, sus 24 métricas y las tolerancias previas están en `app/src/validation/benchmarks/family-case-catalog.ts`. El libro editable está en `outputs/01a04a13-8bed-7161-8f79-2eef8fed266d/AndeLogic-Paquete-Contraste-Externo.xlsx`.
 
 Un caso externo no pasa a “Aprobado” con una captura aislada. Debe incluir todos los datos de identidad definidos en `09-external-benchmark-protocol.md`.
