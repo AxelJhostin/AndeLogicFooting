@@ -98,7 +98,7 @@ La aplicación se organizará como una secuencia de trabajo, no como un catálog
    - Resumen de controles por estado y lámina técnica asociada.
    - Elegir suelo, cortante, punzonamiento, flexión o armado abre el detalle de esa revisión en vez de apilar tarjetas.
 4. **Documentar**
-   - Guardar, descargar, abrir e imprimir se agrupan en un menú de proyecto, no dentro del flujo de cálculo.
+   - Guardar y descargar se agrupan en una franja de acciones del ejercicio; abrir e importar permanecen en un menú de proyecto separado. No se mezclan con los controles técnicos del motor.
 
 ### Ubicación de elementos que hoy están mal situados
 
@@ -191,7 +191,7 @@ La interfaz actual se mantiene solamente como referencia funcional durante la tr
 
 ## Implementación de interfaz — 2026-08-28
 
-La interfaz activa implementa el shell técnico descrito en este documento sin alterar el motor ni los contratos de dominio. El flujo está separado en `Definir caso`, `Sección`, `Planta`, `Resultados`, `Cálculo completo` y `Teoría`; las acciones de archivo quedan en el menú de proyecto y el estado de validación se muestra como una etiqueta breve de perfil.
+La interfaz activa implementa el shell técnico descrito en este documento sin alterar el motor ni los contratos de dominio. El flujo está separado en `Definir caso`, `Sección`, `Planta`, `Resultados`, `Cálculo completo` y `Teoría`; el estado de validación se muestra como una etiqueta breve de perfil.
 
 La lámina se divide en componentes SVG independientes para planta, secciones A–A/B–B, punzonamiento y armado preliminar. Todos consumen entradas o resultados existentes: no vuelven a calcular criterios dentro de los componentes. Las referencias de resistencia y armado siguen rotuladas como referencias de guía en validación, nunca como cumplimiento o aprobación normativa.
 
@@ -199,4 +199,18 @@ La interfaz anterior quedó archivada en `app/src/legacy/` y excluida de la comp
 
 ## Biblioteca rápida — 2026-08-29
 
-La franja del proyecto integra un selector de ejemplos junto al botón **Cargar**. El catálogo es dependiente de la tipología y muestra tres opciones estables. Una leyenda anticipa si se espera cálculo, alerta o bloqueo y describe la observación concreta, de modo que los casos límite también puedan probarse deliberadamente.
+La franja del proyecto integra un selector de ejemplos junto al botón **Cargar datos**. El catálogo es dependiente de la tipología y muestra tres opciones estables. Una leyenda anticipa si se espera cálculo, alerta o bloqueo y describe la observación concreta, de modo que los casos límite también puedan probarse deliberadamente. Después de aplicar el ejemplo aparece una confirmación junto al propio control y se indica el siguiente paso, sin depender de la barra de estado inferior.
+
+## Descubribilidad de modelos y descargas — 2026-08-30
+
+Las ocho pestañas horizontales de tipología se reemplazaron por un único selector **Modelo de cimentación** con nombres completos. La configuración de etiquetas y descripciones vive en `app/src/ui/workspace/footing-model-options.ts`, separada del shell principal.
+
+Guardar, descargar el proyecto JSON, generar la memoria/PDF y descargar Excel se presentan juntos en la franja visible **Archivo y descargas**. La memoria y el Excel permanecen deshabilitados hasta que exista un análisis vigente; al modificar entradas, cargar otro caso o cambiar de modelo vuelven a deshabilitarse para evitar documentar resultados obsoletos. El menú superior queda reservado para crear, importar o abrir proyectos locales.
+
+## Guía teórica ampliada — 2026-08-30
+
+La pestaña `Teoría` deja de ser una cuadrícula breve de tarjetas y se convierte en una guía dependiente de la tipología activa. Las ocho familias disponen de introducción, ruta de cargas, resumen de alcance, seis capítulos plegables, fórmulas conceptuales explicadas, secuencia de revisión, errores frecuentes, glosario y trazabilidad del perfil filtrada por modelo.
+
+La presentación vive en `app/src/ui/theory/FootingTheoryPage.tsx` y el contenido tipado en `app/src/ui/theory/theory-content.ts`. La separación impide volver a introducir párrafos y condicionales por familia dentro de `FootingApp.tsx`. Las pruebas exigen cobertura exacta de las ocho tipologías y una profundidad mínima para cada guía.
+
+Las ecuaciones de la guía no ejecutan cálculos ni reemplazan los módulos de dominio: explican expresiones ya registradas en los documentos de alcance y muestran condiciones y límites. La trazabilidad utiliza directamente el perfil activo, por lo que cada módulo conserva fuente, edición, referencia y aplicabilidad. La guía se carga de forma diferida al abrir la pestaña para no penalizar el paquete inicial.

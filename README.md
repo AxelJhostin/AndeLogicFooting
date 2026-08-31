@@ -25,6 +25,7 @@ El proyecto también incluye:
 - importación y exportación de archivos JSON versionados;
 - exportación Excel editable del ejercicio activo, con entradas, fórmulas, resultados originales y control de modificaciones;
 - memoria de cálculo con datos, hipótesis, fórmulas, sustituciones y resultados;
+- guía teórica completa y específica para cada modelo, con comportamiento, ecuaciones conceptuales, procedimiento, errores frecuentes, glosario, límites y fuentes;
 - láminas técnicas de sección, planta y armado preliminar;
 - catálogo de **24 ejemplos rápidos**, tres por tipología: referencia, variación y alerta o bloqueo esperado;
 - pruebas automáticas del motor, migraciones, informes y ejemplos.
@@ -54,10 +55,11 @@ npm run build
 
 En la franja superior:
 
-1. elige una tipología;
-2. selecciona un caso en **Prueba rápida**;
+1. elige una tipología en **Modelo de cimentación**;
+2. selecciona un caso en **Datos de prueba**;
 3. revisa el resultado esperado que aparece bajo el selector;
-4. pulsa **Cargar** y luego **Analizar**.
+4. pulsa **Cargar datos** y confirma el mensaje verde;
+5. pulsa **Analizar**.
 
 Los ejemplos reemplazan únicamente las entradas del tipo activo, invalidan resultados anteriores y no se guardan automáticamente. Incluyen casos que deben calcular, casos que deben mostrar una alerta y casos que deben bloquearse para demostrar los límites del modelo. Son datos didácticos y de regresión, no proyectos reales ni diseños aprobados.
 
@@ -79,6 +81,31 @@ app/src/
 ```
 
 La interfaz no contiene fórmulas. Cargar un ejemplo tampoco ejecuta cálculos ni cambia criterios: solo aplica un snapshot SI explícito; el botón **Analizar** utiliza el mismo orquestador probado que cualquier proyecto manual.
+
+## Guardar y descargar
+
+La franja **Archivo y descargas** permanece visible bajo los selectores:
+
+- **Guardar** conserva el proyecto en este navegador;
+- **Proyecto (.json)** descarga el archivo portable que puede volver a importarse;
+- **Memoria / PDF** abre la memoria de cálculo y el diálogo para imprimir o guardar como PDF;
+- **Descargar Excel** genera el libro auditable `*.andelogic-zapatas-calculo.xlsx`.
+
+La memoria y el Excel se habilitan únicamente después de analizar el caso vigente. Al modificar una entrada o cambiar de modelo, los resultados se invalidan y deben calcularse nuevamente.
+
+## Teoría por modelo
+
+La pestaña **Teoría** cambia con el modelo de cimentación activo. Cada una de las ocho guías incluye:
+
+- ruta física de las cargas y resumen del alcance;
+- seis capítulos plegables de comportamiento y cálculo conceptual;
+- expresiones acompañadas de su significado, sin volver a calcular resultados en React;
+- secuencia recomendada para revisar el caso;
+- errores frecuentes y glosario;
+- trazabilidad filtrada por tipología, con fuente, edición, aplicabilidad y enlace público;
+- advertencia visible del estado pendiente de contraste y revisión profesional.
+
+El contenido vive en `app/src/ui/theory/theory-content.ts` y se carga de forma diferida al abrir la pestaña para no aumentar innecesariamente la carga inicial de la aplicación.
 
 ## Documentación
 
